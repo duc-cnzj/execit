@@ -6,6 +6,12 @@
 
 in kubernetes.
 
+## ✨  Installation
+
+```shell
+kubectl apply -f https://raw.githubusercontent.com/duc-cnzj/execit/master/deploy.yaml
+```
+
 ## ✨  Features
 
 * multi cluster

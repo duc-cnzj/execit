@@ -22,8 +22,8 @@ picture_plugin:
 #  name: picture_bing
 
 
-# upload_dir 默认是 /tmp/mars-uploads
-upload_dir: ""
+# upload_dir 默认是 /tmp/execit-uploads
+# upload_dir: ""
 
 # 默认 50m, 使用 MB,Gi,m,g这样的写法
 #upload_max_size: "50m"
