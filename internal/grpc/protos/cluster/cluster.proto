@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "model/model.proto";
+
+option go_package = "github.com/duc-cnzj/execit-client/cluster;cluster";
+
+message ClusterListRequest {
+  int64 page = 1 [(validate.rules).int64.gt = 0];
+  int64 page_size = 2 [(validate.rules).int64.gt = 0];
+}
+message ClusterListResponse {
+  int64 page = 1;
+  int64 page_size = 2;
+  int64 count = 3;
+  repeated ClusterModel items = 4;
+}
+
+message ClusterCreateRequest {
+  string name = 1 [(validate.rules).string.min_bytes = 1];
+  string kube_config = 2 [(validate.rules).string.min_bytes = 1];
+}
+message ClusterCreateResponse {
+  int64 id = 1;
+  string name = 2;
+  string created_at = 4;
+  string updated_at = 5;
+  string deleted_at = 6;
+}
+
+message ClusterShowRequest {
+  int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
+}
+message ClusterShowResponse {
+  int64 id = 1;
+  string name = 2;
+  string kube_config = 3;
+  string api_server_url = 4;
+  string created_at = 5;
+  string updated_at = 6;
+  string deleted_at = 7;
+
+  repeated ClusterItems items = 8;
+  //  map<string, ClusterItems> items = 8;
+}
+
+message ClusterItem {
+  string namespace = 1;
+  string type = 2;
+  string name = 3;
+  bool enabled = 4;
+  int64 cluster_id = 5;
+  int64 card_id = 6;
+}
+
+message ClusterItems {
+  string namespace = 1;
+  repeated ClusterItem items = 2;
+}
+
+message ClusterDeleteRequest {
+  int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
+}
+message ClusterDeleteResponse {}
+
+service ClusterSvc {
+  rpc List(ClusterListRequest) returns (ClusterListResponse) {
+    option (google.api.http) = {
+      get: "/api/clusters"
+    };
+  }
+
+  rpc Create(ClusterCreateRequest) returns (ClusterCreateResponse) {
+    option (google.api.http) = {
+      post: "/api/clusters",
+      body: "*"
+    };
+  }
+
+  rpc Show(ClusterShowRequest) returns (ClusterShowResponse) {
+    option (google.api.http) = {
+      get: "/api/clusters/{cluster_id}"
+    };
+  }
+
+  rpc Delete(ClusterDeleteRequest) returns (ClusterDeleteResponse) {
+    option (google.api.http) = {
+      delete: "/api/clusters/{cluster_id}"
+    };
+  }
+}

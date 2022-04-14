@@ -1,0 +1,102 @@
+syntax = "proto3";
+
+option go_package = "github.com/duc-cnzj/execit-client/websocket;websocket";
+
+enum Type {
+  TypeUnknown = 0;
+  SetUid = 1;
+  InternalError = 2;
+
+  HandleExecShell = 50;
+  HandleExecShellMsg = 51;
+  HandleCloseShell = 52;
+  HandleAuthorize = 53;
+}
+
+enum ResultType {
+  ResultUnknown = 0;
+  Error = 1;
+  Success = 2;
+}
+
+enum To {
+  ToSelf = 0;
+  ToAll = 1;
+  ToOthers = 2;
+}
+
+// Request
+
+message WsRequestMetadata {
+  Type type = 1;
+}
+
+message AuthorizeTokenInput {
+  Type type = 1;
+
+  string token = 2;
+}
+
+
+// TerminalMessage is the messaging protocol between ShellController and MyPtyHandler.
+//
+// OP      DIRECTION  FIELD(S) USED  DESCRIPTION
+// ---------------------------------------------------------------------
+// bind    fe->be     SessionID      ID sent back from TerminalResponse
+// stdin   fe->be     Data           Keystrokes/paste buffer
+// resize  fe->be     Rows, Cols     New terminal size
+// stdout  be->fe     Data           Output from the process
+// toast   be->fe     Data           OOB message to be shown to the user
+message TerminalMessage {
+  string op = 1;
+  string data = 2;
+  string session_id = 3;
+  uint32 rows = 4;
+  uint32 cols = 5;
+}
+
+message TerminalMessageInput {
+  Type type = 1;
+
+  TerminalMessage message = 2;
+}
+
+message WsHandleExecShellInput {
+  Type type = 1;
+
+  int64 cluster_id = 2;
+  string namespace = 3;
+  string pod = 4;
+  string container = 5;
+}
+
+// Response
+
+message Metadata {
+  string id = 1;
+  string uid = 2;
+  string slug = 3;
+  Type type = 4;
+  bool end = 5;
+  ResultType result = 6;
+  To to = 7;
+  string data = 8;
+}
+
+message Container {
+  string namespace = 1;
+  string pod = 2;
+  string container = 3;
+  int64 cluster_id = 4;
+}
+
+message WsMetadataResponse {
+  Metadata metadata = 1;
+}
+
+message WsHandleShellResponse {
+  Metadata metadata = 1;
+
+  TerminalMessage terminal_message = 2;
+  Container container = 3;
+}

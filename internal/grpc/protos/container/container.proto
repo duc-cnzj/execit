@@ -1,0 +1,178 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/duc-cnzj/execit-client/container;container";
+
+message ContainerItem {
+  int64 cluster_id = 1;
+  string namespace = 2;
+  string pod = 3;
+  string container = 4;
+}
+
+message ContainerCopyToPodRequest {
+  int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
+  int64 file_id = 2 [(validate.rules).int64.gt = 0];
+  string namespace = 3 [(validate.rules).string.min_bytes = 1];
+  string pod = 4 [(validate.rules).string.min_bytes = 1];
+  string container = 5 [(validate.rules).string.min_bytes = 1];
+}
+
+message ContainerCopyToPodResponse {
+  string pod_file_path = 1;
+  string output = 2;
+  string file_name = 3;
+}
+
+message ContainerExecRequest {
+  int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
+  string namespace = 2 [(validate.rules).string.min_bytes = 1];
+  string pod = 3 [(validate.rules).string.min_bytes = 1];
+  string container = 4;
+  repeated string command = 5 [(validate.rules).repeated = {min_items: 1, items: {string: {min_bytes: 1}}}];
+}
+
+message ContainerExecResponse {
+  string data = 1;
+}
+
+message ContainerStreamCopyToPodRequest {
+  int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
+  string file_name = 2 [(validate.rules).string.min_bytes = 1];
+  bytes data = 3;
+  string namespace = 4 [(validate.rules).string.min_bytes = 1];
+  string pod = 5  [(validate.rules).string.min_bytes = 1];
+  string container = 6;
+}
+
+message ContainerStreamCopyToPodResponse {
+  int64 size = 1;
+  string pod_file_path = 2;
+  string output = 3;
+  string pod = 4;
+  string namespace = 5;
+  string container = 6;
+  string filename = 7;
+}
+
+message ContainerIsPodRunningRequest {
+  int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
+  string namespace = 2 [(validate.rules).string.min_bytes = 1];
+  string pod = 3 [(validate.rules).string.min_bytes = 1];
+}
+
+message ContainerIsPodRunningResponse {
+  bool running = 1;
+  string reason = 2;
+}
+
+message ContainerIsPodExistsRequest {
+  int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
+  string namespace = 2 [(validate.rules).string.min_bytes = 1];
+  string pod = 3 [(validate.rules).string.min_bytes = 1];
+}
+
+message ContainerIsPodExistsResponse {
+  bool exists = 1;
+}
+
+message ContainerLogRequest {
+  int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
+  string namespace = 2 [(validate.rules).string.min_bytes = 1];
+  string pod = 3 [(validate.rules).string.min_bytes = 1];
+  string container = 4 [(validate.rules).string.min_bytes = 1];
+}
+
+message ContainerLogResponse {
+  string namespace = 1;
+  string pod_name = 2;
+  string container_name = 3;
+  string log = 4;
+}
+
+service ContainerSvc {
+  // CopyToPod (web): 页面上传文件到 pod 内部
+  rpc CopyToPod(ContainerCopyToPodRequest) returns (ContainerCopyToPodResponse) {
+    option (google.api.http) = {
+      post: "/api/containers/copy_to_pod",
+      body: "*"
+    };
+  }
+
+  // Exec grpc 执行 pod 命令
+  rpc Exec(ContainerExecRequest) returns (stream ContainerExecResponse);
+
+  // StreamCopyToPod grpc 上传文件到 pod
+  //  demo:
+  //  cp, _ := c.Container().StreamCopyToPod(context.TODO())
+  //	open, _ := os.Open("/xxxxxx/helm-v3.8.0-rc.1-linux-arm64.tar.gz")
+  //	defer open.Close()
+  //	bf := bufio.NewReaderSize(open, 1024*1024*5)
+  //	var (
+  //		filename =  open.Name()
+  //		pod = "mars-demo-549f789f7d-sxvqm"
+  //		containerName = "demo"
+  //		namespace = "devops-a"
+  //	)
+  //	for {
+  //		bts := make([]byte, 1024*1024)
+  //		_, err := bf.Read(bts)
+  //		if err != nil {
+  //			if err == io.EOF {
+  //				cp.Send(&container.ContainerStreamCopyToPodRequest{
+  //					FileName:  filename,
+  //					Data:      bts,
+  //					Namespace: namespace,
+  //					Pod:       pod,
+  //					Container: containerName,
+  //				})
+  //				recv, err := cp.CloseAndRecv()
+  //				if err != nil {
+  //					log.Fatal(err)
+  //				}
+  //				log.Println(recv)
+  //			}
+  //			return
+  //		}
+  //		 cp.Send(&container.ContainerStreamCopyToPodRequest{
+  //			FileName:  filename,
+  //			Data:      bts,
+  //			Namespace: namespace,
+  //			Pod:       pod,
+  //			Container: containerName,
+  //		 })
+  //	}
+  rpc StreamCopyToPod(stream ContainerStreamCopyToPodRequest) returns (ContainerStreamCopyToPodResponse);
+
+  // IsPodRunning pod 是否正常在跑
+  rpc IsPodRunning(ContainerIsPodRunningRequest) returns (ContainerIsPodRunningResponse) {
+    option (google.api.http) = {
+      post: "/api/containers/pod_running_status",
+      body: "*"
+    };
+  }
+
+  //  IsPodExists pod 是否存在
+  rpc IsPodExists(ContainerIsPodExistsRequest) returns (ContainerIsPodExistsResponse) {
+    option (google.api.http) = {
+      post: "/api/containers/pod_exists",
+      body: "*"
+    };
+  }
+
+  // ContainerLog 查看 pod 日志
+  rpc ContainerLog(ContainerLogRequest) returns (ContainerLogResponse) {
+    option (google.api.http) = {
+      get: "/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs"
+    };
+  }
+
+  // StreamContainerLog stream 方式查看 pod 日志
+  rpc StreamContainerLog(ContainerLogRequest) returns (stream ContainerLogResponse) {
+    option (google.api.http) = {
+      get: "/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/stream_logs"
+    };
+  }
+}

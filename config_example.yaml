@@ -1,0 +1,75 @@
+app_port: 6000
+grpc_port: 50000
+debug: false
+
+# 'logrus' | 'zap'
+#log_channel: "logrus"
+
+profile_enabled: true
+
+# 'db' or 'memory'
+cache_driver: "memory"
+
+ws_sender_plugin:
+  name: ws_sender_memory
+#  name: ws_sender_redis
+#  args:
+#    addr: 127.0.0.1:6379
+#    password: ""
+#    db: 1
+picture_plugin:
+  name: picture_cartoon
+#  name: picture_bing
+
+
+# upload_dir 默认是 /tmp/mars-uploads
+upload_dir: ""
+
+# 默认 50m, 使用 MB,Gi,m,g这样的写法
+#upload_max_size: "50m"
+
+# database
+# 'sqlite' or 'mysql', 如果是 'sqlite', 'db_database' 为 db 绝对路径
+db_driver: "sqlite"
+db_database: /tmp/mars-sqlite.db
+# 如果是 'mysql' 以下均为必填项，如果是 'sqlite' 就不用填
+db_host: 127.0.0.1
+db_port: 3306
+db_username: root
+db_password: ""
+
+jaeger_user: ""
+jaeger_password: ""
+jaeger_agent_host_port: ""
+
+#oidc:
+#  - name: "sso1"
+#    enabled: true
+#    provider_url: "http://127.0.0.1:9001"
+#    client_id: "sso-xxx"
+#    client_secret: "xxxx"
+#    redirect_url: "http://127.0.0.1:3000/auth/callback"
+#  - name: "sso2"
+#    enabled: true
+#    provider_url: "http://127.0.0.1:9001"
+#    client_id: "sso-xxx"
+#    client_secret: "xxxx"
+#    redirect_url: "http://127.0.0.1:3000/auth/callback"
+
+admin_password: "123456"
+private_key: |-
+  -----BEGIN RSA PRIVATE KEY-----
+  MIICWwIBAAKBgQCdx5ZBeL3P3lH2fU/8yd4E1L880DjaKCnnnQkya+kOE7kkJNtP
+  xW4WIKsBgXUPtXUYk/uA5AkklJ/1ssiTbkM/G5J54ThsACarhiNijUznD81c7g0Q
+  6pbHYGAHU91wQgpcIv39cOKZVpFkEfIwgBMIKUvupBpGyXMU4YALVV23CQIDAQAB
+  AoGARo+kzeDumlDlvONr6zRoOybd45eHZWEC5JchLtB9qJL/gH+PKQy1X+X6NDEu
+  JflTxcsgdhMFV7u0EdCDzRNJtPKP/cU8hww0J2l3ZKTGzbbQnLIBFD3In8sEc9xe
+  3ikEjqs0EgSh3uY5XEq8qzuX3cI+FNlGyOwzM+ZcN7nWfPUCQQDOURX82COQIfAT
+  RjTshDQ55J/DUPPHyzpTER9OZNXYKp0IBBNzYyhJ6SHQHSuxHfL8W1FVHhmIsIBW
+  GQWo0y7zAkEAw8ZPJ4QH5otMsIgIfwMuPX0rO+QxwmJ6eg9ADuFr5zv6HizjAVVP
+  dKXuUU0gnemD4DncgiV2jZ0v2RzHK1aZEwJAR6G7gpgAcPB3jBmaEmwsPdV06rlW
+  io2y6FhPiEZWQME62CeiITPSLyc0SC94lfwR+zAxYt4ae2zcgggaAO2hpQJAecA5
+  d7S3iRu2XM6sofijaCAQpBV9EItX6dLUHqz4Av0cxmlZ33ljiYKr3CngD/SqS+cQ
+  CGwt91H68MXh40TeuwJARxz1VMLq7hKo8J4scAW/YrBTE4N6malYjYoR2HFs+YwL
+  cSE/4A4yfzTjN2r5GuJr8rTU7gU4Su9C8dLC0htWCA==
+  -----END RSA PRIVATE KEY-----

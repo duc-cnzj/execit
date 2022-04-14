@@ -1,0 +1,126 @@
+syntax = "proto3";
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "container/container.proto";
+
+option go_package = "github.com/duc-cnzj/execit-client/card;card";
+
+message CardAllRequest {}
+message CardAllResponse {
+  repeated CardItemsList items = 1;
+}
+
+message CardListRequest {
+  int64 page = 1 [(validate.rules).int64.gt = 0];
+  int64 page_size = 2 [(validate.rules).int64.gt = 0];
+}
+
+message CardItems {
+  int64 id = 1;
+  int64 cluster_id = 2;
+  string namespace = 3;
+  string name = 4;
+  string type = 5;
+  string cluster_name = 6;
+  repeated ContainerItem items = 7;
+}
+
+message CardItemsList {
+  int64 cluster_id = 1;
+  string namespace = 2;
+  string cluster_name = 3;
+  repeated CardItems items = 4;
+}
+
+message CardListResponse {
+  int64 page = 1;
+  int64 page_size = 2;
+  int64 count = 3;
+  repeated CardItems items = 4;
+}
+
+message CardCreateRequest {
+  int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
+  string namespace = 2 [(validate.rules).string.min_bytes = 1];
+  string name = 3 [(validate.rules).string.min_bytes = 1];
+  string type = 4 [(validate.rules).string.min_bytes = 1];
+}
+message CardCreateResponse {
+  int64 id = 1;
+  string type = 2;
+  string namespace = 3;
+  string name = 4;
+  int64 cluster_id = 6;
+  string created_at = 7;
+  string updated_at = 8;
+  string deleted_at = 9;
+}
+
+message CardShowRequest {
+  int64 card_id = 1 [(validate.rules).int64.gt = 0];
+}
+message CardShowResponse {
+  int64 id = 1;
+  string type = 2;
+  string namespace = 3;
+  string name = 4;
+  int64 cluster_id = 6;
+  string created_at = 7;
+  string updated_at = 8;
+  string deleted_at = 9;
+
+  repeated ContainerItem items = 10;
+}
+
+message CardDeleteRequest {
+  int64 card_id = 1 [(validate.rules).int64.gt = 0];
+}
+message CardDeleteResponse {}
+
+service CardSvc {
+  rpc All(CardAllRequest) returns (CardAllResponse) {
+    option (google.api.http) = {
+      get: "/api/all_cards"
+    };
+  }
+
+  //  rpc List(CardListRequest) returns (CardListResponse) {
+  //    option (google.api.http) = {
+  //      get: "/api/cards"
+  //    };
+  //  }
+
+  rpc Create(CardCreateRequest) returns (CardCreateResponse) {
+    option (google.api.http) = {
+      post: "/api/cards",
+      body: "*"
+    };
+  }
+
+  rpc Show(CardShowRequest) returns (CardShowResponse) {
+    option (google.api.http) = {
+      get: "/api/cards/{card_id}"
+    };
+  }
+
+  rpc Delete(CardDeleteRequest) returns (CardDeleteResponse) {
+    option (google.api.http) = {
+      delete: "/api/cards/{card_id}"
+    };
+  }
+
+  rpc AllContainers(CardAllContainersRequest) returns (CardAllContainersResponse) {
+    option (google.api.http) = {
+      get: "/api/cards/{card_id}/all_containers"
+    };
+  }
+}
+
+message CardAllContainersRequest {
+  int64 card_id = 1;
+}
+
+message CardAllContainersResponse {
+  repeated ContainerItem items = 1;
+}

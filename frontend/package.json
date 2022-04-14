@@ -1,0 +1,96 @@
+{
+  "name": "mars",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@ant-design/icons": "^4.6.2",
+    "@craco/craco": "^6.4.3",
+    "@fvilers/disable-react-devtools": "^1.2.1",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.0.3",
+    "@types/node": "^16.11.17",
+    "@types/react": "^17.0.38",
+    "@types/react-dom": "^17.0.11",
+    "@types/react-redux": "^7.1.16",
+    "add": "^2.0.6",
+    "antd": "^4.18.0",
+    "assert": "^2.0.0",
+    "axios": "^0.24.0",
+    "blueimp-md5": "^2.18.0",
+    "classnames": "^2.3.1",
+    "codemirror": "^5.61.0",
+    "craco-less": "^2.0.0",
+    "fetch-readablestream": "^0.2.0",
+    "hotkeys-js": "^3.8.7",
+    "immutable": "^4.0.0",
+    "js-yaml": "^4.1.0",
+    "jshint": "^2.13.1",
+    "jsonlint": "^1.6.3",
+    "lodash": "^4.17.21",
+    "mitt": "^3.0.0",
+    "prism-themes": "^1.9.0",
+    "protobufjs": "^6.11.2",
+    "react": "^17.0.2",
+    "react-codemirror2": "^7.2.1",
+    "react-diff-viewer": "^3.1.1",
+    "react-dom": "^17.0.2",
+    "react-infinite-scroll-component": "^6.1.0",
+    "react-redux": "^7.2.4",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "5.0.0",
+    "react-string-replace": "^0.4.4",
+    "react-syntax-highlighter": "^15.4.4",
+    "react-uid": "^2.3.1",
+    "react-virtualized": "^9.22.3",
+    "recharts": "^2.1.6",
+    "redux-devtools-extension": "^2.13.9",
+    "redux-thunk": "^2.3.0",
+    "text-encoding-utf-8": "^1.0.2",
+    "typescript": "^4.5.4",
+    "util": "^0.12.4",
+    "web-streams-polyfill": "^3.2.0",
+    "web-vitals": "^2.1.2",
+    "whatwg-fetch": "^3.6.2",
+    "xterm": "^4.14.1",
+    "xterm-addon-fit": "^0.5.0"
+  },
+  "scripts": {
+    "start": "craco start",
+    "build": "craco build",
+    "test": "craco test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ],
+    "rules": {
+      "react/jsx-no-target-blank": "off"
+    }
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@types/blueimp-md5": "^2.18.0",
+    "@types/js-yaml": "^4.0.2",
+    "@types/jshint": "^2.12.1",
+    "@types/lodash": "^4.14.169",
+    "@types/prismjs": "^1.16.6",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/react-syntax-highlighter": "^13.5.0",
+    "babel-plugin-transform-remove-console": "^6.9.4"
+  }
+}
