@@ -4,9 +4,14 @@
 
 ## 💡 Intro
 
-in kubernetes.
+Super simple terminal management in k8s.
 
-## ✨  Installation
+## ✨  Features
+
+* multi cluster
+* like kubernetes dashboard, but more simple and powerful.
+
+## 🚀  Installation
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/duc-cnzj/execit/master/deploy.yaml
@@ -14,11 +19,6 @@ kubectl port-forward -n execit svc/execit 31996:80
 ```
 
 open http://localhost:31996
-
-## ✨  Features
-
-* multi cluster
-* like kubernetes dashboard, but more simple and powerful.
 
 ## TODO
 
