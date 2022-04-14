@@ -55,7 +55,7 @@ func (a *ApiGatewayBootstrapper) Bootstrap(app contracts.ApplicationInterface) e
 		case <-ch:
 			xlog.Info("[Websocket]: all socket connection closed")
 		case <-t.C:
-			xlog.Warningf("[Websocket]: 等待超时, 未等待所有 socket 连接退出，当前剩余连接 %v 个。", socket.Wait.Count())
+			xlog.Warningf("[Websocket]: Waiting for timeout, not waiting for all socket connections to exit, there are currently %v connections remaining.", socket.Wait.Count())
 		}
 	})
 
@@ -179,7 +179,7 @@ func handleDownload(w http.ResponseWriter, r *http.Request, fid int) {
 	user := r.Context().Value(authCtx{}).(*contracts.UserInfo)
 	e.AuditLog(user.Name,
 		event.ActionType_Download,
-		fmt.Sprintf("下载文件 '%s', 大小 %s",
+		fmt.Sprintf("Download file '%s', size %s",
 			fil.Path, humanize.Bytes(fil.Size)), nil, nil)
 	open, err := os.Open(fil.Path)
 	if err != nil {

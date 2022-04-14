@@ -148,7 +148,7 @@ const EventList: React.FC = () => {
   const clearDisk = useCallback(() => {
     setClearLoading(true);
     deleteUndocumentedFiles().then((res) => {
-      message.success("清理成功");
+      message.success("Cleaned up successfully");
       diskInfoApi()
         .then(({ data }) => {
           setDiskInfo(data);

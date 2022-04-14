@@ -10,7 +10,10 @@ in kubernetes.
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/duc-cnzj/execit/master/deploy.yaml
+kubectl port-forward -n execit svc/execit 31996:80
 ```
+
+open http://localhost:31996
 
 ## ✨  Features
 

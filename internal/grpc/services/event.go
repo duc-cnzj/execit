@@ -13,7 +13,7 @@ import (
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/models"
 	"github.com/duc-cnzj/execit/internal/scopes"
-	"github.com/duc-cnzj/execit/internal/utils"
+	"github.com/dustin/go-humanize"
 )
 
 func init() {
@@ -55,7 +55,7 @@ func (e *EventSvc) List(ctx context.Context, request *event.EventListRequest) (*
 			Old:      m.Old,
 			New:      m.New,
 			FileId:   fid,
-			EventAt:  utils.ToRFC3339DatetimeString(&m.CreatedAt),
+			EventAt:  humanize.Time(m.CreatedAt),
 		})
 	}
 

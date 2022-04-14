@@ -64,7 +64,7 @@ metadata:
 spec:
   selector:
     app: execit
-  type: NodePort
+  type: ClusterIP
   ports:
   - name: execit
     protocol: TCP
