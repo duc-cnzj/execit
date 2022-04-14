@@ -7,7 +7,7 @@ import (
 	"github.com/uber/jaeger-client-go/config"
 )
 
-const serviceName = "mars"
+const serviceName = "execit"
 
 type TracingBootstrapper struct{}
 

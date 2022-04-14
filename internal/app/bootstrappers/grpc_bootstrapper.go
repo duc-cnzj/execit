@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	app "github.com/duc-cnzj/execit/internal/app/helper"
-	marsauthorizor "github.com/duc-cnzj/execit/internal/auth"
+	myauthorizor "github.com/duc-cnzj/execit/internal/auth"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/grpc/services"
 	"github.com/duc-cnzj/execit/internal/validator"
@@ -66,7 +66,7 @@ func (g *grpcRunner) Run(ctx context.Context) error {
 		grpc.ChainStreamInterceptor(
 			grpc_opentracing.StreamServerInterceptor(traceWithOpName()),
 			grpc_auth.StreamServerInterceptor(Authenticate),
-			marsauthorizor.StreamServerInterceptor(),
+			myauthorizor.StreamServerInterceptor(),
 			validator.StreamServerInterceptor(),
 			grpc_recovery.StreamServerInterceptor(grpc_recovery.WithRecoveryHandler(func(p any) (err error) {
 				bf := make([]byte, 1024*5)
@@ -76,7 +76,7 @@ func (g *grpcRunner) Run(ctx context.Context) error {
 			})),
 			func(srv any, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 				defer func(t time.Time) {
-					user, err := marsauthorizor.GetUser(ctx)
+					user, err := myauthorizor.GetUser(ctx)
 					if err == nil {
 						xlog.Infof("[Grpc]: user: %v, visit: %v, use: %s.", user.Name, info.FullMethod, time.Since(t))
 					}
@@ -89,11 +89,11 @@ func (g *grpcRunner) Run(ctx context.Context) error {
 		grpc.ChainUnaryInterceptor(
 			grpc_opentracing.UnaryServerInterceptor(traceWithOpName()),
 			grpc_auth.UnaryServerInterceptor(Authenticate),
-			marsauthorizor.UnaryServerInterceptor(),
+			myauthorizor.UnaryServerInterceptor(),
 			validator.UnaryServerInterceptor(),
 			func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp any, err error) {
 				defer func(t time.Time) {
-					user, err := marsauthorizor.GetUser(ctx)
+					user, err := myauthorizor.GetUser(ctx)
 					if err == nil {
 						xlog.Infof("[Grpc]: user: %v, visit: %v, use: %s.", user.Name, info.FullMethod, time.Since(t))
 					}
@@ -139,7 +139,7 @@ func Authenticate(ctx context.Context) (context.Context, error) {
 		return nil, err
 	}
 	if verifyToken, b := app.Auth().VerifyToken(token); b {
-		return marsauthorizor.SetUser(ctx, &verifyToken.UserInfo), nil
+		return myauthorizor.SetUser(ctx, &verifyToken.UserInfo), nil
 	}
 
 	return nil, status.Errorf(codes.Unauthenticated, "Unauthenticated.")

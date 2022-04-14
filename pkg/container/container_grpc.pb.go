@@ -35,7 +35,7 @@ type ContainerSvcClient interface {
 	//	bf := bufio.NewReaderSize(open, 1024*1024*5)
 	//	var (
 	//		filename =  open.Name()
-	//		pod = "mars-demo-549f789f7d-sxvqm"
+	//		pod = "execit-demo-549f789f7d-sxvqm"
 	//		containerName = "demo"
 	//		namespace = "devops-a"
 	//	)
@@ -236,7 +236,7 @@ type ContainerSvcServer interface {
 	//	bf := bufio.NewReaderSize(open, 1024*1024*5)
 	//	var (
 	//		filename =  open.Name()
-	//		pod = "mars-demo-549f789f7d-sxvqm"
+	//		pod = "execit-demo-549f789f7d-sxvqm"
 	//		containerName = "demo"
 	//		namespace = "devops-a"
 	//	)

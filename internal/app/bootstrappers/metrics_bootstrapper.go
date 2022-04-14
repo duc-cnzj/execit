@@ -31,10 +31,10 @@ func (m *metricsRunner) Shutdown(ctx context.Context) error {
 
 func (m *MetricsBootstrapper) Bootstrap(app contracts.ApplicationInterface) error {
 	conns := prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Namespace: "mars",
+		Namespace: "execit",
 		Subsystem: "websocket",
 		Name:      "connections",
-		Help:      "当前 websocket 连接数",
+		Help:      "current websocket connections",
 	}, []string{"hostname"})
 	prometheus.MustRegister(conns)
 

@@ -39,7 +39,7 @@ func (a *Auth) Sign(info contracts.UserInfo) (*contracts.SignData, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, &contracts.JwtClaims{
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(contracts.Expired).Unix(),
-			Issuer:    "mars",
+			Issuer:    "execit",
 		},
 		UserInfo: info,
 	})
