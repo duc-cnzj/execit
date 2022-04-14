@@ -2,6 +2,7 @@ package contracts
 
 import (
 	"context"
+
 	"k8s.io/client-go/informers"
 	appsv1 "k8s.io/client-go/listers/apps/v1"
 	v1 "k8s.io/client-go/listers/core/v1"

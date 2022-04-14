@@ -21,10 +21,10 @@ import (
 	e "github.com/duc-cnzj/execit/internal/event/events"
 	"github.com/duc-cnzj/execit/internal/grpc/services"
 	"github.com/duc-cnzj/execit/internal/middlewares"
-	"github.com/duc-cnzj/execit/internal/xlog"
 	"github.com/duc-cnzj/execit/internal/models"
 	"github.com/duc-cnzj/execit/internal/socket"
 	"github.com/duc-cnzj/execit/internal/utils"
+	"github.com/duc-cnzj/execit/internal/xlog"
 	"github.com/duc-cnzj/execit/third_party/doc/data"
 
 	swagger_ui "github.com/duc-cnzj/execit/third_party/doc/swagger-ui"

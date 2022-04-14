@@ -2,8 +2,9 @@ package bootstrappers
 
 import (
 	"fmt"
-	"github.com/duc-cnzj/execit/internal/xlog"
 	"os"
+
+	"github.com/duc-cnzj/execit/internal/xlog"
 
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/uploader"
