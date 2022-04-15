@@ -5,6 +5,7 @@ import { getUid } from "../utils/uid";
 import { getToken } from "../utils/token";
 import { message } from "antd";
 import pb from "../api/compiled";
+import { useTranslation } from "react-i18next";
 
 interface State {
   ws: WebSocket | null;
@@ -35,11 +36,12 @@ export function useWsReady(): boolean {
 export const ProvideWebsocket: React.FC = ({ children }) => {
   const dispatch = useDispatch();
   const [ws, setWs] = useState<any>();
+  const { t } = useTranslation();
 
   const connectWs = useCallback(() => {
     let token = getToken();
     if (!token) {
-      message.error("User not logged in");
+      message.error(t("User not logged in"));
       return;
     }
     console.log("ws init");
@@ -55,7 +57,7 @@ export const ProvideWebsocket: React.FC = ({ children }) => {
       url += "?uid=" + uid;
     }
     let conn = new WebSocket(url);
-    conn.binaryType = "arraybuffer"
+    conn.binaryType = "arraybuffer";
     conn.onopen = function (evt) {
       setWs({ ws: conn, ready: true });
       conn.send(
@@ -70,8 +72,17 @@ export const ProvideWebsocket: React.FC = ({ children }) => {
       console.log("ws closed");
     };
     conn.onmessage = function (evt) {
-      let data: pb.WsMetadataResponse = pb.WsMetadataResponse.decode(new Uint8Array(evt.data))
-      data.metadata && dispatch(handleEvents(data.metadata.slug, data.metadata, new Uint8Array(evt.data)));
+      let data: pb.WsMetadataResponse = pb.WsMetadataResponse.decode(
+        new Uint8Array(evt.data)
+      );
+      data.metadata &&
+        dispatch(
+          handleEvents(
+            data.metadata.slug,
+            data.metadata,
+            new Uint8Array(evt.data)
+          )
+        );
     };
   }, [dispatch]);
 

@@ -95,13 +95,29 @@ const languages: Lang = {
     en: "total",
     zh: "总数",
   },
+  "wrong username or password": {
+    en: "wrong username or password",
+    zh: "用户名或密码错误",
+  },
   "file space": {
     en: "file space",
     zh: "文件空间",
   },
+  "Login successfully": {
+    en: "Login successfully",
+    zh: "登录成功",
+  },
+  "User not logged in": {
+    en: "User not logged in",
+    zh: "用户未登录",
+  },
   "password": {
     en: "password",
     zh: "密码",
+  },
+  "Login expired. Please log in again": {
+    en: "Login expired. Please log in again",
+    zh: "登录过期，请重新登录",
   },
   "namespace": {
     en: "namespace",
