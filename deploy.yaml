@@ -36,7 +36,6 @@ spec:
           - serve
           - --config=/config.yaml
           - --app_port=6000
-          - --grpc_port=50000
         volumeMounts:
         - name: config
           mountPath: /config.yaml

@@ -8,6 +8,7 @@ import {
   Modal,
   message,
   Form,
+  Empty,
   Input,
   Tabs,
 } from "antd";
@@ -21,6 +22,7 @@ import {
   clusterShow,
 } from "../api/cluster";
 import MyCodeMirror from "./MyCodeMirror";
+import { useHistory } from "react-router-dom";
 
 const { TabPane } = Tabs;
 
@@ -34,6 +36,7 @@ const ClusterManager: React.FC = () => {
   }>({ page: 0, page_size: defaultPageSize, count: 0 });
   const [list, setList] = useState<pb.ClusterModel[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [current, setCurrent] = useState<{
     clusterID: number;
@@ -42,7 +45,7 @@ const ClusterManager: React.FC = () => {
     clusterID: 0,
     detail: undefined,
   });
-
+  const h = useHistory();
   const load = useCallback(() => {
     setLoading(true);
     clusterList({ page: 1, page_size: defaultPageSize })
@@ -135,7 +138,7 @@ const ClusterManager: React.FC = () => {
       .then(() => {
         message.success("success");
         setIsAddClusterVisible(false);
-        load()
+        load();
       })
       .catch((e) => {
         message.error(e.response.data.message);
@@ -230,6 +233,25 @@ const ClusterManager: React.FC = () => {
         >
           <List
             dataSource={list}
+            locale={{
+              emptyText: (
+                <Empty
+                  imageStyle={{
+                    height: 60,
+                  }}
+                  description={<span>Don't have any project cards yet</span>}
+                >
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      setIsAddClusterVisible(true)
+                    }}
+                  >
+                    Create Now
+                  </Button>
+                </Empty>
+              ),
+            }}
             renderItem={(item: pb.ClusterModel) => (
               <List.Item
                 className="git__list-item"
@@ -241,17 +263,20 @@ const ClusterManager: React.FC = () => {
                       setIsModalVisible(true);
                     }}
                   >
-                    show
+                    add card
                   </Button>,
                   <Button
                     danger
+                    loading={deleteLoading}
                     onClick={() => {
+                      setDeleteLoading(true);
                       clusterDelete(item.id)
                         .then(() => {
-                          message.success("success")
-                          load()
+                          message.success("success");
+                          load();
                         })
-                        .catch((e) => message.error(e.response.data.message));
+                        .catch((e) => message.error(e.response.data.message))
+                        .finally(() => setDeleteLoading(false));
                     }}
                   >
                     delete

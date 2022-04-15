@@ -16,6 +16,28 @@
     "application/json"
   ],
   "paths": {
+    "/api/cluster_count": {
+      "get": {
+        "operationId": "ClusterSvc_Count",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ClusterCountResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "ClusterSvc"
+        ]
+      }
+    },
     "/api/clusters": {
       "get": {
         "operationId": "ClusterSvc_List",
@@ -146,6 +168,15 @@
     }
   },
   "definitions": {
+    "ClusterCountResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "ClusterCreateRequest": {
       "type": "object",
       "properties": {

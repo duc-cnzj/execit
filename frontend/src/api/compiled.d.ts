@@ -3624,6 +3624,20 @@ export class ClusterSvc extends $protobuf.rpc.Service {
      * @returns Promise
      */
     public delete(request: ClusterDeleteRequest): Promise<ClusterDeleteResponse>;
+
+    /**
+     * Calls Count.
+     * @param request ClusterCountRequest message or plain object
+     * @param callback Node-style callback called with the error, if any, and ClusterCountResponse
+     */
+    public count(request: ClusterCountRequest, callback: ClusterSvc.CountCallback): void;
+
+    /**
+     * Calls Count.
+     * @param request ClusterCountRequest message or plain object
+     * @returns Promise
+     */
+    public count(request: ClusterCountRequest): Promise<ClusterCountResponse>;
 }
 
 export namespace ClusterSvc {
@@ -3655,6 +3669,83 @@ export namespace ClusterSvc {
      * @param [response] ClusterDeleteResponse
      */
     type DeleteCallback = (error: (Error|null), response?: ClusterDeleteResponse) => void;
+
+    /**
+     * Callback as used by {@link ClusterSvc#count}.
+     * @param error Error, if any
+     * @param [response] ClusterCountResponse
+     */
+    type CountCallback = (error: (Error|null), response?: ClusterCountResponse) => void;
+}
+
+/** Properties of a ClusterCountRequest. */
+export interface IClusterCountRequest {
+}
+
+/** Represents a ClusterCountRequest. */
+export class ClusterCountRequest implements IClusterCountRequest {
+
+    /**
+     * Constructs a new ClusterCountRequest.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IClusterCountRequest);
+
+    /**
+     * Encodes the specified ClusterCountRequest message. Does not implicitly {@link ClusterCountRequest.verify|verify} messages.
+     * @param message ClusterCountRequest message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ClusterCountRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a ClusterCountRequest message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ClusterCountRequest
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): ClusterCountRequest;
+}
+
+/** Properties of a ClusterCountResponse. */
+export interface IClusterCountResponse {
+
+    /** ClusterCountResponse count */
+    count?: (number|null);
+}
+
+/** Represents a ClusterCountResponse. */
+export class ClusterCountResponse implements IClusterCountResponse {
+
+    /**
+     * Constructs a new ClusterCountResponse.
+     * @param [properties] Properties to set
+     */
+    constructor(properties?: IClusterCountResponse);
+
+    /** ClusterCountResponse count. */
+    public count: number;
+
+    /**
+     * Encodes the specified ClusterCountResponse message. Does not implicitly {@link ClusterCountResponse.verify|verify} messages.
+     * @param message ClusterCountResponse message or plain object to encode
+     * @param [writer] Writer to encode to
+     * @returns Writer
+     */
+    public static encode(message: ClusterCountResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+    /**
+     * Decodes a ClusterCountResponse message from the specified reader or buffer.
+     * @param reader Reader or buffer to decode from
+     * @param [length] Message length if known beforehand
+     * @returns ClusterCountResponse
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): ClusterCountResponse;
 }
 
 /** Properties of a ContainerItem. */

@@ -25,3 +25,4 @@ open http://localhost:31996
 - [x] Multi-cluster management
 - [x] base on deployment, statefulset
 - [ ] RBAC
+- [ ] base permission for execit
