@@ -20,8 +20,11 @@ Super simple terminal management in k8s.
 
 ```shell
 kubectl apply -f https://raw.githubusercontent.com/duc-cnzj/execit/master/deploy.yaml
+
 kubectl port-forward -n execit svc/execit 31996:80
 ```
+
+username: `admin`, password: `123456`
 
 open http://localhost:31996
 
