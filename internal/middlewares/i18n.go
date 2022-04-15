@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	trans "github.com/duc-cnzj/execit/internal/translator"
-	"github.com/duc-cnzj/execit/internal/xlog"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"golang.org/x/text/language"
 	"google.golang.org/grpc"
@@ -24,7 +23,6 @@ func I18n(h http.Handler) http.Handler {
 			r = r.WithContext(context.WithValue(r.Context(), i18nKey{}, "en"))
 		}
 
-		xlog.Warning("lang: ", r.Context().Value(i18nKey{}))
 		h.ServeHTTP(w, r)
 	})
 }

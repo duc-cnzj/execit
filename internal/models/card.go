@@ -4,11 +4,15 @@ import (
 	"time"
 
 	cc "github.com/duc-cnzj/execit-client/container"
+	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
+	"github.com/duc-cnzj/execit/internal/plugins"
+	"github.com/duc-cnzj/execit/internal/xlog"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 
 	"gorm.io/gorm"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 )
 
 type Card struct {
@@ -35,9 +39,21 @@ func (c Card) GetItems() []*cc.ContainerItem {
 	}
 	switch c.Type {
 	case "Deployment":
-		deployment, _ := client.Informer.Apps().V1().Deployments().Lister().Deployments(c.Namespace).Get(c.Name)
+		deployment, err := client.DeploymentLister().Deployments(c.Namespace).Get(c.Name)
+		if err != nil {
+			if apierrors.IsNotFound(err) {
+				app.DB().Delete(&c)
+				plugins.GetWsSender().New("", "").ToAll(&websocket_pb.WsMetadataResponse{
+					Metadata: &websocket_pb.Metadata{
+						Type: websocket_pb.Type_SyncCard,
+					},
+				})
+			}
+			xlog.Error(err)
+			return nil
+		}
 		asMap, _ := metav1.LabelSelectorAsMap(deployment.Spec.Selector)
-		list, _ := client.Informer.Core().V1().Pods().Lister().Pods(c.Namespace).List(labels.SelectorFromSet(asMap))
+		list, _ := client.PodLister().Pods(c.Namespace).List(labels.SelectorFromSet(asMap))
 		for _, pod := range list {
 			for _, container := range pod.Spec.Containers {
 				subItems = append(subItems, &cc.ContainerItem{
@@ -49,9 +65,21 @@ func (c Card) GetItems() []*cc.ContainerItem {
 			}
 		}
 	case "StatefulSet":
-		statefulSet, _ := client.Informer.Apps().V1().StatefulSets().Lister().StatefulSets(c.Namespace).Get(c.Name)
+		statefulSet, err := client.StatefulSetLister().StatefulSets(c.Namespace).Get(c.Name)
+		if err != nil {
+			if apierrors.IsNotFound(err) {
+				app.DB().Delete(&c)
+				plugins.GetWsSender().New("", "").ToAll(&websocket_pb.WsMetadataResponse{
+					Metadata: &websocket_pb.Metadata{
+						Type: websocket_pb.Type_SyncCard,
+					},
+				})
+			}
+			xlog.Error(err)
+			return nil
+		}
 		asMap, _ := metav1.LabelSelectorAsMap(statefulSet.Spec.Selector)
-		list, _ := client.Informer.Core().V1().Pods().Lister().Pods(c.Namespace).List(labels.SelectorFromSet(asMap))
+		list, _ := client.PodLister().Pods(c.Namespace).List(labels.SelectorFromSet(asMap))
 		for _, pod := range list {
 			for _, container := range pod.Spec.Containers {
 				subItems = append(subItems, &cc.ContainerItem{

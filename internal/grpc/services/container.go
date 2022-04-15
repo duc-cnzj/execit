@@ -41,13 +41,13 @@ type ContainerSvc struct {
 }
 
 func (c *ContainerSvc) IsPodRunning(_ context.Context, request *container.ContainerIsPodRunningRequest) (*container.ContainerIsPodRunningResponse, error) {
-	running, reason := utils.IsPodRunning(utils.K8sClientByClusterID(request.ClusterId).Client, request.GetNamespace(), request.GetPod())
+	running, reason := utils.IsPodRunning(utils.K8sClientByClusterID(request.ClusterId).Client(), request.GetNamespace(), request.GetPod())
 
 	return &container.ContainerIsPodRunningResponse{Running: running, Reason: reason}, nil
 }
 
 func (c *ContainerSvc) IsPodExists(_ context.Context, request *container.ContainerIsPodExistsRequest) (*container.ContainerIsPodExistsResponse, error) {
-	_, err := utils.K8sClientByClusterID(request.ClusterId).Client.CoreV1().Pods(request.Namespace).Get(context.TODO(), request.Pod, metav1.GetOptions{})
+	_, err := utils.K8sClientByClusterID(request.ClusterId).PodLister().Pods(request.Namespace).Get(request.Pod)
 	if err != nil && apierrors.IsNotFound(err) {
 		return &container.ContainerIsPodExistsResponse{Exists: false}, nil
 	}
@@ -57,13 +57,13 @@ func (c *ContainerSvc) IsPodExists(_ context.Context, request *container.Contain
 
 func (c *ContainerSvc) Exec(request *container.ContainerExecRequest, server container.ContainerSvc_ExecServer) error {
 	k8sClient := utils.K8sClientByClusterID(request.ClusterId)
-	running, reason := utils.IsPodRunning(k8sClient.Client, request.Namespace, request.Pod)
+	running, reason := utils.IsPodRunning(k8sClient.Client(), request.Namespace, request.Pod)
 	if !running {
 		return errors.New(reason)
 	}
 
 	if request.Container == "" {
-		pod, _ := k8sClient.Client.CoreV1().Pods(request.Namespace).Get(context.TODO(), request.Pod, metav1.GetOptions{})
+		pod, _ := k8sClient.PodLister().Pods(request.Namespace).Get(request.Pod)
 		for _, co := range pod.Spec.Containers {
 			request.Container = co.Name
 			xlog.Debug("Use the first container: ", co.Name)
@@ -80,7 +80,7 @@ func (c *ContainerSvc) Exec(request *container.ContainerExecRequest, server cont
 		Command:   request.Command,
 	}
 
-	req := k8sClient.Client.CoreV1().
+	req := k8sClient.Client().CoreV1().
 		RESTClient().
 		Post().
 		Namespace(request.Namespace).
@@ -89,7 +89,7 @@ func (c *ContainerSvc) Exec(request *container.ContainerExecRequest, server cont
 		Name(request.Pod)
 
 	params := req.VersionedParams(peo, scheme.ParameterCodec)
-	exec, err := remotecommand.NewSPDYExecutor(k8sClient.RestConfig, "POST", params.URL())
+	exec, err := remotecommand.NewSPDYExecutor(k8sClient.RestConfig(), "POST", params.URL())
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ func (c *ContainerSvc) Exec(request *container.ContainerExecRequest, server cont
 
 func (c *ContainerSvc) CopyToPod(ctx context.Context, request *container.ContainerCopyToPodRequest) (*container.ContainerCopyToPodResponse, error) {
 	k8sClient := utils.K8sClientByClusterID(request.ClusterId)
-	if running, reason := utils.IsPodRunning(k8sClient.Client, request.Namespace, request.Pod); !running {
+	if running, reason := utils.IsPodRunning(k8sClient.Client(), request.Namespace, request.Pod); !running {
 		return nil, status.Error(codes.NotFound, reason)
 	}
 
@@ -139,7 +139,7 @@ func (c *ContainerSvc) CopyToPod(ctx context.Context, request *container.Contain
 	if err := app.DB().First(&file, request.FileId).Error; err != nil {
 		return nil, err
 	}
-	res, err := utils.CopyFileToPod(k8sClient.Client, k8sClient.RestConfig, request.Namespace, request.Pod, request.Container, file.Path, "")
+	res, err := utils.CopyFileToPod(k8sClient.Client(), k8sClient.RestConfig(), request.Namespace, request.Pod, request.Container, file.Path, "")
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
@@ -181,7 +181,7 @@ func (c *ContainerSvc) StreamCopyToPod(server container.ContainerSvc_StreamCopyT
 
 	for {
 		recv, err := server.Recv()
-		kclient := utils.K8sClientByClusterID(recv.ClusterId).Client
+		kclient := utils.K8sClientByClusterID(recv.ClusterId).Client()
 		if err != nil {
 			if err == io.EOF && f != nil {
 				stat, _ := f.Stat()
@@ -259,7 +259,7 @@ func (c *ContainerSvc) StreamCopyToPod(server container.ContainerSvc_StreamCopyT
 }
 
 func (c *ContainerSvc) ContainerLog(ctx context.Context, request *container.ContainerLogRequest) (*container.ContainerLogResponse, error) {
-	kclient := utils.K8sClientByClusterID(request.ClusterId).Client
+	kclient := utils.K8sClientByClusterID(request.ClusterId).Client()
 
 	if running, reason := utils.IsPodRunning(kclient, request.Namespace, request.Pod); !running {
 		return nil, status.Errorf(codes.NotFound, reason)
@@ -285,7 +285,7 @@ func (c *ContainerSvc) ContainerLog(ctx context.Context, request *container.Cont
 }
 
 func (c *ContainerSvc) StreamContainerLog(request *container.ContainerLogRequest, server container.ContainerSvc_StreamContainerLogServer) error {
-	kclient := utils.K8sClientByClusterID(request.ClusterId).Client
+	kclient := utils.K8sClientByClusterID(request.ClusterId).Client()
 
 	if running, reason := utils.IsPodRunning(kclient, request.Namespace, request.Pod); !running {
 		return status.Errorf(codes.NotFound, reason)

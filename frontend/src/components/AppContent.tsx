@@ -7,6 +7,8 @@ import { cardAll } from "../api/card";
 import NamespaceCardItem from "./NamespaceCardItem";
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
+import { selectSyncAt } from "../store/reducers/card";
 
 const AppContent: React.FC = () => {
   const { t } = useTranslation();
@@ -17,6 +19,12 @@ const AppContent: React.FC = () => {
       setData(res.data.items);
     });
   }, []);
+  const s = useSelector(selectSyncAt);
+  useEffect(() => {
+    cardAll().then((res) => {
+      setData(res.data.items);
+    });
+  }, [s]);
 
   return (
     <DraggableModalProvider>
@@ -81,7 +89,9 @@ const AppContent: React.FC = () => {
                 imageStyle={{
                   height: 60,
                 }}
-                description={<span>{t("Don't have any project cards yet")}</span>}
+                description={
+                  <span>{t("Don't have any project cards yet")}</span>
+                }
               >
                 <Button
                   type="primary"

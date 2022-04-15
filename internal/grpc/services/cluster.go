@@ -168,7 +168,7 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ClusterShowReque
 	if err != nil {
 		return nil, err
 	}
-	list, _ := client.DeploymentLister.List(labels.Everything())
+	list, _ := client.DeploymentLister().List(labels.Everything())
 	var items = make(map[string]*cluster.ClusterItems)
 	for _, deployment := range list {
 		var cardID int64
@@ -203,7 +203,7 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ClusterShowReque
 		}
 	}
 
-	statefulList, _ := client.StatefulSetLister.List(labels.Everything())
+	statefulList, _ := client.StatefulSetLister().List(labels.Everything())
 	for _, state := range statefulList {
 		var cardID int64
 		card, exists := existsMap[keyFn(cl.ID, state.Namespace, state.Name, "StatefulSet")]

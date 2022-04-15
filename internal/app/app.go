@@ -8,19 +8,28 @@ import (
 	"syscall"
 	"time"
 
+	v12 "k8s.io/api/apps/v1"
+	"k8s.io/apimachinery/pkg/api/meta"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
+	appsv1 "k8s.io/client-go/listers/apps/v1"
+	v1 "k8s.io/client-go/listers/core/v1"
 	restclient "k8s.io/client-go/rest"
 	kubeCache "k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/metrics/pkg/client/clientset/versioned"
 
+	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	"github.com/duc-cnzj/execit/internal/app/bootstrappers"
+	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/app/instance"
 	"github.com/duc-cnzj/execit/internal/config"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/database"
+	"github.com/duc-cnzj/execit/internal/models"
+	"github.com/duc-cnzj/execit/internal/plugins"
 	"github.com/duc-cnzj/execit/internal/xlog"
 )
 
@@ -68,7 +77,7 @@ type Application struct {
 	bootstrappers []contracts.Bootstrapper
 
 	k8sMu      sync.RWMutex
-	k8sClients map[string]*contracts.K8sClient
+	k8sClients map[string]contracts.K8s
 
 	hooksMu sync.RWMutex
 	hooks   map[Hook][]contracts.Callback
@@ -84,7 +93,7 @@ func (app *Application) ReleaseKubeClient(name string) error {
 	defer app.k8sMu.Unlock()
 	if client, ok := app.k8sClients[name]; ok {
 		delete(app.k8sClients, name)
-		close(client.Done)
+		close(client.Done())
 	}
 	return nil
 }
@@ -94,12 +103,12 @@ func (app *Application) ReleaseAllKubeClient() error {
 	defer app.k8sMu.Unlock()
 	for s, client := range app.k8sClients {
 		delete(app.k8sClients, s)
-		close(client.Done)
+		close(client.Done())
 	}
 	return nil
 }
 
-func (app *Application) LoadKubeClient(name string, kubeConfig []byte) (*contracts.K8sClient, error) {
+func (app *Application) LoadKubeClient(name string, kubeConfig []byte) (contracts.K8s, error) {
 	app.k8sMu.Lock()
 	defer app.k8sMu.Unlock()
 	sClient := app.k8sClients[name]
@@ -117,23 +126,62 @@ func (app *Application) LoadKubeClient(name string, kubeConfig []byte) (*contrac
 	}
 	ch := make(chan struct{})
 	informer := informers.NewSharedInformerFactory(client, 0)
-	kc := &contracts.K8sClient{
-		Client:                  client,
-		MetricsClient:           metrics,
-		RestConfig:              restConfig,
-		Informer:                informer,
-		Done:                    ch,
-		PodLister:               informer.Core().V1().Pods().Lister(),
-		PodListerSynced:         informer.Core().V1().Pods().Informer().HasSynced,
-		DeploymentLister:        informer.Apps().V1().Deployments().Lister(),
-		DeploymentListerSynced:  informer.Apps().V1().Deployments().Informer().HasSynced,
-		StatefulSetLister:       informer.Apps().V1().StatefulSets().Lister(),
-		StatefulSetListerSynced: informer.Apps().V1().StatefulSets().Informer().HasSynced,
+	kc := &k8sClient{
+		client:                  client,
+		metricsClient:           metrics,
+		restConfig:              restConfig,
+		informer:                informer,
+		done:                    ch,
+		podLister:               informer.Core().V1().Pods().Lister(),
+		podListerSynced:         informer.Core().V1().Pods().Informer().HasSynced,
+		deploymentLister:        informer.Apps().V1().Deployments().Lister(),
+		deploymentListerSynced:  informer.Apps().V1().Deployments().Informer().HasSynced,
+		statefulSetLister:       informer.Apps().V1().StatefulSets().Lister(),
+		statefulSetListerSynced: informer.Apps().V1().StatefulSets().Informer().HasSynced,
 	}
-	kc.Informer.Start(ch)
-	kubeCache.WaitForCacheSync(wait.NeverStop, kc.DeploymentListerSynced, kc.PodListerSynced, kc.StatefulSetListerSynced)
+	informer.Apps().V1().Deployments().Informer().AddEventHandler(&kubeCache.ResourceEventHandlerFuncs{
+		DeleteFunc: onDelete(name),
+	})
+	informer.Apps().V1().StatefulSets().Informer().AddEventHandler(&kubeCache.ResourceEventHandlerFuncs{
+		DeleteFunc: onDelete(name),
+	})
+	kc.Informer().Start(ch)
+	kubeCache.WaitForCacheSync(wait.NeverStop, kc.DeploymentListerSynced(), kc.PodListerSynced(), kc.StatefulSetListerSynced())
 	app.k8sClients[name] = kc
 	return kc, nil
+}
+
+func onDelete(clusterName string) func(obj any) {
+	return func(obj any) {
+		var (
+			ob runtime.Object
+			t  string
+		)
+		switch o := obj.(type) {
+		case *v12.Deployment:
+			ob = o
+			t = "Deployment"
+		case *v12.StatefulSet:
+			ob = o
+			t = "StatefulSet"
+		default:
+			return
+		}
+		accessor, _ := meta.Accessor(ob)
+		var cu models.Cluster
+		if app.DB().Where("`name` = ?", clusterName).First(&cu).Error == nil {
+			var ca models.Card
+			if app.DB().Where("`cluster_id` = ? and `namespace` = ? and `name` = ? and `type` = ?", cu.ID, accessor.GetNamespace(), accessor.GetName(), t).First(&ca).Error == nil {
+				app.DB().Delete(&ca)
+				xlog.Warningf("delete card cluster_id %d namespace %s name %s type %s", ca.ClusterID, ca.Namespace, ca.Name, ca.Type)
+				plugins.GetWsSender().New("", "").ToAll(&websocket_pb.WsMetadataResponse{
+					Metadata: &websocket_pb.Metadata{
+						Type: websocket_pb.Type_SyncCard,
+					},
+				})
+			}
+		}
+	}
 }
 
 func (app *Application) Auth() contracts.AuthInterface {
@@ -207,7 +255,7 @@ func NewApplication(config *config.Config, opts ...contracts.Option) contracts.A
 		hooks:         make(map[Hook][]contracts.Callback),
 		servers:       []contracts.Server{},
 		metrics:       &emptyMetrics{},
-		k8sClients:    make(map[string]*contracts.K8sClient),
+		k8sClients:    make(map[string]contracts.K8s),
 	}
 
 	app.dbManager = database.NewManager(app)
@@ -352,4 +400,62 @@ func NewKubeClient(kubeconfig []byte) (client kubernetes.Interface, restConfig *
 	}
 
 	return nil, nil, err
+}
+
+type k8sClient struct {
+	client                  kubernetes.Interface
+	metricsClient           versioned.Interface
+	restConfig              *restclient.Config
+	informer                informers.SharedInformerFactory
+	done                    chan struct{}
+	podLister               v1.PodLister
+	podListerSynced         func() bool
+	deploymentLister        appsv1.DeploymentLister
+	deploymentListerSynced  func() bool
+	statefulSetLister       appsv1.StatefulSetLister
+	statefulSetListerSynced func() bool
+}
+
+func (k *k8sClient) Client() kubernetes.Interface {
+	return k.client
+}
+
+func (k *k8sClient) MetricsClient() versioned.Interface {
+	return k.metricsClient
+}
+
+func (k *k8sClient) RestConfig() *restclient.Config {
+	return k.restConfig
+}
+
+func (k *k8sClient) Informer() informers.SharedInformerFactory {
+	return k.informer
+}
+
+func (k *k8sClient) Done() chan struct{} {
+	return k.done
+}
+
+func (k *k8sClient) PodLister() v1.PodLister {
+	return k.podLister
+}
+
+func (k *k8sClient) PodListerSynced() func() bool {
+	return k.podListerSynced
+}
+
+func (k *k8sClient) DeploymentLister() appsv1.DeploymentLister {
+	return k.deploymentLister
+}
+
+func (k *k8sClient) DeploymentListerSynced() func() bool {
+	return k.deploymentListerSynced
+}
+
+func (k *k8sClient) StatefulSetLister() appsv1.StatefulSetLister {
+	return k.statefulSetLister
+}
+
+func (k *k8sClient) StatefulSetListerSynced() func() bool {
+	return k.statefulSetListerSynced
 }

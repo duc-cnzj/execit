@@ -11,6 +11,7 @@ enum Type {
   HandleExecShellMsg = 51;
   HandleCloseShell = 52;
   HandleAuthorize = 53;
+  SyncCard = 54;
 }
 
 enum ResultType {

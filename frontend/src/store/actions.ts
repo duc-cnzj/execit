@@ -3,12 +3,12 @@ import {
   CLEAR_CREATE_PROJECT_LOG,
   SET_SHELL_SESSION_ID,
   SET_SHELL_LOG,
+  SET_SYNC_CARD,
 } from "./actionTypes";
 import { Dispatch } from "redux";
 import { message } from "antd";
 import { setUid } from "../utils/uid";
 import pb from "../api/compiled";
-
 
 export const appendCreateProjectLog = (id: string, log: string) => ({
   type: APPEND_CREATE_PROJECT_LOG,
@@ -32,11 +32,18 @@ export const setShellSessionId = (id: string, sessionID: string) => ({
     sessionID: sessionID,
   },
 });
+
 export const setShellLog = (id: string, log: pb.TerminalMessage) => ({
   type: SET_SHELL_LOG,
   data: {
     id: id,
     log: log,
+  },
+});
+export const setSyncCard = () => ({
+  type: SET_SYNC_CARD,
+  data: {
+    syncAt: new Date().toISOString(),
   },
 });
 
@@ -61,6 +68,9 @@ export const handleEvents = (id: string, data: pb.Metadata, input: any) => {
               res.terminal_message.session_id
             )
           );
+        break;
+      case pb.Type.SyncCard:
+        dispatch(setSyncCard());
         break;
       case pb.Type.HandleExecShellMsg:
         let logRes = pb.WsHandleShellResponse.decode(input);

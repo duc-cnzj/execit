@@ -12763,6 +12763,7 @@ export const Version = $root.Version = (() => {
  * @property {number} HandleExecShellMsg=51 HandleExecShellMsg value
  * @property {number} HandleCloseShell=52 HandleCloseShell value
  * @property {number} HandleAuthorize=53 HandleAuthorize value
+ * @property {number} SyncCard=54 SyncCard value
  */
 export const Type = $root.Type = (() => {
     const valuesById = {}, values = Object.create(valuesById);
@@ -12773,6 +12774,7 @@ export const Type = $root.Type = (() => {
     values[valuesById[51] = "HandleExecShellMsg"] = 51;
     values[valuesById[52] = "HandleCloseShell"] = 52;
     values[valuesById[53] = "HandleAuthorize"] = 53;
+    values[valuesById[54] = "SyncCard"] = 54;
     return values;
 })();
 

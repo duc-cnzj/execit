@@ -407,7 +407,7 @@ type TerminalResponse struct {
 
 func HandleExecShell(input *websocket_pb.WsHandleExecShellInput, conn *WsConn) (string, error) {
 	k8sClient := utils.K8sClientByClusterID(input.ClusterId)
-	if running, reason := utils.IsPodRunning(k8sClient.Client, input.Namespace, input.Pod); !running {
+	if running, reason := utils.IsPodRunning(k8sClient.Client(), input.Namespace, input.Pod); !running {
 		return "", errors.New(reason)
 	}
 
@@ -431,7 +431,7 @@ func HandleExecShell(input *websocket_pb.WsHandleExecShellInput, conn *WsConn) (
 		cache:    make([]byte, 0, 20),
 	})
 
-	go WaitForTerminal(conn, k8sClient.Client, k8sClient.RestConfig, &Container{
+	go WaitForTerminal(conn, k8sClient.Client(), k8sClient.RestConfig(), &Container{
 		Namespace: input.Namespace,
 		Pod:       input.Pod,
 		Container: input.Container,

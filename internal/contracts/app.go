@@ -32,6 +32,20 @@ type Bootstrapper interface {
 	Bootstrap(ApplicationInterface) error
 }
 
+type K8s interface {
+	Client() kubernetes.Interface
+	MetricsClient() versioned.Interface
+	RestConfig() *restclient.Config
+	Informer() informers.SharedInformerFactory
+	Done() chan struct{}
+	PodLister() v1.PodLister
+	PodListerSynced() func() bool
+	DeploymentLister() appsv1.DeploymentLister
+	DeploymentListerSynced() func() bool
+	StatefulSetLister() appsv1.StatefulSetLister
+	StatefulSetListerSynced() func() bool
+}
+
 type K8sClient struct {
 	Client                  kubernetes.Interface
 	MetricsClient           versioned.Interface
@@ -94,5 +108,5 @@ type ApplicationInterface interface {
 
 	ReleaseKubeClient(name string) error
 	ReleaseAllKubeClient() error
-	LoadKubeClient(name string, kubeConfig []byte) (*K8sClient, error)
+	LoadKubeClient(name string, kubeConfig []byte) (K8s, error)
 }

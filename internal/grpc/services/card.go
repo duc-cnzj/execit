@@ -13,9 +13,11 @@ import (
 
 	"github.com/duc-cnzj/execit-client/card"
 	"github.com/duc-cnzj/execit-client/event"
+	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/models"
+	"github.com/duc-cnzj/execit/internal/plugins"
 	"github.com/duc-cnzj/execit/internal/scopes"
 	"github.com/duc-cnzj/execit/internal/utils"
 )
@@ -149,7 +151,11 @@ func (c *CardSvc) Create(ctx context.Context, request *card.CardCreateRequest) (
 		}
 		app.DB().Create(&ca)
 	}
-
+	plugins.GetWsSender().New("", "").ToAll(&websocket_pb.WsMetadataResponse{
+		Metadata: &websocket_pb.Metadata{
+			Type: websocket_pb.Type_SyncCard,
+		},
+	})
 	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("add card item, cluster '%d' namesapce '%s' name '%s'", ca.ClusterID, ca.Namespace, ca.Name))
 	return &card.CardCreateResponse{
 		Id:        int64(ca.ID),
@@ -185,6 +191,11 @@ func (c *CardSvc) Delete(ctx context.Context, request *card.CardDeleteRequest) (
 		app.DB().Delete(&ca)
 		AuditLog(MustGetUser(ctx).Name, event.ActionType_Delete, fmt.Sprintf("delete card item, cluster '%d' namesapce '%s' name '%s'", ca.ClusterID, ca.Namespace, ca.Name))
 	}
+	plugins.GetWsSender().New("", "").ToAll(&websocket_pb.WsMetadataResponse{
+		Metadata: &websocket_pb.Metadata{
+			Type: websocket_pb.Type_SyncCard,
+		},
+	})
 
 	return &card.CardDeleteResponse{}, nil
 }
@@ -192,7 +203,5 @@ func (c *CardSvc) Delete(ctx context.Context, request *card.CardDeleteRequest) (
 func (c *CardSvc) AllContainers(ctx context.Context, request *card.CardAllContainersRequest) (*card.CardAllContainersResponse, error) {
 	var ca models.Card
 	app.DB().Preload("Cluster").Where("`id` = ?", request.CardId).First(&ca)
-	return &card.CardAllContainersResponse{
-		Items: ca.GetItems(),
-	}, nil
+	return &card.CardAllContainersResponse{Items: ca.GetItems()}, nil
 }

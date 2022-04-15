@@ -5630,7 +5630,8 @@ export enum Type {
     HandleExecShell = 50,
     HandleExecShellMsg = 51,
     HandleCloseShell = 52,
-    HandleAuthorize = 53
+    HandleAuthorize = 53,
+    SyncCard = 54
 }
 
 /** ResultType enum. */
