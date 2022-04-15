@@ -25,7 +25,6 @@ require (
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.10.1
-	github.com/stretchr/testify v1.7.1
 	github.com/uber/jaeger-client-go v2.25.0+incompatible
 	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a
 	golang.org/x/text v0.3.7
@@ -186,6 +185,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/ssgreg/nlreturn/v2 v2.2.1 // indirect
 	github.com/stretchr/objx v0.2.0 // indirect
+	github.com/stretchr/testify v1.7.1 // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	github.com/sylvia7788/contextcheck v1.0.4 // indirect
 	github.com/tdakkota/asciicheck v0.1.1 // indirect
