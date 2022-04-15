@@ -91,6 +91,14 @@ const languages: Lang = {
     en: "mystery",
     zh: "神秘",
   },
+  logs: {
+    en: "logs",
+    zh: "日志",
+  },
+  terminal: {
+    en: "terminal",
+    zh: "终端",
+  },
   total: {
     en: "total",
     zh: "总数",
@@ -111,7 +119,7 @@ const languages: Lang = {
     en: "User not logged in",
     zh: "用户未登录",
   },
-  "password": {
+  password: {
     en: "password",
     zh: "密码",
   },
@@ -119,11 +127,11 @@ const languages: Lang = {
     en: "Login expired. Please log in again",
     zh: "登录过期，请重新登录",
   },
-  "namespace": {
+  namespace: {
     en: "namespace",
     zh: "命名空间",
   },
-  "delete": {
+  delete: {
     en: "delete",
     zh: "删除",
   },
@@ -159,7 +167,7 @@ const languages: Lang = {
     en: "Click to reload",
     zh: "点击重新加载",
   },
-  "username": {
+  username: {
     en: "username",
     zh: "用户名",
   },
@@ -167,7 +175,7 @@ const languages: Lang = {
     en: "show changes",
     zh: "显示变更",
   },
-  "Login": {
+  Login: {
     en: "Login",
     zh: "登录",
   },
