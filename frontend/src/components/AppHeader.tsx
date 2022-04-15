@@ -19,7 +19,7 @@ const AppHeader: React.FC = () => {
   const lang = useLang();
   const h = useHistory();
   const { user, isAdmin } = useAuth();
-  const {t} = useTranslation()
+  const { t } = useTranslation();
   return (
     <div
       style={{
@@ -55,8 +55,9 @@ const AppHeader: React.FC = () => {
         </svg>
         <a
           className="app__lang-switcher"
-          href="javascript:void(0)"
-          onClick={() => {
+          href="javascript(0);"
+          onClick={(e) => {
+            e.preventDefault()
             if (lang.langName === "中文") {
               lang.setLang("en");
             } else {

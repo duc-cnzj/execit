@@ -84,7 +84,7 @@ export const ProvideWebsocket: React.FC = ({ children }) => {
           )
         );
     };
-  }, [dispatch]);
+  }, [dispatch, t]);
 
   useEffect(() => {
     if (!ws?.ws) {
