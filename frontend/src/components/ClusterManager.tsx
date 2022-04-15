@@ -36,7 +36,6 @@ const ClusterManager: React.FC = () => {
   }>({ page: 0, page_size: defaultPageSize, count: 0 });
   const [list, setList] = useState<pb.ClusterModel[]>([]);
   const [loading, setLoading] = useState(true);
-  const [deleteLoading, setDeleteLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { t } = useTranslation();
   const [current, setCurrent] = useState<{
@@ -272,16 +271,13 @@ const ClusterManager: React.FC = () => {
                   </Button>,
                   <Button
                     danger
-                    loading={deleteLoading}
                     onClick={() => {
-                      setDeleteLoading(true);
                       clusterDelete(item.id)
                         .then(() => {
                           message.success("success");
                           load();
                         })
                         .catch((e) => message.error(e.response.data.message))
-                        .finally(() => setDeleteLoading(false));
                     }}
                   >
                     {t("delete")}

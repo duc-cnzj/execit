@@ -263,7 +263,7 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ClusterShowReque
 
 func (c *ClusterSvc) Delete(ctx context.Context, request *cluster.ClusterDeleteRequest) (*cluster.ClusterDeleteResponse, error) {
 	var cl models.Cluster
-	app.DB().Transaction(func(db *gorm.DB) error {
+	if err := app.DB().Transaction(func(db *gorm.DB) error {
 		if err := db.Where("`id` = ?", request.ClusterId).First(&cl).Error; err != nil {
 			return err
 		}
@@ -276,10 +276,12 @@ func (c *ClusterSvc) Delete(ctx context.Context, request *cluster.ClusterDeleteR
 		if err := app.App().ReleaseKubeClient(cl.Name); err != nil {
 			xlog.Error(err)
 		}
-		AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("delete cluster '%s' host: '%s'", cl.Name, cl.ClusterConfig().Host))
 
 		return nil
-	})
+	}); err != nil {
+		return nil, err
+	}
+	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("delete cluster '%s' host: '%s'", cl.Name, cl.ClusterConfig().Host))
 
 	return &cluster.ClusterDeleteResponse{}, nil
 }

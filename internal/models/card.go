@@ -17,7 +17,7 @@ type Card struct {
 	Type      string `json:"type" gorm:"size:50;not null;default:''"`
 	Namespace string `json:"namespace" gorm:"size:50;not null;default:''"`
 	Name      string `json:"name" gorm:"size:255;not null;default:''"`
-	ClusterID int    `json:"cluster_id" gorm:"not null;default:0"`
+	ClusterID int    `json:"cluster_id" gorm:"index;not null;default:0"`
 
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
