@@ -13,6 +13,7 @@ Super simple terminal management in k8s.
 
 ## Preview
 
+![execit-preview](./images/img_1.png)
 ![execit](./images/img.png)
 
 ## 🚀  Installation
