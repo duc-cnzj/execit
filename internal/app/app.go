@@ -342,7 +342,6 @@ func NewKubeClient(kubeconfig []byte) (client kubernetes.Interface, restConfig *
 	cc, err = clientcmd.NewClientConfigFromBytes(kubeconfig)
 	if err == nil {
 		restConfig, err = cc.ClientConfig()
-		restConfig.Timeout = 5 * time.Second
 		if err == nil {
 			restConfig.QPS = -1
 		}
