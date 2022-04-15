@@ -11,7 +11,7 @@ Super simple terminal management in k8s.
 * multi cluster
 * like kubernetes dashboard, but more simple and powerful.
 
-## Preview
+## 🧀 Preview
 
 ![execit-preview](./images/img_1.png)
 ![execit](./images/img.png)
