@@ -4,6 +4,7 @@ import { Radio, Skeleton, Button, Tag } from "antd";
 import pb from "../api/compiled";
 import LazyLog from "../pkg/lazylog/components/LazyLog";
 import { getToken } from "./../utils/token";
+import { useTranslation } from "react-i18next";
 
 const ProjectContainerLogs: React.FC<{
   cardId: number;
@@ -13,6 +14,7 @@ const ProjectContainerLogs: React.FC<{
   type: string;
 }> = ({ clusterId, namespace, name, type, cardId }) => {
   const [value, setValue] = useState<string>();
+  const {t} = useTranslation()
   const [list, setList] = useState<pb.ContainerItem[]>();
 
   const listContainer = useCallback(async () => {
@@ -88,7 +90,7 @@ const ProjectContainerLogs: React.FC<{
                       size="small"
                       onClick={() => setTimestamp(new Date().getTime())}
                     >
-                      Click to reload
+                      {t("Click to reload")}
                     </Button>
                   </span>
                 );

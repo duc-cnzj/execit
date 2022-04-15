@@ -22,7 +22,7 @@ import {
   clusterShow,
 } from "../api/cluster";
 import MyCodeMirror from "./MyCodeMirror";
-import { useHistory } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const { TabPane } = Tabs;
 
@@ -38,6 +38,7 @@ const ClusterManager: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const { t } = useTranslation();
   const [current, setCurrent] = useState<{
     clusterID: number;
     detail?: pb.ClusterShowResponse;
@@ -136,7 +137,7 @@ const ClusterManager: React.FC = () => {
   const onFinish = (values: any) => {
     clusterCreate({ name: values.name, kube_config: values.kube_config })
       .then(() => {
-        message.success("success");
+        message.success(t("success"));
         setIsAddClusterVisible(false);
         load();
       })
@@ -155,17 +156,17 @@ const ClusterManager: React.FC = () => {
             alignItems: "center",
           }}
         >
-          <div>cluster management</div>
+          <div>{t("cluster management")}</div>
           <Button type="dashed" onClick={() => setIsAddClusterVisible(true)}>
-            add cluster
+            {t("add cluster")}
           </Button>
           <Modal
-            title="add cluster"
+            title={t("add cluster")}
             footer={null}
             width={"60%"}
             visible={isAddClusterVisible}
             onCancel={() => {
-              setIsAddClusterVisible(false)
+              setIsAddClusterVisible(false);
               form.resetFields();
             }}
           >
@@ -179,11 +180,9 @@ const ClusterManager: React.FC = () => {
               autoComplete="off"
             >
               <Form.Item
-                label="cluster name"
+                label={t("cluster name")}
                 name="name"
-                rules={[
-                  { required: true },
-                ]}
+                rules={[{ required: true }]}
               >
                 <Input />
               </Form.Item>
@@ -191,9 +190,7 @@ const ClusterManager: React.FC = () => {
               <Form.Item
                 label="kube config"
                 name="kube_config"
-                rules={[
-                  { required: true },
-                ]}
+                rules={[{ required: true }]}
                 style={{ maxHeight: 550, overflowY: "auto" }}
               >
                 <MyCodeMirror
@@ -206,7 +203,7 @@ const ClusterManager: React.FC = () => {
 
               <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                 <Button type="primary" htmlType="submit">
-                  Submit
+                  {t("Submit")}
                 </Button>
               </Form.Item>
             </Form>
@@ -231,7 +228,9 @@ const ClusterManager: React.FC = () => {
           hasMore={paginate.count > list.length}
           loader={<Skeleton avatar={false} paragraph={{ rows: 1 }} active />}
           endMessage={
-            <Divider plain>hei man, don't turn it over, it's over!</Divider>
+            <Divider plain>
+              {t("hei man, don't turn it over, it's over!")}
+            </Divider>
           }
           scrollableTarget="scrollableDiv"
         >
@@ -243,15 +242,17 @@ const ClusterManager: React.FC = () => {
                   imageStyle={{
                     height: 60,
                   }}
-                  description={<span>Don't have any project cards yet</span>}
+                  description={
+                    <span>{t("Don't have any project cards yet")}</span>
+                  }
                 >
                   <Button
                     type="primary"
                     onClick={() => {
-                      setIsAddClusterVisible(true)
+                      setIsAddClusterVisible(true);
                     }}
                   >
-                    Create Now
+                    {t("Create Now")}
                   </Button>
                 </Empty>
               ),
@@ -267,7 +268,7 @@ const ClusterManager: React.FC = () => {
                       setIsModalVisible(true);
                     }}
                   >
-                    add card
+                    {t("add card")}
                   </Button>,
                   <Button
                     danger
@@ -283,7 +284,7 @@ const ClusterManager: React.FC = () => {
                         .finally(() => setDeleteLoading(false));
                     }}
                   >
-                    delete
+                    {t("delete")}
                   </Button>,
                 ]}
               >

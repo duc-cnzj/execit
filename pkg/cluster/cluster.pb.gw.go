@@ -205,24 +205,6 @@ func local_request_ClusterSvc_Delete_0(ctx context.Context, marshaler runtime.Ma
 
 }
 
-func request_ClusterSvc_Count_0(ctx context.Context, marshaler runtime.Marshaler, client ClusterSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ClusterCountRequest
-	var metadata runtime.ServerMetadata
-
-	msg, err := client.Count(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
-	return msg, metadata, err
-
-}
-
-func local_request_ClusterSvc_Count_0(ctx context.Context, marshaler runtime.Marshaler, server ClusterSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ClusterCountRequest
-	var metadata runtime.ServerMetadata
-
-	msg, err := server.Count(ctx, &protoReq)
-	return msg, metadata, err
-
-}
-
 // RegisterClusterSvcHandlerServer registers the http handlers for service ClusterSvc to "mux".
 // UnaryRPC     :call ClusterSvcServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
@@ -322,30 +304,6 @@ func RegisterClusterSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		}
 
 		forward_ClusterSvc_Delete_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
-	mux.Handle("GET", pattern_ClusterSvc_Count_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		var stream runtime.ServerTransportStream
-		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.ClusterSvc/Count", runtime.WithHTTPPathPattern("/api/cluster_count"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := local_request_ClusterSvc_Count_0(ctx, inboundMarshaler, server, req, pathParams)
-		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_ClusterSvc_Count_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -474,27 +432,6 @@ func RegisterClusterSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 
 	})
 
-	mux.Handle("GET", pattern_ClusterSvc_Count_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
-		ctx, cancel := context.WithCancel(req.Context())
-		defer cancel()
-		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
-		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.ClusterSvc/Count", runtime.WithHTTPPathPattern("/api/cluster_count"))
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-		resp, md, err := request_ClusterSvc_Count_0(ctx, inboundMarshaler, client, req, pathParams)
-		ctx = runtime.NewServerMetadataContext(ctx, md)
-		if err != nil {
-			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
-			return
-		}
-
-		forward_ClusterSvc_Count_0(ctx, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
-
-	})
-
 	return nil
 }
 
@@ -506,8 +443,6 @@ var (
 	pattern_ClusterSvc_Show_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "clusters", "cluster_id"}, ""))
 
 	pattern_ClusterSvc_Delete_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"api", "clusters", "cluster_id"}, ""))
-
-	pattern_ClusterSvc_Count_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"api", "cluster_count"}, ""))
 )
 
 var (
@@ -518,6 +453,4 @@ var (
 	forward_ClusterSvc_Show_0 = runtime.ForwardResponseMessage
 
 	forward_ClusterSvc_Delete_0 = runtime.ForwardResponseMessage
-
-	forward_ClusterSvc_Count_0 = runtime.ForwardResponseMessage
 )

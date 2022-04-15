@@ -6,9 +6,10 @@ import { Card, Row, Col, Empty, Button, Tag } from "antd";
 import { cardAll } from "../api/card";
 import NamespaceCardItem from "./NamespaceCardItem";
 import { useHistory } from "react-router-dom";
-import { useLang } from "../contexts/useI18n";
+import { useTranslation } from "react-i18next";
 
 const AppContent: React.FC = () => {
+  const { t } = useTranslation();
   const [data, setData] = useState<pb.CardItemsList[]>([]);
   const h = useHistory();
   useEffect(() => {
@@ -40,7 +41,7 @@ const AppContent: React.FC = () => {
                       }}
                     >
                       <span style={{ fontSize: 12 }}>
-                        namespace:{" "}
+                        {t("namespace")}:{" "}
                         <span style={{ fontSize: 14, fontWeight: "bold" }}>
                           {item.namespace}
                         </span>
@@ -49,7 +50,7 @@ const AppContent: React.FC = () => {
                         className="content__cluster-tag"
                         style={{
                           borderRadius: 15,
-                          width: "30%",
+                          maxWidth: "30%",
                           padding: "0 15px",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
@@ -80,7 +81,7 @@ const AppContent: React.FC = () => {
                 imageStyle={{
                   height: 60,
                 }}
-                description={<span>Don't have any project cards yet</span>}
+                description={<span>{t("Don't have any project cards yet")}</span>}
               >
                 <Button
                   type="primary"
@@ -88,7 +89,7 @@ const AppContent: React.FC = () => {
                     h.push("/cluster-manager");
                   }}
                 >
-                  Create Now
+                  {t("Create Now")}
                 </Button>
               </Empty>
             </Col>

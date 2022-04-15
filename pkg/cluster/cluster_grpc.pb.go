@@ -27,7 +27,6 @@ type ClusterSvcClient interface {
 	Create(ctx context.Context, in *ClusterCreateRequest, opts ...grpc.CallOption) (*ClusterCreateResponse, error)
 	Show(ctx context.Context, in *ClusterShowRequest, opts ...grpc.CallOption) (*ClusterShowResponse, error)
 	Delete(ctx context.Context, in *ClusterDeleteRequest, opts ...grpc.CallOption) (*ClusterDeleteResponse, error)
-	Count(ctx context.Context, in *ClusterCountRequest, opts ...grpc.CallOption) (*ClusterCountResponse, error)
 }
 
 type clusterSvcClient struct {
@@ -74,15 +73,6 @@ func (c *clusterSvcClient) Delete(ctx context.Context, in *ClusterDeleteRequest,
 	return out, nil
 }
 
-func (c *clusterSvcClient) Count(ctx context.Context, in *ClusterCountRequest, opts ...grpc.CallOption) (*ClusterCountResponse, error) {
-	out := new(ClusterCountResponse)
-	err := c.cc.Invoke(ctx, "/ClusterSvc/Count", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // ClusterSvcServer is the server API for ClusterSvc service.
 // All implementations must embed UnimplementedClusterSvcServer
 // for forward compatibility
@@ -91,7 +81,6 @@ type ClusterSvcServer interface {
 	Create(context.Context, *ClusterCreateRequest) (*ClusterCreateResponse, error)
 	Show(context.Context, *ClusterShowRequest) (*ClusterShowResponse, error)
 	Delete(context.Context, *ClusterDeleteRequest) (*ClusterDeleteResponse, error)
-	Count(context.Context, *ClusterCountRequest) (*ClusterCountResponse, error)
 	mustEmbedUnimplementedClusterSvcServer()
 }
 
@@ -110,9 +99,6 @@ func (UnimplementedClusterSvcServer) Show(context.Context, *ClusterShowRequest) 
 }
 func (UnimplementedClusterSvcServer) Delete(context.Context, *ClusterDeleteRequest) (*ClusterDeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
-}
-func (UnimplementedClusterSvcServer) Count(context.Context, *ClusterCountRequest) (*ClusterCountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Count not implemented")
 }
 func (UnimplementedClusterSvcServer) mustEmbedUnimplementedClusterSvcServer() {}
 
@@ -199,24 +185,6 @@ func _ClusterSvc_Delete_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ClusterSvc_Count_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ClusterCountRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ClusterSvcServer).Count(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/ClusterSvc/Count",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClusterSvcServer).Count(ctx, req.(*ClusterCountRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // ClusterSvc_ServiceDesc is the grpc.ServiceDesc for ClusterSvc service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -239,10 +207,6 @@ var ClusterSvc_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _ClusterSvc_Delete_Handler,
-		},
-		{
-			MethodName: "Count",
-			Handler:    _ClusterSvc_Count_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

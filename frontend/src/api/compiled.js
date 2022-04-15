@@ -8001,188 +8001,7 @@ export const ClusterSvc = $root.ClusterSvc = (() => {
      * @variation 2
      */
 
-    /**
-     * Callback as used by {@link ClusterSvc#count}.
-     * @memberof ClusterSvc
-     * @typedef CountCallback
-     * @type {function}
-     * @param {Error|null} error Error, if any
-     * @param {ClusterCountResponse} [response] ClusterCountResponse
-     */
-
-    /**
-     * Calls Count.
-     * @function count
-     * @memberof ClusterSvc
-     * @instance
-     * @param {ClusterCountRequest} request ClusterCountRequest message or plain object
-     * @param {ClusterSvc.CountCallback} callback Node-style callback called with the error, if any, and ClusterCountResponse
-     * @returns {undefined}
-     * @variation 1
-     */
-    Object.defineProperty(ClusterSvc.prototype.count = function count(request, callback) {
-        return this.rpcCall(count, $root.ClusterCountRequest, $root.ClusterCountResponse, request, callback);
-    }, "name", { value: "Count" });
-
-    /**
-     * Calls Count.
-     * @function count
-     * @memberof ClusterSvc
-     * @instance
-     * @param {ClusterCountRequest} request ClusterCountRequest message or plain object
-     * @returns {Promise<ClusterCountResponse>} Promise
-     * @variation 2
-     */
-
     return ClusterSvc;
-})();
-
-export const ClusterCountRequest = $root.ClusterCountRequest = (() => {
-
-    /**
-     * Properties of a ClusterCountRequest.
-     * @exports IClusterCountRequest
-     * @interface IClusterCountRequest
-     */
-
-    /**
-     * Constructs a new ClusterCountRequest.
-     * @exports ClusterCountRequest
-     * @classdesc Represents a ClusterCountRequest.
-     * @implements IClusterCountRequest
-     * @constructor
-     * @param {IClusterCountRequest=} [properties] Properties to set
-     */
-    function ClusterCountRequest(properties) {
-        if (properties)
-            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * Encodes the specified ClusterCountRequest message. Does not implicitly {@link ClusterCountRequest.verify|verify} messages.
-     * @function encode
-     * @memberof ClusterCountRequest
-     * @static
-     * @param {ClusterCountRequest} message ClusterCountRequest message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    ClusterCountRequest.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        return writer;
-    };
-
-    /**
-     * Decodes a ClusterCountRequest message from the specified reader or buffer.
-     * @function decode
-     * @memberof ClusterCountRequest
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {ClusterCountRequest} ClusterCountRequest
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    ClusterCountRequest.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.ClusterCountRequest();
-        while (reader.pos < end) {
-            let tag = reader.uint32();
-            switch (tag >>> 3) {
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    return ClusterCountRequest;
-})();
-
-export const ClusterCountResponse = $root.ClusterCountResponse = (() => {
-
-    /**
-     * Properties of a ClusterCountResponse.
-     * @exports IClusterCountResponse
-     * @interface IClusterCountResponse
-     * @property {number|null} [count] ClusterCountResponse count
-     */
-
-    /**
-     * Constructs a new ClusterCountResponse.
-     * @exports ClusterCountResponse
-     * @classdesc Represents a ClusterCountResponse.
-     * @implements IClusterCountResponse
-     * @constructor
-     * @param {IClusterCountResponse=} [properties] Properties to set
-     */
-    function ClusterCountResponse(properties) {
-        if (properties)
-            for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                if (properties[keys[i]] != null)
-                    this[keys[i]] = properties[keys[i]];
-    }
-
-    /**
-     * ClusterCountResponse count.
-     * @member {number} count
-     * @memberof ClusterCountResponse
-     * @instance
-     */
-    ClusterCountResponse.prototype.count = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
-
-    /**
-     * Encodes the specified ClusterCountResponse message. Does not implicitly {@link ClusterCountResponse.verify|verify} messages.
-     * @function encode
-     * @memberof ClusterCountResponse
-     * @static
-     * @param {ClusterCountResponse} message ClusterCountResponse message or plain object to encode
-     * @param {$protobuf.Writer} [writer] Writer to encode to
-     * @returns {$protobuf.Writer} Writer
-     */
-    ClusterCountResponse.encode = function encode(message, writer) {
-        if (!writer)
-            writer = $Writer.create();
-        if (message.count != null && Object.hasOwnProperty.call(message, "count"))
-            writer.uint32(/* id 1, wireType 0 =*/8).int64(message.count);
-        return writer;
-    };
-
-    /**
-     * Decodes a ClusterCountResponse message from the specified reader or buffer.
-     * @function decode
-     * @memberof ClusterCountResponse
-     * @static
-     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-     * @param {number} [length] Message length if known beforehand
-     * @returns {ClusterCountResponse} ClusterCountResponse
-     * @throws {Error} If the payload is not a reader or valid buffer
-     * @throws {$protobuf.util.ProtocolError} If required fields are missing
-     */
-    ClusterCountResponse.decode = function decode(reader, length) {
-        if (!(reader instanceof $Reader))
-            reader = $Reader.create(reader);
-        let end = length === undefined ? reader.len : reader.pos + length, message = new $root.ClusterCountResponse();
-        while (reader.pos < end) {
-            let tag = reader.uint32();
-            switch (tag >>> 3) {
-            case 1:
-                message.count = reader.int64();
-                break;
-            default:
-                reader.skipType(tag & 7);
-                break;
-            }
-        }
-        return message;
-    };
-
-    return ClusterCountResponse;
 })();
 
 export const ContainerItem = $root.ContainerItem = (() => {
@@ -9994,7 +9813,6 @@ export const ContainerSvc = $root.ContainerSvc = (() => {
  * @property {number} Delete=3 Delete value
  * @property {number} Upload=4 Upload value
  * @property {number} Download=5 Download value
- * @property {number} DryRun=6 DryRun value
  */
 export const ActionType = $root.ActionType = (() => {
     const valuesById = {}, values = Object.create(valuesById);
@@ -10004,7 +9822,6 @@ export const ActionType = $root.ActionType = (() => {
     values[valuesById[3] = "Delete"] = 3;
     values[valuesById[4] = "Upload"] = 4;
     values[valuesById[5] = "Download"] = 5;
-    values[valuesById[6] = "DryRun"] = 6;
     return values;
 })();
 

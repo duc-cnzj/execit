@@ -14,12 +14,13 @@ import {
 } from "@ant-design/icons";
 import { settings as settingsApi } from "../api/auth";
 import { setState, isRandomBg, toggleRandomBg } from "../utils/token";
+import { useTranslation } from "react-i18next";
 
 const Login: React.FC = () => {
   const [bgInfo, setBgInfo] = useState<pb.BackgroundResponse>();
   const [settings, setSettings] = useState<pb.AuthSettingsResponse>();
   const [random, setRandom] = useState(isRandomBg());
-
+  const { t } = useTranslation();
   useEffect(() => {
     bg({ random: isRandomBg() }).then((res) => setBgInfo(res.data));
     settingsApi().then((res) => {
@@ -79,7 +80,9 @@ const Login: React.FC = () => {
         {random ? <PushpinOutlined /> : <PushpinFilled />}
       </div>
       <div className="login__card">
-        <div className="login__title"><span style={{textTransform: "uppercase"}}>ExecIt</span> Login</div>
+        <div className="login__title">
+          <span style={{ textTransform: "uppercase" }}>ExecIt</span> Login
+        </div>
         <div>
           <Form
             name="basic"
@@ -90,18 +93,12 @@ const Login: React.FC = () => {
             }}
             autoComplete="off"
           >
-            <Form.Item
-              name="username"
-              rules={[{ required: true }]}
-            >
-              <Input placeholder="username" />
+            <Form.Item name="username" rules={[{ required: true }]}>
+              <Input placeholder={t("username")} />
             </Form.Item>
 
-            <Form.Item
-              name="password"
-              rules={[{ required: true }]}
-            >
-              <Input.Password placeholder="password" />
+            <Form.Item name="password" rules={[{ required: true }]}>
+              <Input.Password placeholder={t("password")} />
             </Form.Item>
 
             <Form.Item>
@@ -110,7 +107,7 @@ const Login: React.FC = () => {
                 htmlType="submit"
                 style={{ width: "100%" }}
               >
-                Login
+                {t("Login")}
               </Button>
             </Form.Item>
 

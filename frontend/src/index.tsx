@@ -7,8 +7,9 @@ import store from "./store";
 import { disableReactDevTools } from "@fvilers/disable-react-devtools";
 import { BrowserRouter as Router, Switch } from "react-router-dom";
 import { PrivateRoute, GuestRoute, ProvideAuth } from "./contexts/auth";
-import { ProvideI18n, useLang } from "./contexts/useI18n";
+import { ProvideI18n, useLang } from "./i18n/useI18n";
 import { ConfigProvider } from "antd";
+import "./i18n/i18n";
 
 const Login = lazy(() => import("./components/Login"));
 const Callback = lazy(() => import("./components/AuthCallback"));

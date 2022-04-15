@@ -5,19 +5,21 @@ import { UserOutlined } from "@ant-design/icons";
 import { useAuth } from "../contexts/auth";
 import { removeToken } from "../utils/token";
 import { useHistory } from "react-router-dom";
-import { Dropdown, Menu, Button } from "antd";
+import { Dropdown, Menu } from "antd";
 import {
   LogoutOutlined,
   SettingOutlined,
   ReadOutlined,
   NotificationOutlined,
 } from "@ant-design/icons";
-import { useLang } from "../contexts/useI18n";
+import { useLang } from "../i18n/useI18n";
+import { useTranslation } from "react-i18next";
 
 const AppHeader: React.FC = () => {
   const lang = useLang();
   const h = useHistory();
   const { user, isAdmin } = useAuth();
+  const {t} = useTranslation()
   return (
     <div
       style={{
@@ -77,7 +79,7 @@ const AppHeader: React.FC = () => {
                 <Menu>
                   <Menu.Item style={{ fontSize: 12 }} key="0">
                     <a href="/docs/index.html" target="_blank">
-                      <ReadOutlined /> api document
+                      <ReadOutlined /> {t("api document")}
                     </a>
                   </Menu.Item>
                   {isAdmin() ? (
@@ -90,7 +92,7 @@ const AppHeader: React.FC = () => {
                             h.push("/cluster-manager");
                           }}
                         >
-                          <SettingOutlined /> cluster manager
+                          <SettingOutlined /> {t("cluster manager")}
                         </a>
                       </Menu.Item>
                       <Menu.Item style={{ fontSize: 12 }} key="2">
@@ -101,7 +103,7 @@ const AppHeader: React.FC = () => {
                             h.push("/events");
                           }}
                         >
-                          <NotificationOutlined /> events
+                          <NotificationOutlined /> {t("events")}
                         </a>
                       </Menu.Item>
                     </>
@@ -123,7 +125,7 @@ const AppHeader: React.FC = () => {
                         }
                       }}
                     >
-                      <LogoutOutlined /> logout
+                      <LogoutOutlined /> {t("logout")}
                     </a>
                   </Menu.Item>
                 </Menu>
