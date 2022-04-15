@@ -90,6 +90,9 @@ func (a *apiGateway) Run(ctx context.Context) error {
 			grpc_opentracing.UnaryClientInterceptor(grpc_opentracing.WithFilterFunc(middlewares.TracingIgnoreFn), grpc_opentracing.WithTracer(opentracing.GlobalTracer())),
 			middlewares.In18nUnaryClientInterceptor(),
 		),
+		grpc.WithChainStreamInterceptor(
+			middlewares.I18nStreamClientInterceptor(),
+		),
 	}
 
 	for _, f := range services.RegisteredEndpoints() {

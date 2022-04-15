@@ -80,6 +80,25 @@ func I18nStreamServerInterceptor() grpc.StreamServerInterceptor {
 	}
 }
 
+func I18nStreamClientInterceptor() grpc.StreamClientInterceptor {
+	return func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		var (
+			md metadata.MD
+			ok bool
+		)
+		md, ok = metadata.FromOutgoingContext(ctx)
+		if ok {
+			md.Set("lang", ctx.Value(i18nKey{}).(string))
+		} else {
+			md = metadata.New(map[string]string{
+				"lang": ctx.Value(i18nKey{}).(string),
+			})
+		}
+		ctx = metadata.NewOutgoingContext(ctx, md)
+		return streamer(ctx, desc, cc, method)
+	}
+}
+
 func MustGetLang(ctx context.Context) string {
 	return ctx.Value(i18nKey{}).(string)
 }
