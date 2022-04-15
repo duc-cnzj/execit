@@ -89,7 +89,7 @@ const myCodeMirror: React.ForwardRefRenderFunction<
       editorDidMount={(editor) => {
         setTimeout(() => {
           editor.refresh();
-        }, 200);
+        }, 500);
       }}
       value={props.value ? props.value : ""}
       onBeforeChange={(e: any, d: any, v: string) => {

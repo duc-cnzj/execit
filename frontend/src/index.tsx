@@ -7,6 +7,8 @@ import store from "./store";
 import { disableReactDevTools } from "@fvilers/disable-react-devtools";
 import { BrowserRouter as Router, Switch } from "react-router-dom";
 import { PrivateRoute, GuestRoute, ProvideAuth } from "./contexts/auth";
+import { ProvideI18n, useLang } from "./contexts/useI18n";
+import { ConfigProvider } from "antd";
 
 const Login = lazy(() => import("./components/Login"));
 const Callback = lazy(() => import("./components/AuthCallback"));
@@ -16,9 +18,10 @@ if (process.env.NODE_ENV === "production") {
   disableReactDevTools();
 }
 
-ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
+const Base: React.FC = () => {
+  const l = useLang();
+  return (
+    <ConfigProvider locale={l.lang}>
       <Suspense fallback={null}>
         <Router>
           <ProvideAuth>
@@ -36,7 +39,17 @@ ReactDOM.render(
           </ProvideAuth>
         </Router>
       </Suspense>
-    </Provider>
+    </ConfigProvider>
+  );
+};
+
+ReactDOM.render(
+  <React.StrictMode>
+    <ProvideI18n>
+      <Provider store={store}>
+        <Base />
+      </Provider>
+    </ProvideI18n>
   </React.StrictMode>,
   document.getElementById("root")
 );

@@ -45,7 +45,6 @@ const ClusterManager: React.FC = () => {
     clusterID: 0,
     detail: undefined,
   });
-  const h = useHistory();
   const load = useCallback(() => {
     setLoading(true);
     clusterList({ page: 1, page_size: defaultPageSize })
@@ -133,6 +132,7 @@ const ClusterManager: React.FC = () => {
     return h;
   };
   const [isAddClusterVisible, setIsAddClusterVisible] = useState(false);
+  const [form] = Form.useForm();
   const onFinish = (values: any) => {
     clusterCreate({ name: values.name, kube_config: values.kube_config })
       .then(() => {
@@ -164,10 +164,14 @@ const ClusterManager: React.FC = () => {
             footer={null}
             width={"60%"}
             visible={isAddClusterVisible}
-            onCancel={() => setIsAddClusterVisible(false)}
+            onCancel={() => {
+              setIsAddClusterVisible(false)
+              form.resetFields();
+            }}
           >
             <Form
               name="basic"
+              form={form}
               labelCol={{ span: 4 }}
               wrapperCol={{ span: 20 }}
               initialValues={{ remember: true }}
@@ -178,7 +182,7 @@ const ClusterManager: React.FC = () => {
                 label="cluster name"
                 name="name"
                 rules={[
-                  { required: true, message: "Please input your username!" },
+                  { required: true },
                 ]}
               >
                 <Input />
@@ -188,7 +192,7 @@ const ClusterManager: React.FC = () => {
                 label="kube config"
                 name="kube_config"
                 rules={[
-                  { required: true, message: "Please input your username!" },
+                  { required: true },
                 ]}
                 style={{ maxHeight: 550, overflowY: "auto" }}
               >

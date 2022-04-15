@@ -6,11 +6,11 @@ import { Card, Row, Col, Empty, Button, Tag } from "antd";
 import { cardAll } from "../api/card";
 import NamespaceCardItem from "./NamespaceCardItem";
 import { useHistory } from "react-router-dom";
+import { useLang } from "../contexts/useI18n";
 
 const AppContent: React.FC = () => {
   const [data, setData] = useState<pb.CardItemsList[]>([]);
   const h = useHistory();
-
   useEffect(() => {
     cardAll().then((res) => {
       setData(res.data.items);
