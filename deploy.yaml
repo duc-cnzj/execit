@@ -81,7 +81,6 @@ metadata:
 stringData:
   config.yaml: |
     app_port: 6000
-    grpc_port: 50000
     debug: false
 
     profile_enabled: false
@@ -90,8 +89,8 @@ stringData:
     ws_sender_plugin:
       name: ws_sender_memory
     picture_plugin:
-      name: picture_cartoon
-    #  name: picture_bing
+      name: picture_bing
+      # name: picture_cartoon
 
     upload_dir: "/data/uploads"
     upload_max_size: "50m"

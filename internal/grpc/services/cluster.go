@@ -7,6 +7,8 @@ import (
 	"sort"
 	"time"
 
+	"github.com/duc-cnzj/execit-client/event"
+
 	"k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -107,6 +109,8 @@ func (c *ClusterSvc) Create(ctx context.Context, request *cluster.ClusterCreateR
 		}
 		app.DB().Create(&clm)
 	}
+
+	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("add cluster '%s' host: '%s'", clm.Name, clm.ClusterConfig().Host))
 
 	return &cluster.ClusterCreateResponse{
 		Id:        int64(clm.ID),
@@ -272,6 +276,8 @@ func (c *ClusterSvc) Delete(ctx context.Context, request *cluster.ClusterDeleteR
 		if err := app.App().ReleaseKubeClient(cl.Name); err != nil {
 			xlog.Error(err)
 		}
+		AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("delete cluster '%s' host: '%s'", cl.Name, cl.ClusterConfig().Host))
+
 		return nil
 	})
 

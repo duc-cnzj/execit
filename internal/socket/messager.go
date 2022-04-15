@@ -1,8 +1,6 @@
 package socket
 
 import (
-	"sync"
-
 	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	"github.com/duc-cnzj/execit/internal/plugins"
 )
@@ -15,10 +13,6 @@ type Msger interface {
 }
 
 type messager struct {
-	mu        sync.RWMutex
-	isStopped bool
-	stoperr   error
-
 	conn     *WsConn
 	slugName string
 	wsType   websocket_pb.Type
@@ -26,20 +20,6 @@ type messager struct {
 
 func NewMessageSender(conn *WsConn, slugName string, wsType websocket_pb.Type) Msger {
 	return &messager{conn: conn, slugName: slugName, wsType: wsType}
-}
-
-func (ms *messager) Stop(err error) {
-	ms.mu.Lock()
-	defer ms.mu.Unlock()
-	ms.stoperr = err
-	ms.isStopped = true
-}
-
-func (ms *messager) IsStopped() bool {
-	ms.mu.RLock()
-	defer ms.mu.RUnlock()
-
-	return ms.isStopped
 }
 
 func (ms *messager) SendEndError(err error) {
@@ -92,8 +72,5 @@ func (ms *messager) SendProtoMsg(msg plugins.WebsocketMessage) {
 }
 
 func (ms *messager) send(res plugins.WebsocketMessage) {
-	if ms.IsStopped() {
-		return
-	}
 	ms.conn.pubSub.ToSelf(res)
 }

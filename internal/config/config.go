@@ -27,7 +27,6 @@ type Config struct {
 	AppPort        string `mapstructure:"app_port"`
 	GrpcPort       string `mapstructure:"grpc_port"`
 	Debug          bool   `mapstructure:"debug"`
-	LogChannel     string `mapstructure:"log_channel"`
 	ProfileEnabled bool   `mapstructure:"profile_enabled"`
 	CacheDriver    string `mapstructure:"cache_driver"`
 
