@@ -21,6 +21,7 @@ import pb from "../api/compiled";
 import { copyToPod } from "../api/cp";
 import PodMetrics from "./PodMetrics";
 import { getToken } from "../utils/token";
+import { useTranslation } from "react-i18next";
 
 const TabShell: React.FC<{
   resizeAt: number;
@@ -36,6 +37,7 @@ const TabShell: React.FC<{
   const [term, setTerm] = useState<Terminal>();
   const [timestamp, setTimestamp] = useState(new Date().getTime());
   const fitAddon = useMemo(() => new FitAddon(), []);
+  const {t} =useTranslation()
 
   const ref = useRef<HTMLDivElement>(null);
   const sessions = useSelector(selectSessions);
@@ -251,12 +253,12 @@ const TabShell: React.FC<{
   const beforeUpload = useCallback((file: any) => {
     const isLt50M = file.size / 1024 / 1024 <= 50;
     if (!isLt50M) {
-      message.error("The maximum file size cannot exceed 50MB!");
+      message.error(t("The maximum file size cannot exceed 50MB!"));
     }
     setLoading(isLt50M);
 
     return isLt50M;
-  }, []);
+  }, [t]);
 
   const [loading, setLoading] = useState(false);
 
@@ -284,18 +286,18 @@ const TabShell: React.FC<{
           .then((res) => {
             console.log(res);
             message.success(
-              `File ${info.file.name} has been uploaded under container ${res.data.pod_file_path}`,
+              t("File {{name}} has been uploaded under container {{pod_file_path}}", {name: info.file.name, pod_file_path: res.data.pod_file_path}),
               2
             );
           })
           .catch((e) => {
-            message.error(`File ${info.file.name} failed to upload to container`);
+            message.error(t("File {{name}} failed to upload to container", {name: info.file.name}));
           })
           .finally(() => {
             setLoading(false);
           });
       } else if (info.file.status === "error") {
-        message.error(`File ${info.file.name} upload failed`);
+        message.error(t("File {{info.file.name}} upload failed", {name: info.file.name}));
         setLoading(false);
       }
     },
@@ -335,7 +337,7 @@ const TabShell: React.FC<{
               style={{ fontSize: 12, marginRight: 5, margin: "5px 0" }}
               icon={<UploadOutlined />}
             >
-              {loading ? "uploading..." : "upload to container"}
+              {loading ? t("uploading...") : t("upload to container")}
             </Button>
           </Upload>
           <PodMetrics

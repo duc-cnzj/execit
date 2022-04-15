@@ -1,18 +1,19 @@
 import { message } from "antd";
 import {
   getToken,
+  getLang,
   removeToken,
   getLogoutUrl,
   removeLogoutUrl,
 } from "./../utils/token";
 import axios from "axios";
+import { t } from "i18next";
 
 const ajax = axios.create({
   baseURL: process.env.REACT_APP_BASE_URL,
   //   timeout: 1000,
   headers: {
     "X-Requested-With": "XMLHttpRequest",
-    "Accept-Language": "zh",
   },
 });
 
@@ -21,6 +22,7 @@ ajax.interceptors.request.use(
   (config) => {
     if (config.headers) {
       config.headers["Authorization"] = getToken();
+      config.headers["Accept-Language"] = getLang();
     }
 
     return config;
@@ -41,7 +43,7 @@ ajax.interceptors.response.use(
     if (error.response.status === 401) {
       if (getToken()) {
         removeToken();
-        message.error("登录过期，请重新登录");
+        message.error(t("Login expired. Please log in again"));
       }
       setTimeout(() => {
         if (window.location.pathname !== "/login") {

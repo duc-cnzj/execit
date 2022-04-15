@@ -24,10 +24,6 @@ func IsPodRunning(kubeClient kubernetes.Interface, namespace, podName string) (r
 		return true, ""
 	}
 
-	if podInfo.Status.Phase == v1.PodFailed && podInfo.Status.Reason == "Evicted" {
-		return false, fmt.Sprintf("delete po %s when evicted in namespace %s!", podName, namespace)
-	}
-
 	for _, status := range podInfo.Status.ContainerStatuses {
 		return false, fmt.Sprintf("%s %s", status.State.Waiting.Reason, status.State.Waiting.Message)
 	}

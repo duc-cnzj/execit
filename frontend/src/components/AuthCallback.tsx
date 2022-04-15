@@ -5,6 +5,7 @@ import { setToken, setLogoutUrl } from "../utils/token";
 import { useAuth } from "../contexts/auth";
 import { getState, removeState } from "../utils/token";
 import { message } from "antd";
+import { useTranslation } from "react-i18next";
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -14,6 +15,7 @@ const Callback: React.FC = () => {
   const h = useHistory();
   let code = query.get("code");
   let state = query.get("state");
+  const {t} =useTranslation()
   const auth = useAuth();
   if (!code) {
     h.push("/login");
@@ -30,12 +32,12 @@ const Callback: React.FC = () => {
           h.push("/");
         });
       } else {
-        message.error("sThe state is inconsistent, please log in again");
+        message.error(t("The state is inconsistent, please log in again"));
         removeState();
         h.push("/login");
       }
     }
-  }, [code, h, auth, state]);
+  }, [code, h, auth, state, t]);
 
   return <div>login....</div>;
 };

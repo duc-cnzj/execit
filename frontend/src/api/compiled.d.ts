@@ -4530,8 +4530,7 @@ export enum ActionType {
     Update = 2,
     Delete = 3,
     Upload = 4,
-    Download = 5,
-    DryRun = 6
+    Download = 5
 }
 
 /** Represents an EventListRequest. */

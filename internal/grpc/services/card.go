@@ -3,20 +3,21 @@ package services
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sort"
 
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"github.com/duc-cnzj/execit/internal/utils"
 	"gorm.io/gorm"
 
 	"github.com/duc-cnzj/execit-client/card"
+	"github.com/duc-cnzj/execit-client/event"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/models"
 	"github.com/duc-cnzj/execit/internal/scopes"
-	"google.golang.org/grpc"
+	"github.com/duc-cnzj/execit/internal/utils"
 )
 
 func init() {
@@ -148,6 +149,8 @@ func (c *CardSvc) Create(ctx context.Context, request *card.CardCreateRequest) (
 		}
 		app.DB().Create(&ca)
 	}
+
+	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("add card item, cluster '%d' namesapce '%s' name '%s'", ca.ClusterID, ca.Namespace, ca.Name))
 	return &card.CardCreateResponse{
 		Id:        int64(ca.ID),
 		Type:      ca.Type,
@@ -177,7 +180,12 @@ func (c *CardSvc) Show(ctx context.Context, request *card.CardShowRequest) (*car
 }
 
 func (c *CardSvc) Delete(ctx context.Context, request *card.CardDeleteRequest) (*card.CardDeleteResponse, error) {
-	app.DB().Delete(&models.Card{ID: int(request.CardId)})
+	var ca models.Card
+	if err := app.DB().First(&ca, request.CardId).Error; err == nil {
+		app.DB().Delete(&ca)
+		AuditLog(MustGetUser(ctx).Name, event.ActionType_Delete, fmt.Sprintf("delete card item, cluster '%d' namesapce '%s' name '%s'", ca.ClusterID, ca.Namespace, ca.Name))
+	}
+
 	return &card.CardDeleteResponse{}, nil
 }
 

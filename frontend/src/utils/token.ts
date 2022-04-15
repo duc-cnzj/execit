@@ -1,8 +1,8 @@
-export const setToken = (token: string) => {
-  window.localStorage.setItem("token", "Bearer " + token);
-};
 export const removeToken = () => {
   window.localStorage.removeItem("token");
+};
+export const setToken = (token: string) => {
+  window.localStorage.setItem("token", "Bearer " + token);
 };
 export const getToken = (): string => {
   return window.localStorage.getItem("token") || "";
@@ -37,4 +37,11 @@ export const toggleRandomBg = (): boolean => {
     window.localStorage.setItem("random_bg", "1");
     return true;
   }
+};
+
+export const setLang = (lang: string) => {
+  window.localStorage.setItem("lang", lang);
+};
+export const getLang = (): string => {
+  return window.localStorage.getItem("lang") || "en";
 };

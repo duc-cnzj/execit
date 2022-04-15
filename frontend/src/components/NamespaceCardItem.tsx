@@ -32,6 +32,7 @@ const NamespaceCardItem: React.FC<{
         onClick={() => {
           onOk();
         }}
+        title={item.type}
         className="project-detail__show-button"
         type="dashed"
       >

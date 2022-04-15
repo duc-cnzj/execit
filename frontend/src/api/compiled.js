@@ -9813,7 +9813,6 @@ export const ContainerSvc = $root.ContainerSvc = (() => {
  * @property {number} Delete=3 Delete value
  * @property {number} Upload=4 Upload value
  * @property {number} Download=5 Download value
- * @property {number} DryRun=6 DryRun value
  */
 export const ActionType = $root.ActionType = (() => {
     const valuesById = {}, values = Object.create(valuesById);
@@ -9823,7 +9822,6 @@ export const ActionType = $root.ActionType = (() => {
     values[valuesById[3] = "Delete"] = 3;
     values[valuesById[4] = "Upload"] = 4;
     values[valuesById[5] = "Download"] = 5;
-    values[valuesById[6] = "DryRun"] = 6;
     return values;
 })();
 

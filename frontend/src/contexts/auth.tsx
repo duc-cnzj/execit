@@ -4,6 +4,7 @@ import { message } from "antd";
 import { login, info } from "../api/auth";
 import { setToken, getToken, removeToken } from "../utils/token";
 import pb from "../api/compiled";
+import { t } from "i18next";
 
 export const authContext = createContext<any>(null);
 
@@ -61,11 +62,11 @@ function useProvideAuth() {
       .then((res) => {
         setUser(res.data);
         cb();
-        message.success("login successful");
+        message.success(t("Login successfully"));
       })
       .catch((e) => {
         console.log(e);
-        message.error("wrong username or password");
+        message.error(t("wrong username or password"));
       });
   };
 
@@ -73,7 +74,7 @@ function useProvideAuth() {
     realAuth.signout().then(() => {
       setUser(undefined);
       cb();
-      message.success("Logout succeeded");
+      message.success(t("Login successfully"));
     });
   };
 

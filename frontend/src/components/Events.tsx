@@ -21,11 +21,13 @@ import {
   deleteUndocumentedFiles,
 } from "../api/file";
 import ErrorBoundary from "../components/ErrorBoundary";
+import { useTranslation } from "react-i18next";
 
 const defaultPageSize = 15;
 
 const EventList: React.FC = () => {
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
   const [diskInfo, setDiskInfo] = useState<pb.DiskInfoResponse>();
   const [paginate, setPaginate] = useState<{
     page: number;
@@ -82,47 +84,41 @@ const EventList: React.FC = () => {
       case pb.ActionType.Create:
         return (
           <Tag color="#1890ff" style={style}>
-            Create
+            {t("Create")}
           </Tag>
         );
       case pb.ActionType.Update:
         return (
           <Tag color="#52c41a" style={style}>
-            Update
+            {t("Update")}
           </Tag>
         );
       case pb.ActionType.Delete:
         return (
           <Tag color="#f5222d" style={style}>
-            Delete
+            {t("Delete")}
           </Tag>
         );
       case pb.ActionType.Upload:
         return (
           <Tag color="#fcd34d" style={style}>
-            Upload
+            {t("Upload")}
           </Tag>
         );
       case pb.ActionType.Download:
         return (
           <Tag color="#2dd4bf" style={style}>
-            Download
-          </Tag>
-        );
-      case pb.ActionType.DryRun:
-        return (
-          <Tag color="#818cf8" style={style}>
-            Dry Run
+            {t("Download")}
           </Tag>
         );
       default:
         return (
           <Tag color="#f1c40f" style={style}>
-            mystery
+            {t("mystery")}
           </Tag>
         );
     }
-  }, []);
+  }, [t]);
 
   const highlightSyntax = useCallback(
     (str: string) => (
@@ -148,7 +144,7 @@ const EventList: React.FC = () => {
   const clearDisk = useCallback(() => {
     setClearLoading(true);
     deleteUndocumentedFiles().then((res) => {
-      message.success("Cleaned up successfully");
+      message.success(t("Cleaned up successfully"));
       diskInfoApi()
         .then(({ data }) => {
           setDiskInfo(data);
@@ -157,7 +153,7 @@ const EventList: React.FC = () => {
           setClearLoading(false);
         });
     });
-  }, []);
+  }, [t]);
 
   const handleCancel = useCallback(() => {
     setIsModalVisible(false);
@@ -180,16 +176,22 @@ const EventList: React.FC = () => {
             alignItems: "center",
           }}
         >
-          <div>events: {paginate.count} total</div>
-          <div style={{ fontSize: 12, fontWeight: "normal", textTransform: "uppercase" }}>
-            file space:{" "}
+          <div>{t("events")}: {paginate.count} {t("total")}</div>
+          <div
+            style={{
+              fontSize: 12,
+              fontWeight: "normal",
+              textTransform: "uppercase",
+            }}
+          >
+            {t("file space")}:{" "}
             <Button
               loading={clearLoading}
               style={{ fontSize: 10 }}
               type="link"
               onClick={clearDisk}
             >
-              {diskInfo?.humanize_usage} Click to clean up
+              {diskInfo?.humanize_usage} {t("Click to clean up")}
             </Button>
           </div>
         </div>
@@ -212,7 +214,7 @@ const EventList: React.FC = () => {
           hasMore={paginate.count > data.length}
           loader={<Skeleton avatar={false} paragraph={{ rows: 1 }} active />}
           endMessage={
-            <Divider plain>hei man, don't turn it over, it's over!</Divider>
+            <Divider plain>{t("hei man, don't turn it over, it's over!")}</Divider>
           }
           scrollableTarget="scrollableDiv"
         >
@@ -260,12 +262,12 @@ const EventList: React.FC = () => {
                                 v.id === item.id ? { ...v, file_id: 0 } : v
                               )
                             );
-                            message.success("successfully deleted");
+                            message.success(t("successfully deleted"));
                           })
                           .catch((e) => message.error(e.response.data.message));
                       }}
                     >
-                      delete file
+                      {t("delete file")}
                     </Button>
                   </>
                 ) : (
@@ -283,7 +285,7 @@ const EventList: React.FC = () => {
                       showModal();
                     }}
                   >
-                    show changes
+                    {t("show changes")}
                   </Button>
                 ) : (
                   <></>

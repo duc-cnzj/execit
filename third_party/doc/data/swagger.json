@@ -923,8 +923,7 @@
         "Update",
         "Delete",
         "Upload",
-        "Download",
-        "DryRun"
+        "Download"
       ]
     },
     "AuthExchangeRequest": {
