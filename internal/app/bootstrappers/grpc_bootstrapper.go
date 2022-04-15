@@ -19,6 +19,7 @@ import (
 	myauthorizor "github.com/duc-cnzj/execit/internal/auth"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/grpc/services"
+	"github.com/duc-cnzj/execit/internal/middlewares"
 	"github.com/duc-cnzj/execit/internal/validator"
 	"github.com/duc-cnzj/execit/internal/xlog"
 )
@@ -64,6 +65,7 @@ func (g *grpcRunner) Run(ctx context.Context) error {
 	}
 	server := grpc.NewServer(
 		grpc.ChainStreamInterceptor(
+			middlewares.I18nStreamServerInterceptor(),
 			grpc_opentracing.StreamServerInterceptor(traceWithOpName()),
 			grpc_auth.StreamServerInterceptor(Authenticate),
 			myauthorizor.StreamServerInterceptor(),
@@ -87,6 +89,7 @@ func (g *grpcRunner) Run(ctx context.Context) error {
 			grpc_prometheus.StreamServerInterceptor,
 		),
 		grpc.ChainUnaryInterceptor(
+			middlewares.I18nUnaryServerInterceptor(),
 			grpc_opentracing.UnaryServerInterceptor(traceWithOpName()),
 			grpc_auth.UnaryServerInterceptor(Authenticate),
 			myauthorizor.UnaryServerInterceptor(),

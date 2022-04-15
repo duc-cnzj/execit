@@ -36,6 +36,7 @@ var _ contracts.ApplicationInterface = (*Application)(nil)
 
 var DefaultBootstrappers = []contracts.Bootstrapper{
 	&bootstrappers.PluginsBootstrapper{},
+	&bootstrappers.I18nBootstrapper{},
 	&bootstrappers.AuthBootstrapper{},
 	&bootstrappers.UploadBootstrapper{},
 	&bootstrappers.DBBootstrapper{},

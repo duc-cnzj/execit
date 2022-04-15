@@ -86,7 +86,10 @@ func (a *apiGateway) Run(ctx context.Context) error {
 
 	opts := []grpc.DialOption{
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
-		grpc.WithUnaryInterceptor(grpc_opentracing.UnaryClientInterceptor(grpc_opentracing.WithFilterFunc(middlewares.TracingIgnoreFn), grpc_opentracing.WithTracer(opentracing.GlobalTracer()))),
+		grpc.WithChainUnaryInterceptor(
+			grpc_opentracing.UnaryClientInterceptor(grpc_opentracing.WithFilterFunc(middlewares.TracingIgnoreFn), grpc_opentracing.WithTracer(opentracing.GlobalTracer())),
+			middlewares.In18nUnaryClientInterceptor(),
+		),
 	}
 
 	for _, f := range services.RegisteredEndpoints() {
@@ -107,10 +110,12 @@ func (a *apiGateway) Run(ctx context.Context) error {
 
 	s := &http.Server{
 		Addr: ":" + app.Config().AppPort,
-		Handler: middlewares.TracingWrapper(
-			middlewares.RouteLogger(
-				middlewares.AllowCORS(
-					router,
+		Handler: middlewares.I18n(
+			middlewares.TracingWrapper(
+				middlewares.RouteLogger(
+					middlewares.AllowCORS(
+						router,
+					),
 				),
 			),
 		),

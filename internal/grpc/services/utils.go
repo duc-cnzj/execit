@@ -3,6 +3,8 @@ package services
 import (
 	"errors"
 
+	"github.com/duc-cnzj/execit/internal/middlewares"
+
 	eventpb "github.com/duc-cnzj/execit-client/event"
 	"github.com/duc-cnzj/execit/internal/auth"
 	"github.com/duc-cnzj/execit/internal/event/events"
@@ -18,3 +20,5 @@ var AuditLog = func(username string, action eventpb.ActionType, msg string) {
 var FileAuditLog = func(username string, msg string, fileID int) {
 	events.FileAuditLog(username, msg, fileID)
 }
+
+var MustGetLang = middlewares.MustGetLang
