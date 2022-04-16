@@ -276,7 +276,7 @@ const EventList: React.FC = () => {
                         downloadFile(item.file_id);
                       }}
                     >
-                      download file
+                      {t("download file")}
                     </Button>
                     <Button
                       type="dashed"

@@ -87,6 +87,10 @@ const languages: Lang = {
     en: "Download",
     zh: "下载",
   },
+  "download file": {
+    en: "download file",
+    zh: "下载文件",
+  },
   mystery: {
     en: "mystery",
     zh: "神秘",
