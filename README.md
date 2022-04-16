@@ -21,15 +21,15 @@ kubectl apply -f https://raw.githubusercontent.com/duc-cnzj/execit/master/deploy
 kubectl port-forward -n execit svc/execit 31996:80
 ```
 
+username: `admin`, password: `123456`
+
+open http://localhost:31996
+
 ## 🧀 Preview
 
 ![execit-preview](./images/img_1.png)
 ![execit](./images/img.png)
 ![user commands](./images/img_2.png)
-
-username: `admin`, password: `123456`
-
-open http://localhost:31996
 
 ## TODO
 
