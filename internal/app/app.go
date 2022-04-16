@@ -21,15 +21,14 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/metrics/pkg/client/clientset/versioned"
 
-	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	"github.com/duc-cnzj/execit/internal/app/bootstrappers"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/app/instance"
 	"github.com/duc-cnzj/execit/internal/config"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/database"
+	"github.com/duc-cnzj/execit/internal/event/events"
 	"github.com/duc-cnzj/execit/internal/models"
-	"github.com/duc-cnzj/execit/internal/plugins"
 	"github.com/duc-cnzj/execit/internal/xlog"
 )
 
@@ -174,10 +173,8 @@ func onDelete(clusterName string) func(obj any) {
 			if app.DB().Where("`cluster_id` = ? and `namespace` = ? and `name` = ? and `type` = ?", cu.ID, accessor.GetNamespace(), accessor.GetName(), t).First(&ca).Error == nil {
 				app.DB().Delete(&ca)
 				xlog.Warningf("delete card cluster_id %d namespace %s name %s type %s", ca.ClusterID, ca.Namespace, ca.Name, ca.Type)
-				plugins.GetWsSender().New("", "").ToAll(&websocket_pb.WsMetadataResponse{
-					Metadata: &websocket_pb.Metadata{
-						Type: websocket_pb.Type_SyncCard,
-					},
+				app.Event().Dispatch(events.EventCardDeleted, events.EventCardDeletedData{
+					Card: &ca,
 				})
 			}
 		}

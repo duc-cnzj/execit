@@ -99,9 +99,21 @@ const languages: Lang = {
     en: "terminal",
     zh: "终端",
   },
+  "Exec Shell": {
+    en: "Exec Shell",
+    zh: "执行 shell",
+  },
   total: {
     en: "total",
     zh: "总数",
+  },
+  commands: {
+    en: "commands",
+    zh: "命令",
+  },
+  "show commands": {
+    en: "show commands",
+    zh: "显示命令",
   },
   "wrong username or password": {
     en: "wrong username or password",

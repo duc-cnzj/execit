@@ -10,14 +10,14 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 
 	"github.com/duc-cnzj/execit-client/card"
 	"github.com/duc-cnzj/execit-client/event"
-	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/contracts"
+	"github.com/duc-cnzj/execit/internal/event/events"
 	"github.com/duc-cnzj/execit/internal/models"
-	"github.com/duc-cnzj/execit/internal/plugins"
 	"github.com/duc-cnzj/execit/internal/scopes"
 	"github.com/duc-cnzj/execit/internal/utils"
 )
@@ -119,6 +119,13 @@ func (c *CardSvc) List(ctx context.Context, request *card.CardListRequest) (*car
 
 	var items []*card.CardItems
 	for _, m := range cards {
+		getItems, err := m.GetItems()
+		if apierrors.IsNotFound(err) {
+			app.DB().Delete(&c)
+			app.Event().Dispatch(events.EventCardDeleted, events.EventCardDeletedData{
+				Card: &m,
+			})
+		}
 		items = append(items, &card.CardItems{
 			Id:          int64(m.ID),
 			ClusterId:   int64(m.ClusterID),
@@ -126,7 +133,7 @@ func (c *CardSvc) List(ctx context.Context, request *card.CardListRequest) (*car
 			Name:        m.Name,
 			Type:        m.Type,
 			ClusterName: m.Cluster.Name,
-			Items:       m.GetItems(),
+			Items:       getItems,
 		})
 	}
 	return &card.CardListResponse{
@@ -151,10 +158,8 @@ func (c *CardSvc) Create(ctx context.Context, request *card.CardCreateRequest) (
 		}
 		app.DB().Create(&ca)
 	}
-	plugins.GetWsSender().New("", "").ToAll(&websocket_pb.WsMetadataResponse{
-		Metadata: &websocket_pb.Metadata{
-			Type: websocket_pb.Type_SyncCard,
-		},
+	app.Event().Dispatch(events.EventCardCreated, events.EventCardCreatedData{
+		Card: &ca,
 	})
 	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("add card item, cluster '%d' namesapce '%s' name '%s'", ca.ClusterID, ca.Namespace, ca.Name))
 	return &card.CardCreateResponse{
@@ -172,6 +177,7 @@ func (c *CardSvc) Create(ctx context.Context, request *card.CardCreateRequest) (
 func (c *CardSvc) Show(ctx context.Context, request *card.CardShowRequest) (*card.CardShowResponse, error) {
 	var ca models.Card
 	app.DB().Preload("Cluster").Where("`id` = ?", request.CardId).First(&ca)
+	items, _ := ca.GetItems()
 	return &card.CardShowResponse{
 		Id:        int64(ca.ID),
 		Type:      ca.Type,
@@ -181,7 +187,7 @@ func (c *CardSvc) Show(ctx context.Context, request *card.CardShowRequest) (*car
 		CreatedAt: utils.ToRFC3339DatetimeString(&ca.CreatedAt),
 		UpdatedAt: utils.ToRFC3339DatetimeString(&ca.UpdatedAt),
 		DeletedAt: utils.ToRFC3339DatetimeString(&ca.DeletedAt.Time),
-		Items:     ca.GetItems(),
+		Items:     items,
 	}, nil
 }
 
@@ -191,10 +197,8 @@ func (c *CardSvc) Delete(ctx context.Context, request *card.CardDeleteRequest) (
 		app.DB().Delete(&ca)
 		AuditLog(MustGetUser(ctx).Name, event.ActionType_Delete, fmt.Sprintf("delete card item, cluster '%d' namesapce '%s' name '%s'", ca.ClusterID, ca.Namespace, ca.Name))
 	}
-	plugins.GetWsSender().New("", "").ToAll(&websocket_pb.WsMetadataResponse{
-		Metadata: &websocket_pb.Metadata{
-			Type: websocket_pb.Type_SyncCard,
-		},
+	app.Event().Dispatch(events.EventCardDeleted, events.EventCardDeletedData{
+		Card: &ca,
 	})
 
 	return &card.CardDeleteResponse{}, nil
@@ -203,5 +207,6 @@ func (c *CardSvc) Delete(ctx context.Context, request *card.CardDeleteRequest) (
 func (c *CardSvc) AllContainers(ctx context.Context, request *card.CardAllContainersRequest) (*card.CardAllContainersResponse, error) {
 	var ca models.Card
 	app.DB().Preload("Cluster").Where("`id` = ?", request.CardId).First(&ca)
-	return &card.CardAllContainersResponse{Items: ca.GetItems()}, nil
+	items, _ := ca.GetItems()
+	return &card.CardAllContainersResponse{Items: items}, nil
 }

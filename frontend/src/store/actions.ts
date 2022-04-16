@@ -69,7 +69,7 @@ export const handleEvents = (id: string, data: pb.Metadata, input: any) => {
             )
           );
         break;
-      case pb.Type.SyncCard:
+      case pb.Type.HandleSyncCard:
         dispatch(setSyncCard());
         break;
       case pb.Type.HandleExecShellMsg:

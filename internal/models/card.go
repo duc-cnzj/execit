@@ -4,15 +4,11 @@ import (
 	"time"
 
 	cc "github.com/duc-cnzj/execit-client/container"
-	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
-	"github.com/duc-cnzj/execit/internal/plugins"
-	"github.com/duc-cnzj/execit/internal/xlog"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 
 	"gorm.io/gorm"
-	apierrors "k8s.io/apimachinery/pkg/api/errors"
 )
 
 type Card struct {
@@ -30,27 +26,18 @@ type Card struct {
 	Cluster Cluster
 }
 
-func (c Card) GetItems() []*cc.ContainerItem {
+func (c Card) GetItems() ([]*cc.ContainerItem, error) {
 	var subItems []*cc.ContainerItem
 
 	client, err := app.App().LoadKubeClient(c.Cluster.Name, []byte(c.Cluster.KubeConfig))
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	switch c.Type {
 	case "Deployment":
 		deployment, err := client.DeploymentLister().Deployments(c.Namespace).Get(c.Name)
 		if err != nil {
-			if apierrors.IsNotFound(err) {
-				app.DB().Delete(&c)
-				plugins.GetWsSender().New("", "").ToAll(&websocket_pb.WsMetadataResponse{
-					Metadata: &websocket_pb.Metadata{
-						Type: websocket_pb.Type_SyncCard,
-					},
-				})
-			}
-			xlog.Error(err)
-			return nil
+			return nil, err
 		}
 		asMap, _ := metav1.LabelSelectorAsMap(deployment.Spec.Selector)
 		list, _ := client.PodLister().Pods(c.Namespace).List(labels.SelectorFromSet(asMap))
@@ -67,16 +54,7 @@ func (c Card) GetItems() []*cc.ContainerItem {
 	case "StatefulSet":
 		statefulSet, err := client.StatefulSetLister().StatefulSets(c.Namespace).Get(c.Name)
 		if err != nil {
-			if apierrors.IsNotFound(err) {
-				app.DB().Delete(&c)
-				plugins.GetWsSender().New("", "").ToAll(&websocket_pb.WsMetadataResponse{
-					Metadata: &websocket_pb.Metadata{
-						Type: websocket_pb.Type_SyncCard,
-					},
-				})
-			}
-			xlog.Error(err)
-			return nil
+			return nil, err
 		}
 		asMap, _ := metav1.LabelSelectorAsMap(statefulSet.Spec.Selector)
 		list, _ := client.PodLister().Pods(c.Namespace).List(labels.SelectorFromSet(asMap))
@@ -91,5 +69,5 @@ func (c Card) GetItems() []*cc.ContainerItem {
 			}
 		}
 	}
-	return subItems
+	return subItems, nil
 }

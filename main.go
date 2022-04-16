@@ -3,10 +3,10 @@ package main
 import (
 	_ "embed"
 
-	"github.com/duc-cnzj/execit/cmd"
-
 	_ "github.com/duc-cnzj/execit/plugins/picture"
 	_ "github.com/duc-cnzj/execit/plugins/wssender"
+
+	"github.com/duc-cnzj/execit/cmd"
 )
 
 //go:embed config_example.yaml

@@ -33,6 +33,9 @@ type WsConn struct {
 	uid  string
 	conn *websocket.Conn
 
+	eMu     sync.Mutex
+	eventID int
+
 	userMu           sync.RWMutex
 	user             contracts.UserInfo
 	pubSub           plugins.PubSub

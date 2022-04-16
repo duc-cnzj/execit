@@ -6,10 +6,17 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
+	goatomic "sync/atomic"
 	"time"
+
+	"github.com/duc-cnzj/execit-client/event"
+	app "github.com/duc-cnzj/execit/internal/app/helper"
+	"github.com/duc-cnzj/execit/internal/models"
 
 	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	"github.com/duc-cnzj/execit/internal/utils"
@@ -22,8 +29,17 @@ import (
 	"k8s.io/client-go/tools/remotecommand"
 )
 
-const ETX = "\u0003"
-const END_OF_TRANSMISSION = "\u0004"
+const (
+	TAB                 = "\u0009"
+	ETX                 = "\u0003"
+	END_OF_TRANSMISSION = "\u0004"
+	ESC                 = "\u001B"
+
+	Up    = "\u2191"
+	Down  = "\u2193"
+	Left  = "\u2190"
+	Right = "\u2192"
+)
 
 const (
 	OpStdout = "stdout"
@@ -37,6 +53,7 @@ type Container struct {
 	Pod       string `json:"pod"`
 	Container string `json:"container"`
 	ClusterID int64  `json:"cluster_id"`
+	Cluster   *models.Cluster
 }
 
 // PtyHandler is what remotecommand expects from a pty
@@ -60,6 +77,11 @@ type MyPtyHandler struct {
 
 	cacheLock sync.RWMutex
 	cache     []byte
+
+	eMu     sync.Mutex
+	eventID int
+
+	first int32
 }
 
 func (t *MyPtyHandler) Close(reason string) {
@@ -113,7 +135,33 @@ func (t *MyPtyHandler) Close(reason string) {
 	t.cacheLock.RUnlock()
 }
 
+func (t *MyPtyHandler) SetEventID(ID int) {
+	t.eMu.Lock()
+	defer t.eMu.Unlock()
+	t.eventID = ID
+}
+
+func (t *MyPtyHandler) GetEventID() int {
+	t.eMu.Lock()
+	defer t.eMu.Unlock()
+	return t.eventID
+}
+
+// 当复制黏贴时会出现特殊字符串, 要替换掉
+// [200~mime.types[201~
+var pasteRegexp = regexp.MustCompile(`\[200~(.*?)\[201~`)
+
 func (t *MyPtyHandler) Read(p []byte) (n int, err error) {
+	if goatomic.CompareAndSwapInt32(&t.first, 0, 1) {
+		xlog.Warning("swapped!!!")
+		var emodal = models.Event{
+			Action:   uint8(event.ActionType_Shell),
+			Username: t.conn.GetUser().Name,
+			Message:  fmt.Sprintf("user exec container: '%s' namespace: '%s', pod： '%s', cluster_id: '%d'", t.Container.Container, t.Container.Namespace, t.Container.Pod, t.Container.ClusterID),
+		}
+		app.DB().Create(&emodal)
+		t.SetEventID(emodal.ID)
+	}
 	select {
 	case <-t.doneChan:
 		return copy(p, END_OF_TRANSMISSION), fmt.Errorf("[Websocket]: %v doneChan closed", t.id)
@@ -126,13 +174,33 @@ func (t *MyPtyHandler) Read(p []byte) (n int, err error) {
 	switch msg.Op {
 	case OpStdin:
 		t.cacheLock.Lock()
+		textQuoted := strconv.QuoteToASCII(msg.Data)
+		textUnquoted := textQuoted[1 : len(textQuoted)-1]
+		xlog.Debugf("input: '%v'", textUnquoted)
 		switch {
+		case pasteRegexp.MatchString(msg.Data):
+			submatch := pasteRegexp.FindStringSubmatch(msg.Data)
+			if len(submatch) == 2 {
+				t.cache = append(t.cache, []byte(submatch[1])...)
+			}
+		case msg.Data == ETX:
+			t.cache = append(t.cache, []byte("[ctrl+C]")...)
+			fallthrough
 		case msg.Data == "\r":
+			fallthrough
+		case msg.Data == "\n":
 			xlog.Infof("[Websocket]: user %v, send: '%v', namespace: %v, pod: %v.", t.conn.GetUser().Name, string(t.cache), t.Namespace, t.Pod)
+			app.DB().Create(&models.Command{
+				ClusterID: int(t.Container.ClusterID),
+				Namespace: t.Container.Namespace,
+				Pod:       t.Container.Pod,
+				Container: t.Container.Container,
+				Command:   string(t.cache),
+				EventID:   t.GetEventID(),
+			})
 			t.cache = make([]byte, 0, 20)
-		case strings.ContainsRune(msg.Data, rune(byte(''))):
 		default:
-			t.cache = append(t.cache, []byte(msg.Data)...)
+			t.cache = append(t.cache, []byte(filterSpecialCharacters(msg.Data))...)
 		}
 
 		t.cacheLock.Unlock()
@@ -144,6 +212,32 @@ func (t *MyPtyHandler) Read(p []byte) (n int, err error) {
 	default:
 		return copy(p, END_OF_TRANSMISSION), fmt.Errorf("unknown message type '%s'", msg.Op)
 	}
+}
+
+const (
+	ShellUp     = "[A"
+	ShellDown   = "[B"
+	ShellLeft   = "[D"
+	ShellRight  = "[C"
+	ShellDelete = "\u007f"
+)
+
+var shellMap = map[string]string{
+	ShellDelete:         "⌫",
+	ESC:                 "",
+	TAB:                 "[TAB]",
+	END_OF_TRANSMISSION: "[ctrl+D]",
+	ShellUp:             Up,
+	ShellDown:           Down,
+	ShellLeft:           Left,
+	ShellRight:          Right,
+}
+
+func filterSpecialCharacters(s string) string {
+	for old, newS := range shellMap {
+		s = strings.ReplaceAll(s, old, newS)
+	}
+	return s
 }
 
 func (t *MyPtyHandler) Write(p []byte) (n int, err error) {
@@ -415,28 +509,27 @@ func HandleExecShell(input *websocket_pb.WsHandleExecShellInput, conn *WsConn) (
 	if err != nil {
 		return "", err
 	}
-
-	conn.terminalSessions.Set(sessionID, &MyPtyHandler{
-		Container: Container{
-			Namespace: input.Namespace,
-			Pod:       input.Pod,
-			Container: input.Container,
-			ClusterID: input.ClusterId,
-		},
-		id:       sessionID,
-		conn:     conn,
-		sizeChan: make(chan remotecommand.TerminalSize, 1),
-		doneChan: make(chan struct{}, 1),
-		shellCh:  make(chan *websocket_pb.TerminalMessage, 100),
-		cache:    make([]byte, 0, 20),
-	})
-
-	go WaitForTerminal(conn, k8sClient.Client(), k8sClient.RestConfig(), &Container{
+	var cu models.Cluster
+	app.DB().First(&cu, input.ClusterId)
+	var c = Container{
 		Namespace: input.Namespace,
 		Pod:       input.Pod,
 		Container: input.Container,
 		ClusterID: input.ClusterId,
-	}, "", sessionID)
+		Cluster:   &cu,
+	}
+
+	conn.terminalSessions.Set(sessionID, &MyPtyHandler{
+		Container: c,
+		id:        sessionID,
+		conn:      conn,
+		sizeChan:  make(chan remotecommand.TerminalSize, 1),
+		doneChan:  make(chan struct{}, 1),
+		shellCh:   make(chan *websocket_pb.TerminalMessage, 100),
+		cache:     make([]byte, 0, 20),
+	})
+
+	go WaitForTerminal(conn, k8sClient.Client(), k8sClient.RestConfig(), &c, "", sessionID)
 
 	return sessionID, nil
 }

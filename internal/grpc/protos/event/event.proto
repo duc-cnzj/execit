@@ -12,6 +12,7 @@ enum ActionType {
   Delete = 3;
   Upload = 4;
   Download = 5;
+  Shell = 6;
 }
 
 message EventListRequest {
@@ -28,6 +29,12 @@ message EventListItem {
   string new = 6;
   string event_at = 7;
   int64 file_id = 8;
+
+  repeated Command commands = 9;
+}
+
+message Command {
+  string command = 1;
 }
 
 message EventListResponse {

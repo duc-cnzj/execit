@@ -78,47 +78,56 @@ const EventList: React.FC = () => {
 
   const [config, setConfig] = useState({ old: "", new: "", title: "" });
 
-  const getActionStyle = useCallback((type: pb.ActionType): React.ReactNode => {
-    let style = { fontSize: 12, marginLeft: 5 };
-    switch (type) {
-      case pb.ActionType.Create:
-        return (
-          <Tag color="#1890ff" style={style}>
-            {t("Create")}
-          </Tag>
-        );
-      case pb.ActionType.Update:
-        return (
-          <Tag color="#52c41a" style={style}>
-            {t("Update")}
-          </Tag>
-        );
-      case pb.ActionType.Delete:
-        return (
-          <Tag color="#f5222d" style={style}>
-            {t("Delete")}
-          </Tag>
-        );
-      case pb.ActionType.Upload:
-        return (
-          <Tag color="#fcd34d" style={style}>
-            {t("Upload")}
-          </Tag>
-        );
-      case pb.ActionType.Download:
-        return (
-          <Tag color="#2dd4bf" style={style}>
-            {t("Download")}
-          </Tag>
-        );
-      default:
-        return (
-          <Tag color="#f1c40f" style={style}>
-            {t("mystery")}
-          </Tag>
-        );
-    }
-  }, [t]);
+  const getActionStyle = useCallback(
+    (type: pb.ActionType): React.ReactNode => {
+      let style = { fontSize: 12, marginLeft: 5 };
+      switch (type) {
+        case pb.ActionType.Create:
+          return (
+            <Tag color="#1890ff" style={style}>
+              {t("Create")}
+            </Tag>
+          );
+        case pb.ActionType.Shell:
+          return (
+            <Tag color="#1890ff" style={style}>
+              {t("Exec Shell")}
+            </Tag>
+          );
+        case pb.ActionType.Update:
+          return (
+            <Tag color="#52c41a" style={style}>
+              {t("Update")}
+            </Tag>
+          );
+        case pb.ActionType.Delete:
+          return (
+            <Tag color="#f5222d" style={style}>
+              {t("Delete")}
+            </Tag>
+          );
+        case pb.ActionType.Upload:
+          return (
+            <Tag color="#fcd34d" style={style}>
+              {t("Upload")}
+            </Tag>
+          );
+        case pb.ActionType.Download:
+          return (
+            <Tag color="#2dd4bf" style={style}>
+              {t("Download")}
+            </Tag>
+          );
+        default:
+          return (
+            <Tag color="#f1c40f" style={style}>
+              {t("mystery")}
+            </Tag>
+          );
+      }
+    },
+    [t]
+  );
 
   const highlightSyntax = useCallback(
     (str: string) => (
@@ -139,6 +148,9 @@ const EventList: React.FC = () => {
   const handleOk = useCallback(() => {
     setIsModalVisible(false);
   }, []);
+
+  const [isCommandsModalVisible, setIsCommandsModalVisible] = useState(false);
+  const [commands, setCommands] = useState<pb.Command[]>([])
 
   const [clearLoading, setClearLoading] = useState(false);
   const clearDisk = useCallback(() => {
@@ -176,7 +188,9 @@ const EventList: React.FC = () => {
             alignItems: "center",
           }}
         >
-          <div>{t("events")}: {paginate.count} {t("total")}</div>
+          <div>
+            {t("events")}: {paginate.count} {t("total")}
+          </div>
           <div
             style={{
               fontSize: 12,
@@ -214,7 +228,9 @@ const EventList: React.FC = () => {
           hasMore={paginate.count > data.length}
           loader={<Skeleton avatar={false} paragraph={{ rows: 1 }} active />}
           endMessage={
-            <Divider plain>{t("hei man, don't turn it over, it's over!")}</Divider>
+            <Divider plain>
+              {t("hei man, don't turn it over, it's over!")}
+            </Divider>
           }
           scrollableTarget="scrollableDiv"
         >
@@ -239,7 +255,19 @@ const EventList: React.FC = () => {
                   }
                   description={`${item.message}`}
                 />
-                {item.file_id > 0 ? (
+                {item.commands.length > 0 && (
+                  <Button
+                    type="dashed"
+                    style={{ marginRight: 5 }}
+                    onClick={() => {
+                      setIsCommandsModalVisible(true);
+                      setCommands(item.commands);
+                    }}
+                  >
+                    {t("show commands")}
+                  </Button>
+                )}
+                {item.file_id > 0 && (
                   <>
                     <Button
                       type="dashed"
@@ -270,8 +298,6 @@ const EventList: React.FC = () => {
                       {t("delete file")}
                     </Button>
                   </>
-                ) : (
-                  <></>
                 )}
                 {!!(item.old || item.new) ? (
                   <Button
@@ -318,6 +344,16 @@ const EventList: React.FC = () => {
             newValue={config.new}
           />
         </ErrorBoundary>
+      </Modal>
+      <Modal
+        title={t("commands")}
+        visible={isCommandsModalVisible}
+        footer={null}
+        onCancel={() => setIsCommandsModalVisible(false)}
+      >
+        <ol style={{maxHeight: 500, overflowY: "auto"}}>
+          {commands.map((v) => <li className="events__command">{v.command}</li>)}
+        </ol>
       </Modal>
     </Card>
   );
