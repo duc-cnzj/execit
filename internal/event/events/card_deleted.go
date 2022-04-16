@@ -19,6 +19,6 @@ type EventCardDeletedData struct {
 	Card *models.Card
 }
 
-func (d *EventCardDeletedData) GetCard() *models.Card {
+func (d EventCardDeletedData) GetCard() *models.Card {
 	return d.Card
 }
