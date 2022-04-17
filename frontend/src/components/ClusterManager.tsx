@@ -23,6 +23,7 @@ import {
 } from "../api/cluster";
 import MyCodeMirror from "./MyCodeMirror";
 import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 const { TabPane } = Tabs;
 
@@ -355,11 +356,11 @@ const DetailItems: React.FC<{
                   danger
                   onClick={() => onDelete(item.card_id)}
                 >
-                  remove
+                  {t("remove")}
                 </Button>
               ) : (
                 <Button type="dashed" onClick={() => onAdd(item)}>
-                  add
+                  {t("add")}
                 </Button>
               ),
             ]}

@@ -207,6 +207,10 @@ func (c *CardSvc) Delete(ctx context.Context, request *card.CardDeleteRequest) (
 func (c *CardSvc) AllContainers(ctx context.Context, request *card.CardAllContainersRequest) (*card.CardAllContainersResponse, error) {
 	var ca models.Card
 	app.DB().Preload("Cluster").Where("`id` = ?", request.CardId).First(&ca)
-	items, _ := ca.GetItems()
+	items, err := ca.GetItems()
+	if apierrors.IsNotFound(err) {
+		app.DB().Delete(&ca)
+		app.Event().Dispatch(events.EventCardDeleted, events.EventCardDeletedData{Card: &ca})
+	}
 	return &card.CardAllContainersResponse{Items: items}, nil
 }

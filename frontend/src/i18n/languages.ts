@@ -83,6 +83,14 @@ const languages: Lang = {
     en: "Upload",
     zh: "上传",
   },
+  add: {
+    en: "add",
+    zh: "添加",
+  },
+  remove: {
+    en: "remove",
+    zh: "删除",
+  },
   Download: {
     en: "Download",
     zh: "下载",

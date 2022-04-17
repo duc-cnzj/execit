@@ -61,16 +61,18 @@ const NamespaceCardItem: React.FC<{
             placement="start"
             text={
               <>
-                {item.namespace}
-                <span
-                  style={{ fontSize: 10, paddingLeft: 5, color: "#93c5fd" }}
-                >
-                  ({item.cluster_name})
+                <span style={{ fontSize: 10, paddingLeft: 5 }}>
+                  {item.namespace}
+                  <span style={{ marginLeft: 5 }}>({item.cluster_name})</span>
                 </span>
               </>
             }
           >
-            <div style={{ textAlign: "center", fontSize: 18 }}>{item.name}</div>
+            <div
+              style={{ textAlign: "center", fontWeight: "bold", fontSize: 18 }}
+            >
+              {item.name}
+            </div>
           </Badge.Ribbon>
         }
       >

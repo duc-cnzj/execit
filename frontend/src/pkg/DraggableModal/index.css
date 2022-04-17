@@ -35,7 +35,7 @@
 
 .ant-design-draggable-modal .ant-design-draggable-modal-title {
     cursor: move;
-    padding: 16px;
+    padding: 16px 16px 0;
 }
 
 .ant-design-draggable-modal .ant-modal-body {
