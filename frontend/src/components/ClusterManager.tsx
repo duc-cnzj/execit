@@ -88,7 +88,7 @@ const ClusterManager: React.FC = () => {
       }).then((res) => {
         clusterShow(current.clusterID).then((res) => {
           setCurrent((c) => ({ ...c, detail: res.data }));
-          message.success(t("cluster.success"));
+          message.success(t("success"));
         });
       });
     },
@@ -100,7 +100,7 @@ const ClusterManager: React.FC = () => {
         cardDelete(cardID).then((res) => {
           clusterShow(current.clusterID).then((res) => {
             setCurrent((c) => ({ ...c, detail: res.data }));
-            message.success(t("cluster.success"));
+            message.success(t("success"));
           });
         });
     },
