@@ -123,19 +123,19 @@ var checkList = []struct {
 	{
 		Verb:        "get",
 		Group:       "apps",
-		Resource:    "statefulSets",
+		Resource:    "statefulsets",
 		Subresource: "",
 	},
 	{
 		Verb:        "list",
 		Group:       "apps",
-		Resource:    "statefulSets",
+		Resource:    "statefulsets",
 		Subresource: "",
 	},
 	{
 		Verb:        "watch",
 		Group:       "apps",
-		Resource:    "statefulSets",
+		Resource:    "statefulsets",
 		Subresource: "",
 	},
 }
