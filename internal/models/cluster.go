@@ -13,6 +13,7 @@ type Cluster struct {
 
 	Name       string `json:"key" gorm:"size:255;not null;default:'';"`
 	KubeConfig string `json:"kube_config" gorm:"type:text"`
+	Namespace  string `json:"namespace" gorm:"size:70;not null;default:''"`
 
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`

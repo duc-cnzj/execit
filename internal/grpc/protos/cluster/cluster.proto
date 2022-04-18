@@ -20,7 +20,9 @@ message ClusterListResponse {
 message ClusterCreateRequest {
   string name = 1 [(validate.rules).string.min_bytes = 1];
   string kube_config = 2 [(validate.rules).string.min_bytes = 1];
+  string namespace = 3;
 }
+
 message ClusterCreateResponse {
   int64 id = 1;
   string name = 2;

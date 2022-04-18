@@ -3160,6 +3160,9 @@ export interface IClusterCreateRequest {
 
     /** ClusterCreateRequest kube_config */
     kube_config?: (string|null);
+
+    /** ClusterCreateRequest namespace */
+    namespace?: (string|null);
 }
 
 /** Represents a ClusterCreateRequest. */
@@ -3176,6 +3179,9 @@ export class ClusterCreateRequest implements IClusterCreateRequest {
 
     /** ClusterCreateRequest kube_config. */
     public kube_config: string;
+
+    /** ClusterCreateRequest namespace. */
+    public namespace: string;
 
     /**
      * Encodes the specified ClusterCreateRequest message. Does not implicitly {@link ClusterCreateRequest.verify|verify} messages.

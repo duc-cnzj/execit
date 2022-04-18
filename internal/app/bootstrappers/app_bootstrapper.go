@@ -18,7 +18,7 @@ func (a *AppBootstrapper) Bootstrap(app contracts.ApplicationInterface) error {
 		var cus []models.Cluster
 		app.DBManager().DB().Find(&cus)
 		for _, cluster := range cus {
-			if _, err := app.LoadKubeClient(cluster.Name, []byte(cluster.KubeConfig)); err != nil {
+			if _, err := app.LoadKubeClient(cluster.Name, []byte(cluster.KubeConfig), cluster.Namespace); err != nil {
 				xlog.Error(err)
 			}
 		}

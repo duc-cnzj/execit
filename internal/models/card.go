@@ -29,7 +29,7 @@ type Card struct {
 func (c Card) GetItems() ([]*cc.ContainerItem, error) {
 	var subItems []*cc.ContainerItem
 
-	client, err := app.App().LoadKubeClient(c.Cluster.Name, []byte(c.Cluster.KubeConfig))
+	client, err := app.App().LoadKubeClient(c.Cluster.Name, []byte(c.Cluster.KubeConfig), c.Cluster.Namespace)
 	if err != nil {
 		return nil, err
 	}

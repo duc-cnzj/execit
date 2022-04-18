@@ -7,16 +7,16 @@ import (
 	"sort"
 	"time"
 
-	"github.com/duc-cnzj/execit-client/event"
-
+	"gorm.io/gorm"
+	authorizationv1 "k8s.io/api/authorization/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
-	"gorm.io/gorm"
-	"k8s.io/apimachinery/pkg/labels"
-
 	"github.com/duc-cnzj/execit-client/cluster"
+	"github.com/duc-cnzj/execit-client/event"
 	"github.com/duc-cnzj/execit-client/model"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/contracts"
@@ -72,6 +72,84 @@ func (c *ClusterSvc) List(ctx context.Context, request *cluster.ClusterListReque
 	}, nil
 }
 
+var checkList = []struct {
+	Verb        string
+	Group       string
+	Resource    string
+	Subresource string
+}{
+	{
+		Verb:        "get",
+		Group:       "",
+		Resource:    "pods",
+		Subresource: "",
+	},
+	{
+		Verb:        "watch",
+		Group:       "",
+		Resource:    "pods",
+		Subresource: "",
+	},
+	{
+		Verb:        "create",
+		Group:       "",
+		Resource:    "pods",
+		Subresource: "exec",
+	},
+	{
+		Verb:        "get",
+		Group:       "apps",
+		Resource:    "deployments",
+		Subresource: "",
+	},
+	{
+		Verb:        "watch",
+		Group:       "apps",
+		Resource:    "deployments",
+		Subresource: "",
+	},
+	{
+		Verb:        "get",
+		Group:       "apps",
+		Resource:    "statefulSets",
+		Subresource: "",
+	},
+	{
+		Verb:        "watch",
+		Group:       "apps",
+		Resource:    "statefulSets",
+		Subresource: "",
+	},
+}
+
+func RunAccessCheck(cli kubernetes.Interface, namespace string) (bool, error) {
+	for _, o := range checkList {
+		var sar *authorizationv1.SelfSubjectAccessReview
+		sar = &authorizationv1.SelfSubjectAccessReview{
+			Spec: authorizationv1.SelfSubjectAccessReviewSpec{
+				ResourceAttributes: &authorizationv1.ResourceAttributes{
+					Namespace:   namespace,
+					Verb:        o.Verb,
+					Group:       o.Group,
+					Resource:    o.Resource,
+					Subresource: o.Subresource,
+				},
+			},
+		}
+
+		response, err := cli.AuthorizationV1().SelfSubjectAccessReviews().Create(context.TODO(), sar, metav1.CreateOptions{})
+		if err != nil {
+			return false, err
+		}
+
+		if !response.Status.Allowed {
+			return false, fmt.Errorf("not allowed Resource: '%s', Subresource: '%s', Group: '%s', Verb '%s', namespace: '%s'", o.Resource, o.Subresource, o.Group, o.Verb, namespace)
+		}
+	}
+
+	return true, nil
+}
+
 func (c *ClusterSvc) Create(ctx context.Context, request *cluster.ClusterCreateRequest) (*cluster.ClusterCreateResponse, error) {
 	if app.DB().Where("`name` = ?", request.Name).First(&models.Cluster{}).Error == nil {
 		return nil, status.Errorf(codes.AlreadyExists, "cluster name '%s' already exists", request.Name)
@@ -82,15 +160,16 @@ func (c *ClusterSvc) Create(ctx context.Context, request *cluster.ClusterCreateR
 		err        error
 		restConfig *restclient.Config
 		validOk    bool
+		client     *kubernetes.Clientset
 	)
 	cc, err = clientcmd.NewClientConfigFromBytes([]byte(request.KubeConfig))
 	if err == nil {
 		restConfig, err = cc.ClientConfig()
 		if err == nil {
 			restConfig.Timeout = 5 * time.Second
-			_, err = kubernetes.NewForConfig(restConfig)
+			client, err = kubernetes.NewForConfig(restConfig)
 			if err == nil {
-				validOk = true
+				validOk, err = RunAccessCheck(client, request.Namespace)
 			}
 		}
 	}
@@ -99,13 +178,14 @@ func (c *ClusterSvc) Create(ctx context.Context, request *cluster.ClusterCreateR
 	}
 
 	var clm models.Cluster
-	if err := app.DB().Where("`name` = ?", request.Name).First(&clm).Error; err != nil {
+	if err := app.DB().Where("`name` = ? and `namespace` = ?", request.Name, request.Namespace).First(&clm).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, err
 		}
 		clm = models.Cluster{
 			Name:       request.Name,
 			KubeConfig: request.KubeConfig,
+			Namespace:  request.Namespace,
 		}
 		app.DB().Create(&clm)
 	}
@@ -164,7 +244,7 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ClusterShowReque
 		existsMap[keyFn(card.ClusterID, card.Namespace, card.Name, card.Type)] = card
 	}
 
-	client, err := app.App().LoadKubeClient(cl.Name, []byte(cl.KubeConfig))
+	client, err := app.App().LoadKubeClient(cl.Name, []byte(cl.KubeConfig), cl.Namespace)
 	if err != nil {
 		return nil, err
 	}

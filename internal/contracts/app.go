@@ -108,5 +108,5 @@ type ApplicationInterface interface {
 
 	ReleaseKubeClient(name string) error
 	ReleaseAllKubeClient() error
-	LoadKubeClient(name string, kubeConfig []byte) (K8s, error)
+	LoadKubeClient(name string, kubeConfig []byte, namespace string) (K8s, error)
 }

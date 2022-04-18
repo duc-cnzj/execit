@@ -88,10 +88,11 @@ const ClusterManager: React.FC = () => {
       }).then((res) => {
         clusterShow(current.clusterID).then((res) => {
           setCurrent((c) => ({ ...c, detail: res.data }));
+          message.success(t("cluster.success"));
         });
       });
     },
-    [current.clusterID]
+    [current.clusterID, t]
   );
   const onDelete = useCallback(
     (cardID: number) => {
@@ -99,10 +100,11 @@ const ClusterManager: React.FC = () => {
         cardDelete(cardID).then((res) => {
           clusterShow(current.clusterID).then((res) => {
             setCurrent((c) => ({ ...c, detail: res.data }));
+            message.success(t("cluster.success"));
           });
         });
     },
-    [current.clusterID]
+    [current.clusterID, t]
   );
   const loadMoreData = () => {
     if (loading) {
@@ -135,7 +137,11 @@ const ClusterManager: React.FC = () => {
   const [isAddClusterVisible, setIsAddClusterVisible] = useState(false);
   const [form] = Form.useForm();
   const onFinish = (values: any) => {
-    clusterCreate({ name: values.name, kube_config: values.kube_config })
+    clusterCreate({
+      name: values.name,
+      kube_config: values.kube_config,
+      namespace: values.namespace,
+    })
       .then(() => {
         message.success(t("success"));
         setIsAddClusterVisible(false);
@@ -184,6 +190,9 @@ const ClusterManager: React.FC = () => {
                 name="name"
                 rules={[{ required: true }]}
               >
+                <Input />
+              </Form.Item>
+              <Form.Item label={t("cluster namespace")} name="namespace">
                 <Input />
               </Form.Item>
 
@@ -278,7 +287,7 @@ const ClusterManager: React.FC = () => {
                           message.success("success");
                           load();
                         })
-                        .catch((e) => message.error(e.response.data.message))
+                        .catch((e) => message.error(e.response.data.message));
                     }}
                   >
                     {t("delete")}

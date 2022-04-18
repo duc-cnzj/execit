@@ -91,6 +91,10 @@ const languages: Lang = {
     en: "remove",
     zh: "删除",
   },
+  "cluster namespace": {
+    en: "cluster namespace",
+    zh: "集群命名空间",
+  },
   Download: {
     en: "Download",
     zh: "下载",

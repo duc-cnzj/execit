@@ -34,7 +34,7 @@ func IsPodRunning(kubeClient kubernetes.Interface, namespace, podName string) (r
 func K8sClientByClusterID[T ~int | ~int8 | ~int32 | ~int64](id T) contracts.K8s {
 	var c = models.Cluster{ID: int(id)}
 	app.DB().First(&c)
-	client, err := app.App().LoadKubeClient(c.Name, []byte(c.KubeConfig))
+	client, err := app.App().LoadKubeClient(c.Name, []byte(c.KubeConfig), c.Namespace)
 	if err != nil {
 		xlog.Error(err)
 	}

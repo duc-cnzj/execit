@@ -154,6 +154,9 @@
         },
         "kube_config": {
           "type": "string"
+        },
+        "namespace": {
+          "type": "string"
         }
       }
     },

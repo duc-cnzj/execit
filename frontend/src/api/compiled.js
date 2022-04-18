@@ -6965,6 +6965,7 @@ export const ClusterCreateRequest = $root.ClusterCreateRequest = (() => {
      * @interface IClusterCreateRequest
      * @property {string|null} [name] ClusterCreateRequest name
      * @property {string|null} [kube_config] ClusterCreateRequest kube_config
+     * @property {string|null} [namespace] ClusterCreateRequest namespace
      */
 
     /**
@@ -6999,6 +7000,14 @@ export const ClusterCreateRequest = $root.ClusterCreateRequest = (() => {
     ClusterCreateRequest.prototype.kube_config = "";
 
     /**
+     * ClusterCreateRequest namespace.
+     * @member {string} namespace
+     * @memberof ClusterCreateRequest
+     * @instance
+     */
+    ClusterCreateRequest.prototype.namespace = "";
+
+    /**
      * Encodes the specified ClusterCreateRequest message. Does not implicitly {@link ClusterCreateRequest.verify|verify} messages.
      * @function encode
      * @memberof ClusterCreateRequest
@@ -7014,6 +7023,8 @@ export const ClusterCreateRequest = $root.ClusterCreateRequest = (() => {
             writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
         if (message.kube_config != null && Object.hasOwnProperty.call(message, "kube_config"))
             writer.uint32(/* id 2, wireType 2 =*/18).string(message.kube_config);
+        if (message.namespace != null && Object.hasOwnProperty.call(message, "namespace"))
+            writer.uint32(/* id 3, wireType 2 =*/26).string(message.namespace);
         return writer;
     };
 
@@ -7040,6 +7051,9 @@ export const ClusterCreateRequest = $root.ClusterCreateRequest = (() => {
                 break;
             case 2:
                 message.kube_config = reader.string();
+                break;
+            case 3:
+                message.namespace = reader.string();
                 break;
             default:
                 reader.skipType(tag & 7);

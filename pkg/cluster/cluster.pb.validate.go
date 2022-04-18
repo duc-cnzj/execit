@@ -345,6 +345,8 @@ func (m *ClusterCreateRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	// no validation rules for Namespace
+
 	if len(errors) > 0 {
 		return ClusterCreateRequestMultiError(errors)
 	}

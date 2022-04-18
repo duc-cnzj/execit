@@ -2,6 +2,7 @@ package app
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"sync"
@@ -107,10 +108,15 @@ func (app *Application) ReleaseAllKubeClient() error {
 	return nil
 }
 
-func (app *Application) LoadKubeClient(name string, kubeConfig []byte) (contracts.K8s, error) {
+func (app *Application) LoadKubeClient(name string, kubeConfig []byte, namespace string) (contracts.K8s, error) {
+	keyFn := func(name, namespace string) string {
+		return fmt.Sprintf("name:%s-namesapce:%s", name, namespace)
+	}
+	key := keyFn(name, namespace)
+
 	app.k8sMu.Lock()
 	defer app.k8sMu.Unlock()
-	sClient := app.k8sClients[name]
+	sClient := app.k8sClients[key]
 	if sClient != nil {
 		return sClient, nil
 	}
@@ -124,7 +130,7 @@ func (app *Application) LoadKubeClient(name string, kubeConfig []byte) (contract
 		return nil, err
 	}
 	ch := make(chan struct{})
-	informer := informers.NewSharedInformerFactory(client, 0)
+	informer := informers.NewSharedInformerFactoryWithOptions(client, 0, informers.WithNamespace(namespace))
 	kc := &k8sClient{
 		client:                  client,
 		metricsClient:           metrics,
@@ -146,7 +152,7 @@ func (app *Application) LoadKubeClient(name string, kubeConfig []byte) (contract
 	})
 	kc.Informer().Start(ch)
 	kubeCache.WaitForCacheSync(wait.NeverStop, kc.DeploymentListerSynced(), kc.PodListerSynced(), kc.StatefulSetListerSynced())
-	app.k8sClients[name] = kc
+	app.k8sClients[key] = kc
 	return kc, nil
 }
 

@@ -5,8 +5,8 @@ export function clusterList({page, page_size}: pb.ClusterListRequest) {
   return ajax.get<pb.ClusterListResponse>(`/api/clusters?page=${page}&page_size=${page_size}`);
 }
 
-export function clusterCreate({name, kube_config}: pb.ClusterCreateRequest) {
-  return ajax.post<pb.ClusterCreateResponse>(`/api/clusters`, {name, kube_config});
+export function clusterCreate({name, kube_config, namespace}: pb.ClusterCreateRequest) {
+  return ajax.post<pb.ClusterCreateResponse>(`/api/clusters`, {name, kube_config, namespace});
 }
 
 export function clusterShow(cluster_id: number) {
