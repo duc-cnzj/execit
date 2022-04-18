@@ -145,6 +145,7 @@ const ClusterManager: React.FC = () => {
       .then(() => {
         message.success(t("success"));
         setIsAddClusterVisible(false);
+        form.resetFields();
         load();
       })
       .catch((e) => {
