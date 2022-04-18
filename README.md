@@ -27,7 +27,7 @@ open http://localhost:31996
 
 ## 💡 Minimum permissions required
 
-| resource     | Verbs            |
+| Resource     | Verbs            |
 | ------------ | ---------------- |
 | pods         | `get`, `list`, `watch` |
 | deployments  | `get`, `list`, `watch` |
