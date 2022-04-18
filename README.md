@@ -33,7 +33,6 @@ open http://localhost:31996
 | deployments  | `get`, `list`, `watch` |
 | statefulSets | `get`, `list`, `watch` |
 | pods/exec    | `create`         |
-|              |                  |
 
 
 ## 🧀 Preview
