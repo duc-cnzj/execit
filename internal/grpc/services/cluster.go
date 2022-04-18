@@ -85,6 +85,12 @@ var checkList = []struct {
 		Subresource: "",
 	},
 	{
+		Verb:        "list",
+		Group:       "",
+		Resource:    "pods",
+		Subresource: "",
+	},
+	{
 		Verb:        "watch",
 		Group:       "",
 		Resource:    "pods",
@@ -103,6 +109,12 @@ var checkList = []struct {
 		Subresource: "",
 	},
 	{
+		Verb:        "list",
+		Group:       "apps",
+		Resource:    "deployments",
+		Subresource: "",
+	},
+	{
 		Verb:        "watch",
 		Group:       "apps",
 		Resource:    "deployments",
@@ -110,6 +122,12 @@ var checkList = []struct {
 	},
 	{
 		Verb:        "get",
+		Group:       "apps",
+		Resource:    "statefulSets",
+		Subresource: "",
+	},
+	{
+		Verb:        "list",
 		Group:       "apps",
 		Resource:    "statefulSets",
 		Subresource: "",

@@ -25,6 +25,17 @@ username: `admin`, password: `123456`
 
 open http://localhost:31996
 
+## 💡 Minimum permissions required
+
+| resource     | Verbs            |
+| ------------ | ---------------- |
+| pods         | `get`, `list`, `watch` |
+| deployments  | `get`, `list`, `watch` |
+| statefulSets | `get`, `list`, `watch` |
+| pods/exec    | `create`         |
+|              |                  |
+
+
 ## 🧀 Preview
 
 ![execit-preview](./images/img_1.png)
