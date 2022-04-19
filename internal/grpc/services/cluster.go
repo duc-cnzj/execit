@@ -385,7 +385,7 @@ func (c *ClusterSvc) Delete(ctx context.Context, request *cluster.ClusterDeleteR
 	}); err != nil {
 		return nil, err
 	}
-	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("delete cluster '%s' host: '%s'", cl.Name, cl.ClusterConfig().Host))
+	AuditLog(MustGetUser(ctx).Name, event.ActionType_Delete, fmt.Sprintf("delete cluster '%s' host: '%s'", cl.Name, cl.ClusterConfig().Host))
 
 	return &cluster.ClusterDeleteResponse{}, nil
 }
