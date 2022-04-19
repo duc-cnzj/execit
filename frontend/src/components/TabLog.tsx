@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState, useCallback } from "react";
 import { cardAllContainers } from "../api/card";
-import { Radio, Skeleton, Button, Tag, message } from "antd";
+import { Radio, Skeleton, Button, Tag } from "antd";
 import pb from "../api/compiled";
 import LazyLog from "../pkg/lazylog/components/LazyLog";
 import { getToken } from "./../utils/token";
