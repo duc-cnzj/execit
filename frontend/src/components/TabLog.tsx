@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState, useCallback } from "react";
 import { cardAllContainers } from "../api/card";
-import { Radio, Skeleton, Button, Tag } from "antd";
+import { Radio, Skeleton, Button, Tag, message } from "antd";
 import pb from "../api/compiled";
 import LazyLog from "../pkg/lazylog/components/LazyLog";
 import { getToken } from "./../utils/token";
@@ -75,6 +75,9 @@ const ProjectContainerLogs: React.FC<{
       >
         {value ? (
           <LazyLog
+            renderErrLineFunc={(e: any) => {
+              return JSON.parse(e.body).error.message
+            }}
             fetchOptions={{ headers: { Authorization: getToken() } }}
             enableSearch
             selectableLines

@@ -91,6 +91,12 @@ var checkList = []struct {
 		Subresource: "",
 	},
 	{
+		Verb:        "get",
+		Group:       "",
+		Resource:    "pods",
+		Subresource: "log",
+	},
+	{
 		Verb:        "watch",
 		Group:       "",
 		Resource:    "pods",
