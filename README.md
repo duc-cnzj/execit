@@ -34,6 +34,7 @@ open http://localhost:31996
 | statefulsets | `get`, `list`, `watch` |
 | pods/exec    | `create`         |
 | pods/log     | `get`            |
+| metrics.k8s.io/pod(optional)  | `get` |
 
 
 ## 🧀 Preview
