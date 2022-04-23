@@ -6,16 +6,16 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"regexp"
+	"os"
 	"runtime"
 	"strconv"
 	"strings"
 	"sync"
-	goatomic "sync/atomic"
 	"time"
 
 	"github.com/duc-cnzj/execit-client/event"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
+	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/models"
 
 	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
@@ -63,8 +63,93 @@ type PtyHandler interface {
 	remotecommand.TerminalSizeQueue
 }
 
+type Recorder struct {
+	sync.Mutex
+	filepath  string
+	container Container
+	f         *os.File
+	shell     string
+	startTime time.Time
+	user      contracts.UserInfo
+
+	t    *MyPtyHandler
+	once sync.Once
+}
+
+var (
+	startLine = "{\"version\": 2, \"width\": 204, \"height\": 54, \"timestamp\": %d, \"env\": {\"SHELL\": \"%s\", \"TERM\": \"xterm-256color\"}}\n"
+	writeLine = "[%.6f, \"o\", \"%s\"]\n"
+)
+
+func (r *Recorder) Start() error {
+	r.Lock()
+	defer r.Unlock()
+	file, err := app.Uploader().Disk("shell").NewFile(fmt.Sprintf("%s/%s/%s",
+		r.t.conn.GetUser().Name,
+		time.Now().Format("2006-01-02"),
+		fmt.Sprintf("recorder-%d-%s-%s-%s-%s.cast", r.t.ClusterID, r.t.Namespace, r.t.Pod, r.t.Container.Container, utils.RandomString(20))))
+	if err != nil {
+		return err
+	}
+	r.f = file
+	r.filepath = file.Name()
+	r.startTime = time.Now()
+	return nil
+}
+
+func (r *Recorder) Write(data string) error {
+	r.Lock()
+	defer r.Unlock()
+	r.once.Do(func() {
+		r.f.Write([]byte(fmt.Sprintf(startLine, r.startTime.Unix(), r.shell)))
+	})
+	textQuoted := strconv.QuoteToASCII(data)
+	data = textQuoted[1 : len(textQuoted)-1]
+	_, err := r.f.WriteString(fmt.Sprintf(writeLine, float64(time.Now().Sub(r.startTime).Microseconds())/1000000, data))
+	return err
+}
+
+func (r *Recorder) Close() error {
+	r.Lock()
+	defer r.Unlock()
+	var err error
+	if r.f == nil {
+		return nil
+	}
+	stat, _ := r.f.Stat()
+	var emptyFile bool = true
+	if stat.Size() > 0 {
+		file := &models.File{
+			Path:      r.filepath,
+			Size:      uint64(stat.Size()),
+			Username:  r.user.Name,
+			ClusterID: int(r.container.ClusterID),
+			Namespace: r.container.Namespace,
+			Pod:       r.container.Pod,
+			Container: r.container.Container,
+		}
+		app.DB().Create(file)
+		var emodal = models.Event{
+			Action:   uint8(event.ActionType_Shell),
+			Username: r.user.Name,
+			Message:  fmt.Sprintf("user exec container: '%s' namespace: '%s', pod： '%s', cluster_id: '%d'", r.container.Container, r.container.Namespace, r.container.Pod, r.container.ClusterID),
+			FileID:   &file.ID,
+		}
+		app.DB().Create(&emodal)
+		emptyFile = false
+	}
+	err = r.f.Close()
+	if emptyFile {
+		app.Uploader().Delete(r.f.Name())
+	}
+	return err
+}
+
 type MyPtyHandler struct {
 	Container
+
+	recorder *Recorder
+
 	id       string
 	conn     *WsConn
 	sizeChan chan remotecommand.TerminalSize
@@ -74,14 +159,6 @@ type MyPtyHandler struct {
 
 	closeLock sync.Mutex
 	isClosed  bool
-
-	cacheLock sync.RWMutex
-	cache     []byte
-
-	eMu     sync.Mutex
-	eventID int
-
-	first int32
 }
 
 func (t *MyPtyHandler) Close(reason string) {
@@ -125,43 +202,13 @@ func (t *MyPtyHandler) Close(reason string) {
 		Data:      END_OF_TRANSMISSION,
 		SessionId: t.id,
 	}
+	t.recorder.Close()
 	close(t.shellCh)
 	close(t.sizeChan)
 	close(t.doneChan)
-	t.cacheLock.RLock()
-	if len(t.cache) > 0 {
-		xlog.Infof("[Websocket]: user %v, send: '%v', namespace: %v, pod: %v.", t.conn.GetUser().Name, string(t.cache), t.Namespace, t.Pod)
-	}
-	t.cacheLock.RUnlock()
 }
-
-func (t *MyPtyHandler) SetEventID(ID int) {
-	t.eMu.Lock()
-	defer t.eMu.Unlock()
-	t.eventID = ID
-}
-
-func (t *MyPtyHandler) GetEventID() int {
-	t.eMu.Lock()
-	defer t.eMu.Unlock()
-	return t.eventID
-}
-
-// 当复制黏贴时会出现特殊字符串, 要替换掉
-// [200~mime.types[201~
-var pasteRegexp = regexp.MustCompile(`\[200~(.*?)\[201~`)
 
 func (t *MyPtyHandler) Read(p []byte) (n int, err error) {
-	if goatomic.CompareAndSwapInt32(&t.first, 0, 1) {
-		xlog.Warning("swapped!!!")
-		var emodal = models.Event{
-			Action:   uint8(event.ActionType_Shell),
-			Username: t.conn.GetUser().Name,
-			Message:  fmt.Sprintf("user exec container: '%s' namespace: '%s', pod： '%s', cluster_id: '%d'", t.Container.Container, t.Container.Namespace, t.Container.Pod, t.Container.ClusterID),
-		}
-		app.DB().Create(&emodal)
-		t.SetEventID(emodal.ID)
-	}
 	select {
 	case <-t.doneChan:
 		return copy(p, END_OF_TRANSMISSION), fmt.Errorf("[Websocket]: %v doneChan closed", t.id)
@@ -173,37 +220,6 @@ func (t *MyPtyHandler) Read(p []byte) (n int, err error) {
 	}
 	switch msg.Op {
 	case OpStdin:
-		t.cacheLock.Lock()
-		textQuoted := strconv.QuoteToASCII(msg.Data)
-		textUnquoted := textQuoted[1 : len(textQuoted)-1]
-		xlog.Debugf("input: '%v'", textUnquoted)
-		switch {
-		case pasteRegexp.MatchString(msg.Data):
-			submatch := pasteRegexp.FindStringSubmatch(msg.Data)
-			if len(submatch) == 2 {
-				t.cache = append(t.cache, []byte(submatch[1])...)
-			}
-		case msg.Data == ETX:
-			t.cache = append(t.cache, []byte("[ctrl+C]")...)
-			fallthrough
-		case msg.Data == "\r":
-			fallthrough
-		case msg.Data == "\n":
-			xlog.Infof("[Websocket]: user %v, send: '%v', namespace: %v, pod: %v.", t.conn.GetUser().Name, string(t.cache), t.Namespace, t.Pod)
-			app.DB().Create(&models.Command{
-				ClusterID: int(t.Container.ClusterID),
-				Namespace: t.Container.Namespace,
-				Pod:       t.Container.Pod,
-				Container: t.Container.Container,
-				Command:   string(t.cache),
-				EventID:   t.GetEventID(),
-			})
-			t.cache = make([]byte, 0, 20)
-		default:
-			t.cache = append(t.cache, []byte(filterSpecialCharacters(msg.Data))...)
-		}
-
-		t.cacheLock.Unlock()
 		return copy(p, msg.Data), nil
 	case OpResize:
 		xlog.Debugf("[Websocket]: resize cols: %v  rows: %v", msg.Cols, msg.Rows)
@@ -212,32 +228,6 @@ func (t *MyPtyHandler) Read(p []byte) (n int, err error) {
 	default:
 		return copy(p, END_OF_TRANSMISSION), fmt.Errorf("unknown message type '%s'", msg.Op)
 	}
-}
-
-const (
-	ShellUp     = "[A"
-	ShellDown   = "[B"
-	ShellLeft   = "[D"
-	ShellRight  = "[C"
-	ShellDelete = "\u007f"
-)
-
-var shellMap = map[string]string{
-	ShellDelete:         "⌫",
-	ESC:                 "",
-	TAB:                 "[TAB]",
-	END_OF_TRANSMISSION: "[ctrl+D]",
-	ShellUp:             Up,
-	ShellDown:           Down,
-	ShellLeft:           Left,
-	ShellRight:          Right,
-}
-
-func filterSpecialCharacters(s string) string {
-	for old, newS := range shellMap {
-		s = strings.ReplaceAll(s, old, newS)
-	}
-	return s
 }
 
 func (t *MyPtyHandler) Write(p []byte) (n int, err error) {
@@ -253,6 +243,7 @@ func (t *MyPtyHandler) Write(p []byte) (n int, err error) {
 	}
 	t.closeLock.Unlock()
 	if send {
+		t.recorder.Write(string(p))
 		NewMessageSender(t.conn, t.id, WsHandleExecShellMsg).SendProtoMsg(&websocket_pb.WsHandleShellResponse{
 			Metadata: &websocket_pb.Metadata{
 				Id:     t.conn.id,
@@ -385,7 +376,7 @@ func (sm *SessionMap) Close(sessionId string, status uint32, reason string) {
 
 // startProcess is called by handleAttach
 // Executed cmd in the Container specified in request and connects it up with the ptyHandler (a session)
-func startProcess(k8sClient kubernetes.Interface, cfg *rest.Config, container *Container, cmd []string, ptyHandler PtyHandler) error {
+func startProcess(k8sClient kubernetes.Interface, cfg *rest.Config, container *Container, cmd []string, ptyHandler *MyPtyHandler) error {
 	namespace := container.Namespace
 	podName := container.Pod
 	containerName := container.Container
@@ -408,6 +399,9 @@ func startProcess(k8sClient kubernetes.Interface, cfg *rest.Config, container *C
 	exec, err := remotecommand.NewSPDYExecutor(cfg, "POST", req.URL())
 	if err != nil {
 		return err
+	}
+	if err := ptyHandler.recorder.Start(); err != nil {
+		xlog.Errorf("[recorder.Start]: %v", err)
 	}
 
 	return exec.Stream(remotecommand.StreamOptions{
@@ -471,12 +465,14 @@ func WaitForTerminal(conn *WsConn, k8sClient kubernetes.Interface, cfg *rest.Con
 	session, _ := conn.terminalSessions.Get(sessionId)
 	if isValidShell(validShells, shell) {
 		cmd := []string{shell}
+		session.recorder.shell = shell
 		err = startProcess(k8sClient, cfg, container, cmd, session)
 	} else {
 		// No shell given or it was not valid: try some shells until one succeeds or all fail
 		// FIXME: if the first shell fails then the first keyboard event is lost
 		for _, testShell := range validShells {
 			cmd := []string{testShell}
+			session.recorder.shell = testShell
 			if err = startProcess(k8sClient, cfg, container, cmd, session); err == nil {
 				break
 			}
@@ -519,15 +515,20 @@ func HandleExecShell(input *websocket_pb.WsHandleExecShellInput, conn *WsConn) (
 		Cluster:   &cu,
 	}
 
-	conn.terminalSessions.Set(sessionID, &MyPtyHandler{
+	pty := &MyPtyHandler{
 		Container: c,
 		id:        sessionID,
 		conn:      conn,
 		sizeChan:  make(chan remotecommand.TerminalSize, 1),
 		doneChan:  make(chan struct{}, 1),
 		shellCh:   make(chan *websocket_pb.TerminalMessage, 100),
-		cache:     make([]byte, 0, 20),
-	})
+		recorder: &Recorder{
+			user:      conn.GetUser(),
+			container: c,
+		},
+	}
+	pty.recorder.t = pty
+	conn.terminalSessions.Set(sessionID, pty)
 
 	go WaitForTerminal(conn, k8sClient.Client(), k8sClient.RestConfig(), &c, "", sessionID)
 

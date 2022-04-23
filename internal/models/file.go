@@ -16,6 +16,7 @@ type File struct {
 	Size     uint64 `json:"size" gorm:"not null;default:0;"`
 	Username string `json:"username" gorm:"size:255;not null;default:'';"`
 
+	ClusterID     int    `json:"cluster_id" gorm:"not null;default:0;"`
 	Namespace     string `json:"namespace" gorm:"size:100;not null;default:'';"`
 	Pod           string `json:"pod" gorm:"size:100;not null;default:'';"`
 	Container     string `json:"container" gorm:"size:100;not null;default:'';"`

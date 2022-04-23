@@ -70,14 +70,6 @@
       ],
       "default": "Unknown"
     },
-    "Command": {
-      "type": "object",
-      "properties": {
-        "command": {
-          "type": "string"
-        }
-      }
-    },
     "EventListItem": {
       "type": "object",
       "properties": {
@@ -106,12 +98,6 @@
         "file_id": {
           "type": "string",
           "format": "int64"
-        },
-        "commands": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Command"
-          }
         }
       }
     },

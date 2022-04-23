@@ -2,6 +2,7 @@ package contracts
 
 import (
 	"io"
+	"os"
 )
 
 type FileInfo interface {
@@ -18,6 +19,7 @@ type Uploader interface {
 	MkDir(path string, recursive bool) error
 	AbsolutePath(path string) string
 	Put(path string, content io.Reader) (FileInfo, error)
+	NewFile(path string) (*os.File, error)
 	AllDirectoryFiles(dir string) ([]FileInfo, error)
 	RemoveEmptyDir(dir string) error
 }

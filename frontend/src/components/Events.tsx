@@ -22,6 +22,8 @@ import {
 } from "../api/file";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { useTranslation } from "react-i18next";
+import AsciinemaPlayer from "./Player";
+import { getToken } from "../utils/token";
 
 const defaultPageSize = 15;
 
@@ -149,8 +151,8 @@ const EventList: React.FC = () => {
     setIsModalVisible(false);
   }, []);
 
-  const [isCommandsModalVisible, setIsCommandsModalVisible] = useState(false);
-  const [commands, setCommands] = useState<pb.Command[]>([])
+  const [shellModalVisible, setShellModalVisible] = useState(false);
+  const [fileID, setFileID] = useState(0);
 
   const [clearLoading, setClearLoading] = useState(false);
   const clearDisk = useCallback(() => {
@@ -255,19 +257,19 @@ const EventList: React.FC = () => {
                   }
                   description={`${item.message}`}
                 />
-                {item.commands.length > 0 && (
+                {item.file_id > 0 && item.action === pb.ActionType.Shell && (
                   <Button
                     type="dashed"
                     style={{ marginRight: 5 }}
                     onClick={() => {
-                      setIsCommandsModalVisible(true);
-                      setCommands(item.commands);
+                      setShellModalVisible(true);
+                      setFileID(item.file_id);
                     }}
                   >
-                    {t("show commands")}
+                    {t("viewing Operation Records")}
                   </Button>
                 )}
-                {item.file_id > 0 && (
+                {item.file_id > 0 && item.action === pb.ActionType.Upload && (
                   <>
                     <Button
                       type="dashed"
@@ -346,14 +348,34 @@ const EventList: React.FC = () => {
         </ErrorBoundary>
       </Modal>
       <Modal
-        title={t("commands")}
-        visible={isCommandsModalVisible}
+        width={"80%"}
+        title={t("Operation Records")}
+        destroyOnClose
+        visible={shellModalVisible}
         footer={null}
-        onCancel={() => setIsCommandsModalVisible(false)}
+        onCancel={() => {
+          setShellModalVisible(false)
+          setFileID(0);
+        }}
       >
-        <ol style={{maxHeight: 500, overflowY: "auto"}}>
-          {commands.map((v) => <li className="events__command">{v.command}</li>)}
-        </ol>
+        <div style={{ width: "100%" }}>
+          {fileID > 0 && (
+            <AsciinemaPlayer
+              speed={2}
+              src={{
+                url: `${process.env.REACT_APP_BASE_URL}/api/raw_file/${fileID}`,
+                fetchOpts: {
+                  method: "GET",
+                  headers: { Authorization: getToken() },
+                },
+              }}
+              rows={50}
+              idleTimeLimit={3}
+              preload={true}
+              theme="monokai"
+            />
+          )}
+        </div>
       </Modal>
     </Card>
   );

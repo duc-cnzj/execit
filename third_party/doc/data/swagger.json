@@ -1361,14 +1361,6 @@
         }
       }
     },
-    "Command": {
-      "type": "object",
-      "properties": {
-        "command": {
-          "type": "string"
-        }
-      }
-    },
     "ContainerCopyToPodRequest": {
       "type": "object",
       "properties": {
@@ -1552,12 +1544,6 @@
       "properties": {
         "action": {
           "$ref": "#/definitions/ActionType"
-        },
-        "commands": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Command"
-          }
         },
         "event_at": {
           "type": "string"
