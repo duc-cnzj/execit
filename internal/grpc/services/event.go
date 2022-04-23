@@ -56,6 +56,7 @@ func (e *EventSvc) List(ctx context.Context, request *event.EventListRequest) (*
 			New:      m.New,
 			FileId:   fid,
 			EventAt:  humanize.Time(m.CreatedAt),
+			Duration: m.Duration,
 		})
 	}
 

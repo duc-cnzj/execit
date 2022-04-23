@@ -268,7 +268,7 @@ const EventList: React.FC = () => {
                         setFileID(item.file_id);
                       }}
                     >
-                      {t("viewing Operation Records")}
+                      {t("viewing Operation Records")}{item.duration &&<span style={{fontSize: "10px", marginLeft: 5}}>({t("duration")}: {item.duration})</span>}
                     </Button>
                     <DeleteFile
                       onDelete={() => {

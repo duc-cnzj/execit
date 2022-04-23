@@ -203,6 +203,10 @@ const languages: Lang = {
     en: "show changes",
     zh: "显示变更",
   },
+  duration: {
+    en: "duration",
+    zh: "时长",
+  },
   "Are you sure you want to delete this file?": {
     en: "Are you sure you want to delete this file?",
     zh: "确定要删除此文件吗？",

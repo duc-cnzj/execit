@@ -9950,6 +9950,7 @@ export const EventListItem = $root.EventListItem = (() => {
      * @property {string|null} ["new"] EventListItem new
      * @property {string|null} [event_at] EventListItem event_at
      * @property {number|null} [file_id] EventListItem file_id
+     * @property {string|null} [duration] EventListItem duration
      */
 
     /**
@@ -10032,6 +10033,14 @@ export const EventListItem = $root.EventListItem = (() => {
     EventListItem.prototype.file_id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
 
     /**
+     * EventListItem duration.
+     * @member {string} duration
+     * @memberof EventListItem
+     * @instance
+     */
+    EventListItem.prototype.duration = "";
+
+    /**
      * Encodes the specified EventListItem message. Does not implicitly {@link EventListItem.verify|verify} messages.
      * @function encode
      * @memberof EventListItem
@@ -10059,6 +10068,8 @@ export const EventListItem = $root.EventListItem = (() => {
             writer.uint32(/* id 7, wireType 2 =*/58).string(message.event_at);
         if (message.file_id != null && Object.hasOwnProperty.call(message, "file_id"))
             writer.uint32(/* id 8, wireType 0 =*/64).int64(message.file_id);
+        if (message.duration != null && Object.hasOwnProperty.call(message, "duration"))
+            writer.uint32(/* id 9, wireType 2 =*/74).string(message.duration);
         return writer;
     };
 
@@ -10103,6 +10114,9 @@ export const EventListItem = $root.EventListItem = (() => {
                 break;
             case 8:
                 message.file_id = reader.int64();
+                break;
+            case 9:
+                message.duration = reader.string();
                 break;
             default:
                 reader.skipType(tag & 7);
