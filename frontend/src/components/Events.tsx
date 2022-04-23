@@ -328,23 +328,26 @@ const EventList: React.FC = () => {
         title={config.title}
         visible={isModalVisible}
         okText={"ok"}
+        footer={null}
         cancelText={"cancel"}
         onOk={handleOk}
         onCancel={handleCancel}
       >
         <ErrorBoundary>
-          <ReactDiffViewer
-            disableWordDiff
-            styles={{
-              line: { fontSize: 12, wordBreak: "break-word" },
-            }}
-            useDarkTheme
-            showDiffOnly
-            splitView={config.old !== ""}
-            renderContent={highlightSyntax}
-            oldValue={config.old}
-            newValue={config.new}
-          />
+          <div style={{ maxHeight: 550, overflowY: "auto" }}>
+            <ReactDiffViewer
+              disableWordDiff
+              styles={{
+                line: { fontSize: 12, wordBreak: "break-word" },
+              }}
+              useDarkTheme
+              showDiffOnly
+              splitView={config.old !== ""}
+              renderContent={highlightSyntax}
+              oldValue={config.old}
+              newValue={config.new}
+            />
+          </div>
         </ErrorBoundary>
       </Modal>
       <Modal
@@ -354,14 +357,14 @@ const EventList: React.FC = () => {
         visible={shellModalVisible}
         footer={null}
         onCancel={() => {
-          setShellModalVisible(false)
+          setShellModalVisible(false);
           setFileID(0);
         }}
       >
         <div style={{ width: "100%" }}>
           {fileID > 0 && (
             <AsciinemaPlayer
-              speed={2}
+              speed={1.5}
               src={{
                 url: `${process.env.REACT_APP_BASE_URL}/api/raw_file/${fileID}`,
                 fetchOpts: {
@@ -369,7 +372,7 @@ const EventList: React.FC = () => {
                   headers: { Authorization: getToken() },
                 },
               }}
-              rows={50}
+              rows={40}
               idleTimeLimit={3}
               preload={true}
               theme="monokai"

@@ -147,10 +147,11 @@ func (a *apiGateway) Shutdown(ctx context.Context) error {
 }
 
 // https://xtermjs.org/docs/api/vtfeatures/#backspace
-var ansiRe = regexp.MustCompile(`\\x1b[[0-9;]*[a-zA-Z@]|\\x[01][0-9a-zA-Z]|\\x7F|\\x[89][0-9a-zA-Z]|\\a|\\0|\\e|\\v`)
+var ansiRe = regexp.MustCompile(`\\a|\\0|\\e|\\v|\\x`)
+var x = regexp.MustCompile(`\\x([0189][0-9a-zA-Z])`)
 
 func Strip(str string) string {
-	return ansiRe.ReplaceAllString(str, "")
+	return ansiRe.ReplaceAllString(x.ReplaceAllString(str, "\\u00${1}"), "")
 }
 
 func handFile(gmux *runtime.ServeMux) {

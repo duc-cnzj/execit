@@ -64,7 +64,7 @@ type PtyHandler interface {
 }
 
 type Recorder struct {
-	sync.Mutex
+	sync.RWMutex
 	filepath  string
 	container Container
 	f         *os.File
@@ -81,39 +81,34 @@ var (
 	writeLine = "[%.6f, \"o\", \"%s\"]\n"
 )
 
-func (r *Recorder) Start() error {
-	r.Lock()
-	defer r.Unlock()
-	file, err := app.Uploader().Disk("shell").NewFile(fmt.Sprintf("%s/%s/%s",
-		r.t.conn.GetUser().Name,
-		time.Now().Format("2006-01-02"),
-		fmt.Sprintf("recorder-%d-%s-%s-%s-%s.cast", r.t.ClusterID, r.t.Namespace, r.t.Pod, r.t.Container.Container, utils.RandomString(20))))
-	if err != nil {
-		return err
-	}
-	r.f = file
-	r.filepath = file.Name()
-	r.startTime = time.Now()
-	return nil
-}
-
-func (r *Recorder) Write(data string) error {
+func (r *Recorder) Write(data string) (err error) {
 	r.Lock()
 	defer r.Unlock()
 	r.once.Do(func() {
+		var file *os.File
+		file, err = app.Uploader().Disk("shell").NewFile(fmt.Sprintf("%s/%s/%s",
+			r.t.conn.GetUser().Name,
+			time.Now().Format("2006-01-02"),
+			fmt.Sprintf("recorder-%d-%s-%s-%s-%s.cast", r.t.ClusterID, r.t.Namespace, r.t.Pod, r.t.Container.Container, utils.RandomString(20))))
+		if err != nil {
+			return
+		}
+		r.f = file
+		r.filepath = file.Name()
+		r.startTime = time.Now()
 		r.f.Write([]byte(fmt.Sprintf(startLine, r.startTime.Unix(), r.shell)))
 	})
 	textQuoted := strconv.QuoteToASCII(data)
 	data = textQuoted[1 : len(textQuoted)-1]
-	_, err := r.f.WriteString(fmt.Sprintf(writeLine, float64(time.Now().Sub(r.startTime).Microseconds())/1000000, data))
+	_, err = r.f.WriteString(fmt.Sprintf(writeLine, float64(time.Now().Sub(r.startTime).Microseconds())/1000000, data))
 	return err
 }
 
 func (r *Recorder) Close() error {
-	r.Lock()
-	defer r.Unlock()
+	r.RLock()
+	defer r.RUnlock()
 	var err error
-	if r.f == nil {
+	if r.f == nil || r.startTime.IsZero() {
 		return nil
 	}
 	stat, _ := r.f.Stat()
@@ -376,7 +371,7 @@ func (sm *SessionMap) Close(sessionId string, status uint32, reason string) {
 
 // startProcess is called by handleAttach
 // Executed cmd in the Container specified in request and connects it up with the ptyHandler (a session)
-func startProcess(k8sClient kubernetes.Interface, cfg *rest.Config, container *Container, cmd []string, ptyHandler *MyPtyHandler) error {
+func startProcess(k8sClient kubernetes.Interface, cfg *rest.Config, container *Container, cmd []string, ptyHandler PtyHandler) error {
 	namespace := container.Namespace
 	podName := container.Pod
 	containerName := container.Container
@@ -399,9 +394,6 @@ func startProcess(k8sClient kubernetes.Interface, cfg *rest.Config, container *C
 	exec, err := remotecommand.NewSPDYExecutor(cfg, "POST", req.URL())
 	if err != nil {
 		return err
-	}
-	if err := ptyHandler.recorder.Start(); err != nil {
-		xlog.Errorf("[recorder.Start]: %v", err)
 	}
 
 	return exec.Stream(remotecommand.StreamOptions{
