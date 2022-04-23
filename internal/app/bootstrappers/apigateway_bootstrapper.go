@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -145,10 +146,44 @@ func (a *apiGateway) Shutdown(ctx context.Context) error {
 	return a.server.Shutdown(ctx)
 }
 
+// https://xtermjs.org/docs/api/vtfeatures/#backspace
+var ansiRe = regexp.MustCompile(`\\a|\\0|\\e|\\v|\\x`)
+var x = regexp.MustCompile(`\\x([0189][0-9a-zA-Z])?`)
+
+func Strip(str string) string {
+	return ansiRe.ReplaceAllString(x.ReplaceAllString(str, "\\u00${1}"), "")
+}
+
 func handFile(gmux *runtime.ServeMux) {
 	gmux.HandlePath("POST", "/api/files", func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 		if req, ok := authenticated(r); ok {
 			handleBinaryFileUpload(w, req)
+			return
+		}
+		http.Error(w, "Unauthenticated", http.StatusUnauthorized)
+	})
+	gmux.HandlePath("GET", "/api/raw_file/{id}", func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+		idstr, ok := pathParams["id"]
+		if !ok {
+			http.Error(w, "missing id", http.StatusBadRequest)
+			return
+		}
+		if _, ok := authenticated(r); ok {
+			var f models.File
+			if err := app.DB().First(&f, idstr).Error; err != nil {
+				if errors.Is(err, gorm.ErrRecordNotFound) {
+					http.Error(w, "not found", http.StatusNotFound)
+					return
+				}
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			file, err := os.ReadFile(f.Path)
+			if err == nil {
+				w.Write([]byte(Strip(string(file))))
+				return
+			}
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		http.Error(w, "Unauthenticated", http.StatusUnauthorized)

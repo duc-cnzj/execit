@@ -9,6 +9,7 @@ import {
   Tag,
   Button,
   Modal,
+  Popconfirm,
   message,
 } from "antd";
 import pb from "../api/compiled";
@@ -22,6 +23,8 @@ import {
 } from "../api/file";
 import ErrorBoundary from "../components/ErrorBoundary";
 import { useTranslation } from "react-i18next";
+import AsciinemaPlayer from "./Player";
+import { getToken } from "../utils/token";
 
 const defaultPageSize = 15;
 
@@ -149,8 +152,8 @@ const EventList: React.FC = () => {
     setIsModalVisible(false);
   }, []);
 
-  const [isCommandsModalVisible, setIsCommandsModalVisible] = useState(false);
-  const [commands, setCommands] = useState<pb.Command[]>([])
+  const [shellModalVisible, setShellModalVisible] = useState(false);
+  const [fileID, setFileID] = useState(0);
 
   const [clearLoading, setClearLoading] = useState(false);
   const clearDisk = useCallback(() => {
@@ -255,34 +258,20 @@ const EventList: React.FC = () => {
                   }
                   description={`${item.message}`}
                 />
-                {item.commands.length > 0 && (
-                  <Button
-                    type="dashed"
-                    style={{ marginRight: 5 }}
-                    onClick={() => {
-                      setIsCommandsModalVisible(true);
-                      setCommands(item.commands);
-                    }}
-                  >
-                    {t("show commands")}
-                  </Button>
-                )}
-                {item.file_id > 0 && (
+                {item.file_id > 0 && item.action === pb.ActionType.Shell && (
                   <>
                     <Button
                       type="dashed"
                       style={{ marginRight: 5 }}
                       onClick={() => {
-                        downloadFile(item.file_id);
+                        setShellModalVisible(true);
+                        setFileID(item.file_id);
                       }}
                     >
-                      {t("download file")}
+                      {t("viewing Operation Records")}{item.duration &&<span style={{fontSize: "10px", marginLeft: 5}}>({t("duration")}: {item.duration})</span>}
                     </Button>
-                    <Button
-                      type="dashed"
-                      style={{ marginRight: 5 }}
-                      danger
-                      onClick={() => {
+                    <DeleteFile
+                      onDelete={() => {
                         deleteFile({ id: item.file_id })
                           .then((res) => {
                             setData(
@@ -294,9 +283,34 @@ const EventList: React.FC = () => {
                           })
                           .catch((e) => message.error(e.response.data.message));
                       }}
+                    />
+                  </>
+                )}
+                {item.file_id > 0 && item.action === pb.ActionType.Upload && (
+                  <>
+                    <Button
+                      type="dashed"
+                      style={{ marginRight: 5 }}
+                      onClick={() => {
+                        downloadFile(item.file_id);
+                      }}
                     >
-                      {t("delete file")}
+                      {t("download file")}
                     </Button>
+                    <DeleteFile
+                      onDelete={() => {
+                        deleteFile({ id: item.file_id })
+                          .then((res) => {
+                            setData(
+                              data.map((v) =>
+                                v.id === item.id ? { ...v, file_id: 0 } : v
+                              )
+                            );
+                            message.success(t("successfully deleted"));
+                          })
+                          .catch((e) => message.error(e.response.data.message));
+                      }}
+                    />
                   </>
                 )}
                 {!!(item.old || item.new) ? (
@@ -326,36 +340,75 @@ const EventList: React.FC = () => {
         title={config.title}
         visible={isModalVisible}
         okText={"ok"}
+        footer={null}
         cancelText={"cancel"}
         onOk={handleOk}
         onCancel={handleCancel}
       >
         <ErrorBoundary>
-          <ReactDiffViewer
-            disableWordDiff
-            styles={{
-              line: { fontSize: 12, wordBreak: "break-word" },
-            }}
-            useDarkTheme
-            showDiffOnly
-            splitView={config.old !== ""}
-            renderContent={highlightSyntax}
-            oldValue={config.old}
-            newValue={config.new}
-          />
+          <div style={{ maxHeight: 550, overflowY: "auto" }}>
+            <ReactDiffViewer
+              disableWordDiff
+              styles={{
+                line: { fontSize: 12, wordBreak: "break-word" },
+              }}
+              useDarkTheme
+              showDiffOnly
+              splitView={config.old !== ""}
+              renderContent={highlightSyntax}
+              oldValue={config.old}
+              newValue={config.new}
+            />
+          </div>
         </ErrorBoundary>
       </Modal>
       <Modal
-        title={t("commands")}
-        visible={isCommandsModalVisible}
+        width={"80%"}
+        title={t("Operation Records")}
+        destroyOnClose
+        visible={shellModalVisible}
         footer={null}
-        onCancel={() => setIsCommandsModalVisible(false)}
+        onCancel={() => {
+          setShellModalVisible(false);
+          setFileID(0);
+        }}
       >
-        <ol style={{maxHeight: 500, overflowY: "auto"}}>
-          {commands.map((v) => <li className="events__command">{v.command}</li>)}
-        </ol>
+        <div style={{ width: "100%" }}>
+          {fileID > 0 && (
+            <AsciinemaPlayer
+              speed={1.5}
+              src={{
+                url: `${process.env.REACT_APP_BASE_URL}/api/raw_file/${fileID}`,
+                fetchOpts: {
+                  method: "GET",
+                  headers: { Authorization: getToken() },
+                },
+              }}
+              rows={40}
+              idleTimeLimit={3}
+              preload={true}
+              theme="monokai"
+            />
+          )}
+        </div>
       </Modal>
     </Card>
+  );
+};
+
+const DeleteFile: React.FC<{ onDelete: () => void }> = ({ onDelete }) => {
+  const { t } = useTranslation();
+  return (
+    <Popconfirm
+      title={t("Are you sure you want to delete this file?")}
+      onConfirm={onDelete}
+      okText="Yes"
+      cancelText="No"
+    >
+      <Button type="dashed" style={{ marginRight: 5 }} danger>
+        {t("delete file")}
+      </Button>
+    </Popconfirm>
   );
 };
 

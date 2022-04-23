@@ -165,13 +165,11 @@ const TabShell: React.FC<{
         bellStyle: "sound",
         cursorBlink: true,
         cols: 106,
+        rows: 26,
       });
       myterm.loadAddon(fitAddon);
       myterm.onResize(onTerminalResize(id, ws));
       myterm.onData(onTerminalSendString(id, ws));
-      myterm.onKey((e: { key: string; domEvent: KeyboardEvent }) => {
-        console.log(e.key);
-      });
       ref.current !== null && myterm.open(ref.current);
       debouncedFit_();
       myterm.focus();

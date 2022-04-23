@@ -21,7 +21,6 @@ var Models = []any{
 	&models.Cluster{},
 	&models.Event{},
 	&models.File{},
-	&models.Command{},
 }
 
 type DBBootstrapper struct{}

@@ -123,13 +123,13 @@ const languages: Lang = {
     en: "total",
     zh: "总数",
   },
-  commands: {
-    en: "commands",
-    zh: "命令",
+  "viewing Operation Records": {
+    en: "viewing Operation Records",
+    zh: "查看操作记录",
   },
-  "show commands": {
-    en: "show commands",
-    zh: "显示命令",
+  "Operation Records": {
+    en: "Operation Records",
+    zh: "操作记录",
   },
   "wrong username or password": {
     en: "wrong username or password",
@@ -202,6 +202,14 @@ const languages: Lang = {
   "show changes": {
     en: "show changes",
     zh: "显示变更",
+  },
+  duration: {
+    en: "duration",
+    zh: "时长",
+  },
+  "Are you sure you want to delete this file?": {
+    en: "Are you sure you want to delete this file?",
+    zh: "确定要删除此文件吗？",
   },
   Login: {
     en: "Login",
