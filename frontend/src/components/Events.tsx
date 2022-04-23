@@ -258,16 +258,37 @@ const EventList: React.FC = () => {
                   description={`${item.message}`}
                 />
                 {item.file_id > 0 && item.action === pb.ActionType.Shell && (
-                  <Button
-                    type="dashed"
-                    style={{ marginRight: 5 }}
-                    onClick={() => {
-                      setShellModalVisible(true);
-                      setFileID(item.file_id);
-                    }}
-                  >
-                    {t("viewing Operation Records")}
-                  </Button>
+                  <>
+                    <Button
+                      type="dashed"
+                      style={{ marginRight: 5 }}
+                      onClick={() => {
+                        setShellModalVisible(true);
+                        setFileID(item.file_id);
+                      }}
+                    >
+                      {t("viewing Operation Records")}
+                    </Button>
+                    <Button
+                      type="dashed"
+                      style={{ marginRight: 5 }}
+                      danger
+                      onClick={() => {
+                        deleteFile({ id: item.file_id })
+                          .then((res) => {
+                            setData(
+                              data.map((v) =>
+                                v.id === item.id ? { ...v, file_id: 0 } : v
+                              )
+                            );
+                            message.success(t("successfully deleted"));
+                          })
+                          .catch((e) => message.error(e.response.data.message));
+                      }}
+                    >
+                      {t("delete file")}
+                    </Button>
+                  </>
                 )}
                 {item.file_id > 0 && item.action === pb.ActionType.Upload && (
                   <>
