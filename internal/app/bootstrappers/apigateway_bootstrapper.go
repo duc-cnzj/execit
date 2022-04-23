@@ -148,7 +148,7 @@ func (a *apiGateway) Shutdown(ctx context.Context) error {
 
 // https://xtermjs.org/docs/api/vtfeatures/#backspace
 var ansiRe = regexp.MustCompile(`\\a|\\0|\\e|\\v|\\x`)
-var x = regexp.MustCompile(`\\x([0189][0-9a-zA-Z])`)
+var x = regexp.MustCompile(`\\x([0189][0-9a-zA-Z])?`)
 
 func Strip(str string) string {
 	return ansiRe.ReplaceAllString(x.ReplaceAllString(str, "\\u00${1}"), "")

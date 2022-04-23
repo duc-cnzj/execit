@@ -9,6 +9,7 @@ import {
   Tag,
   Button,
   Modal,
+  Popconfirm,
   message,
 } from "antd";
 import pb from "../api/compiled";
@@ -269,11 +270,8 @@ const EventList: React.FC = () => {
                     >
                       {t("viewing Operation Records")}
                     </Button>
-                    <Button
-                      type="dashed"
-                      style={{ marginRight: 5 }}
-                      danger
-                      onClick={() => {
+                    <DeleteFile
+                      onDelete={() => {
                         deleteFile({ id: item.file_id })
                           .then((res) => {
                             setData(
@@ -285,9 +283,7 @@ const EventList: React.FC = () => {
                           })
                           .catch((e) => message.error(e.response.data.message));
                       }}
-                    >
-                      {t("delete file")}
-                    </Button>
+                    />
                   </>
                 )}
                 {item.file_id > 0 && item.action === pb.ActionType.Upload && (
@@ -301,11 +297,8 @@ const EventList: React.FC = () => {
                     >
                       {t("download file")}
                     </Button>
-                    <Button
-                      type="dashed"
-                      style={{ marginRight: 5 }}
-                      danger
-                      onClick={() => {
+                    <DeleteFile
+                      onDelete={() => {
                         deleteFile({ id: item.file_id })
                           .then((res) => {
                             setData(
@@ -317,9 +310,7 @@ const EventList: React.FC = () => {
                           })
                           .catch((e) => message.error(e.response.data.message));
                       }}
-                    >
-                      {t("delete file")}
-                    </Button>
+                    />
                   </>
                 )}
                 {!!(item.old || item.new) ? (
@@ -402,6 +393,22 @@ const EventList: React.FC = () => {
         </div>
       </Modal>
     </Card>
+  );
+};
+
+const DeleteFile: React.FC<{ onDelete: () => void }> = ({ onDelete }) => {
+  const { t } = useTranslation();
+  return (
+    <Popconfirm
+      title={t("Are you sure you want to delete this file?")}
+      onConfirm={onDelete}
+      okText="Yes"
+      cancelText="No"
+    >
+      <Button type="dashed" style={{ marginRight: 5 }} danger>
+        {t("delete file")}
+      </Button>
+    </Popconfirm>
   );
 };
 

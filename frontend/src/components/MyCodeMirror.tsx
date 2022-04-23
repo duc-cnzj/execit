@@ -6,29 +6,13 @@ import {
 } from "react-codemirror2";
 
 import "codemirror/mode/yaml/yaml";
-// import "codemirror/mode/go/go";
-// import "codemirror/mode/css/css";
-// import "codemirror/mode/javascript/javascript";
-// import "codemirror/mode/php/php";
-// import "codemirror/mode/python/python";
-// import "codemirror/mode/properties/properties";
-// import "codemirror/mode/textile/textile";
-
 import "codemirror/addon/comment/comment";
 
 import "codemirror/addon/hint/show-hint";
 import "codemirror/addon/hint/anyword-hint";
-// import "codemirror/addon/hint/javascript-hint";
-// import "codemirror/addon/hint/sql-hint";
-
-// import "codemirror/addon/lint/javascript-lint";
 import "codemirror/addon/lint/yaml-lint";
 import "codemirror/addon/lint/lint.js";
 import jsyaml from "js-yaml";
-
-// import { JSHINT } from "jshint";
-
-// (window as any).JSHINT = JSHINT;
 (window as any).jsyaml = jsyaml;
 
 export const getMode = (mode: string): string => {
