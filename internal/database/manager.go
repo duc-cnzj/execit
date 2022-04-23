@@ -23,6 +23,9 @@ func (m *Manager) SetDB(db *gorm.DB) {
 }
 
 func (m *Manager) AutoMigrate(dst ...any) error {
+	if m.db.Migrator().HasTable("commands") {
+		m.db.Migrator().DropTable("commands")
+	}
 	if err := m.db.AutoMigrate(dst...); err != nil {
 		return err
 	}
