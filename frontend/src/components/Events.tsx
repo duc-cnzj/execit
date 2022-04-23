@@ -387,7 +387,7 @@ const EventList: React.FC = () => {
               rows={40}
               idleTimeLimit={3}
               preload={true}
-              theme="monokai"
+              theme="tango"
             />
           )}
         </div>
