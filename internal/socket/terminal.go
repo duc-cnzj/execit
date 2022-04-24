@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"regexp"
 	"runtime"
 	"strings"
 	"sync"
@@ -81,22 +80,6 @@ var (
 	startLine = "{\"version\": 2, \"width\": 204, \"height\": 54, \"timestamp\": %d, \"env\": {\"SHELL\": \"%s\", \"TERM\": \"xterm-256color\"}}\n"
 	writeLine = "[%.6f, \"o\", %s]\n"
 )
-
-// https://xtermjs.org/docs/api/vtfeatures/#backspace
-var x = regexp.MustCompile(`\\x([0189][0-9a-zA-Z])?`)
-
-func Strip(str string) string {
-	str = strings.ReplaceAll(str, `\0`, `\x00`)
-	str = strings.ReplaceAll(str, `\a`, `\x07`)
-	str = strings.ReplaceAll(str, `\b`, `\x08`)
-	str = strings.ReplaceAll(str, `\t`, `\x09`)
-	str = strings.ReplaceAll(str, `\n`, `\x0A`)
-	str = strings.ReplaceAll(str, `\v`, `\x0B`)
-	str = strings.ReplaceAll(str, `\f`, `\x0C`)
-	str = strings.ReplaceAll(str, `\r`, `\x0D`)
-	str = strings.ReplaceAll(str, `\e`, `\x1B`)
-	return x.ReplaceAllString(str, "\\u00${1}")
-}
 
 func (r *Recorder) Write(data string) (err error) {
 	r.Lock()
