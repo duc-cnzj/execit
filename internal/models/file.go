@@ -31,10 +31,9 @@ func (f *File) DeleteFile() {
 	if f.Path == "" {
 		return
 	}
+	app.DB().Delete(f)
 	if err := app.Uploader().Delete(f.Path); err != nil {
 		xlog.Errorf("[File]: delete file err: '%s'", err.Error())
-		return
 	}
-	app.DB().Delete(f)
 	xlog.Debugf("[File]: deleted '%s' ", f.Path)
 }
