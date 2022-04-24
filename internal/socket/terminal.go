@@ -3,13 +3,13 @@ package socket
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"regexp"
 	"runtime"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -79,7 +79,7 @@ type Recorder struct {
 
 var (
 	startLine = "{\"version\": 2, \"width\": 204, \"height\": 54, \"timestamp\": %d, \"env\": {\"SHELL\": \"%s\", \"TERM\": \"xterm-256color\"}}\n"
-	writeLine = "[%.6f, \"o\", \"%s\"]\n"
+	writeLine = "[%.6f, \"o\", %s]\n"
 )
 
 // https://xtermjs.org/docs/api/vtfeatures/#backspace
@@ -115,9 +115,8 @@ func (r *Recorder) Write(data string) (err error) {
 		r.startTime = time.Now()
 		r.f.Write([]byte(fmt.Sprintf(startLine, r.startTime.Unix(), r.shell)))
 	})
-	textQuoted := strconv.QuoteToASCII(data)
-	data = textQuoted[1 : len(textQuoted)-1]
-	_, err = r.f.WriteString(fmt.Sprintf(writeLine, float64(time.Now().Sub(r.startTime).Microseconds())/1000000, Strip(data)))
+	marshal, _ := json.Marshal(data)
+	_, err = r.f.WriteString(fmt.Sprintf(writeLine, float64(time.Now().Sub(r.startTime).Microseconds())/1000000, string(marshal)))
 	return err
 }
 
