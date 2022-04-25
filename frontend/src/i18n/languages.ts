@@ -127,9 +127,9 @@ const languages: Lang = {
     en: "viewing Operation Records",
     zh: "查看操作记录",
   },
-  "Operation Records": {
-    en: "Operation Records",
-    zh: "操作记录",
+  "speed": {
+    en: "speed",
+    zh: "速度",
   },
   "wrong username or password": {
     en: "wrong username or password",

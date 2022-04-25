@@ -268,7 +268,12 @@ const EventList: React.FC = () => {
                         setFileID(item.file_id);
                       }}
                     >
-                      {t("viewing Operation Records")}{item.duration &&<span style={{fontSize: "10px", marginLeft: 5}}>({t("duration")}: {item.duration})</span>}
+                      {t("viewing Operation Records")}
+                      {item.duration && (
+                        <span style={{ fontSize: "10px", marginLeft: 5 }}>
+                          ({t("duration")}: {item.duration})
+                        </span>
+                      )}
                     </Button>
                     <DeleteFile
                       onDelete={() => {
@@ -363,8 +368,8 @@ const EventList: React.FC = () => {
         </ErrorBoundary>
       </Modal>
       <Modal
-        width={"80%"}
-        title={t("Operation Records")}
+        width={"65%"}
+        title={null}
         destroyOnClose
         visible={shellModalVisible}
         footer={null}
@@ -384,9 +389,12 @@ const EventList: React.FC = () => {
                   headers: { Authorization: getToken() },
                 },
               }}
-              rows={40}
+              cols={120}
+              rows={36}
               idleTimeLimit={3}
-              preload={true}
+              fit={"width"}
+              terminalLineHeight={1.2}
+              preload
               theme="tango"
             />
           )}
