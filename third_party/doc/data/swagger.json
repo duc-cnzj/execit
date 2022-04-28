@@ -21,7 +21,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardAllResponse"
+              "$ref": "#/definitions/cardAllResponse"
             }
           },
           "default": {
@@ -46,7 +46,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AuthExchangeRequest"
+              "$ref": "#/definitions/authExchangeRequest"
             }
           }
         ],
@@ -54,7 +54,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/AuthExchangeResponse"
+              "$ref": "#/definitions/authExchangeResponse"
             }
           },
           "default": {
@@ -77,7 +77,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/AuthInfoResponse"
+              "$ref": "#/definitions/authInfoResponse"
             }
           },
           "default": {
@@ -103,7 +103,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AuthLoginRequest"
+              "$ref": "#/definitions/authLoginRequest"
             }
           }
         ],
@@ -111,7 +111,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/AuthLoginResponse"
+              "$ref": "#/definitions/authLoginResponse"
             }
           },
           "default": {
@@ -134,7 +134,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/AuthSettingsResponse"
+              "$ref": "#/definitions/authSettingsResponse"
             }
           },
           "default": {
@@ -158,7 +158,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CardCreateRequest"
+              "$ref": "#/definitions/cardCreateRequest"
             }
           }
         ],
@@ -166,7 +166,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardCreateResponse"
+              "$ref": "#/definitions/cardCreateResponse"
             }
           },
           "default": {
@@ -197,7 +197,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardShowResponse"
+              "$ref": "#/definitions/cardShowResponse"
             }
           },
           "default": {
@@ -226,7 +226,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardDeleteResponse"
+              "$ref": "#/definitions/cardDeleteResponse"
             }
           },
           "default": {
@@ -257,7 +257,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardAllContainersResponse"
+              "$ref": "#/definitions/cardAllContainersResponse"
             }
           },
           "default": {
@@ -293,7 +293,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ClusterListResponse"
+              "$ref": "#/definitions/clusterListResponse"
             }
           },
           "default": {
@@ -315,7 +315,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ClusterCreateRequest"
+              "$ref": "#/definitions/clusterCreateRequest"
             }
           }
         ],
@@ -323,7 +323,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ClusterCreateResponse"
+              "$ref": "#/definitions/clusterCreateResponse"
             }
           },
           "default": {
@@ -354,7 +354,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ClusterShowResponse"
+              "$ref": "#/definitions/clusterShowResponse"
             }
           },
           "default": {
@@ -383,7 +383,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ClusterDeleteResponse"
+              "$ref": "#/definitions/clusterDeleteResponse"
             }
           },
           "default": {
@@ -433,7 +433,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ContainerLogResponse"
+              "$ref": "#/definitions/containerLogResponse"
             }
           },
           "default": {
@@ -484,13 +484,13 @@
             "description": "A successful response.(streaming responses)",
             "schema": {
               "type": "object",
-              "title": "Stream result of ContainerLogResponse",
+              "title": "Stream result of containerLogResponse",
               "properties": {
                 "error": {
                   "$ref": "#/definitions/rpcStatus"
                 },
                 "result": {
-                  "$ref": "#/definitions/ContainerLogResponse"
+                  "$ref": "#/definitions/containerLogResponse"
                 }
               }
             }
@@ -517,7 +517,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ContainerCopyToPodRequest"
+              "$ref": "#/definitions/containerCopyToPodRequest"
             }
           }
         ],
@@ -525,7 +525,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ContainerCopyToPodResponse"
+              "$ref": "#/definitions/containerCopyToPodResponse"
             }
           },
           "default": {
@@ -550,7 +550,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ContainerIsPodExistsRequest"
+              "$ref": "#/definitions/containerIsPodExistsRequest"
             }
           }
         ],
@@ -558,7 +558,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ContainerIsPodExistsResponse"
+              "$ref": "#/definitions/containerIsPodExistsResponse"
             }
           },
           "default": {
@@ -583,7 +583,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ContainerIsPodRunningRequest"
+              "$ref": "#/definitions/containerIsPodRunningRequest"
             }
           }
         ],
@@ -591,7 +591,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ContainerIsPodRunningResponse"
+              "$ref": "#/definitions/containerIsPodRunningResponse"
             }
           },
           "default": {
@@ -628,7 +628,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/EventListResponse"
+              "$ref": "#/definitions/eventListResponse"
             }
           },
           "default": {
@@ -670,7 +670,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/FileListResponse"
+              "$ref": "#/definitions/fileListResponse"
             }
           },
           "default": {
@@ -693,7 +693,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/DeleteUndocumentedFilesResponse"
+              "$ref": "#/definitions/fileDeleteUndocumentedFilesResponse"
             }
           },
           "default": {
@@ -716,7 +716,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/DiskInfoResponse"
+              "$ref": "#/definitions/fileDiskInfoResponse"
             }
           },
           "default": {
@@ -748,7 +748,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/FileDeleteResponse"
+              "$ref": "#/definitions/fileDeleteResponse"
             }
           },
           "default": {
@@ -792,7 +792,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/MetricsTopPodResponse"
+              "$ref": "#/definitions/metricsTopPodResponse"
             }
           },
           "default": {
@@ -837,13 +837,13 @@
             "description": "A successful response.(streaming responses)",
             "schema": {
               "type": "object",
-              "title": "Stream result of MetricsTopPodResponse",
+              "title": "Stream result of metricsTopPodResponse",
               "properties": {
                 "error": {
                   "$ref": "#/definitions/rpcStatus"
                 },
                 "result": {
-                  "$ref": "#/definitions/MetricsTopPodResponse"
+                  "$ref": "#/definitions/metricsTopPodResponse"
                 }
               }
             }
@@ -876,7 +876,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/BackgroundResponse"
+              "$ref": "#/definitions/pictureBackgroundResponse"
             }
           },
           "default": {
@@ -900,7 +900,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/VersionResponse"
+              "$ref": "#/definitions/versionResponse"
             }
           },
           "default": {
@@ -914,20 +914,27 @@
     }
   },
   "definitions": {
-    "ActionType": {
-      "type": "string",
-      "default": "Unknown",
-      "enum": [
-        "Unknown",
-        "Create",
-        "Update",
-        "Delete",
-        "Upload",
-        "Download",
-        "Shell"
-      ]
+    "SettingsResponseOidcSetting": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "end_session_endpoint": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
     },
-    "AuthExchangeRequest": {
+    "authExchangeRequest": {
       "type": "object",
       "properties": {
         "code": {
@@ -935,7 +942,7 @@
         }
       }
     },
-    "AuthExchangeResponse": {
+    "authExchangeResponse": {
       "type": "object",
       "properties": {
         "expires_in": {
@@ -947,7 +954,7 @@
         }
       }
     },
-    "AuthInfoResponse": {
+    "authInfoResponse": {
       "type": "object",
       "properties": {
         "avatar": {
@@ -973,7 +980,7 @@
         }
       }
     },
-    "AuthLoginRequest": {
+    "authLoginRequest": {
       "type": "object",
       "properties": {
         "password": {
@@ -984,7 +991,7 @@
         }
       }
     },
-    "AuthLoginResponse": {
+    "authLoginResponse": {
       "type": "object",
       "properties": {
         "expires_in": {
@@ -996,71 +1003,40 @@
         }
       }
     },
-    "AuthSettingsResponse": {
+    "authSettingsResponse": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/AuthSettingsResponseOidcSetting"
+            "$ref": "#/definitions/SettingsResponseOidcSetting"
           }
         }
       }
     },
-    "AuthSettingsResponseOidcSetting": {
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "type": "boolean"
-        },
-        "end_session_endpoint": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "state": {
-          "type": "string"
-        },
-        "url": {
-          "type": "string"
-        }
-      }
-    },
-    "BackgroundResponse": {
-      "type": "object",
-      "properties": {
-        "copyright": {
-          "type": "string"
-        },
-        "url": {
-          "type": "string"
-        }
-      }
-    },
-    "CardAllContainersResponse": {
+    "cardAllContainersResponse": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ContainerItem"
+            "$ref": "#/definitions/containerItem"
           }
         }
       }
     },
-    "CardAllResponse": {
+    "cardAllResponse": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/CardItemsList"
+            "$ref": "#/definitions/cardItemsList"
           }
         }
       }
     },
-    "CardCreateRequest": {
+    "cardCreateRequest": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1078,7 +1054,7 @@
         }
       }
     },
-    "CardCreateResponse": {
+    "cardCreateResponse": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1109,10 +1085,10 @@
         }
       }
     },
-    "CardDeleteResponse": {
+    "cardDeleteResponse": {
       "type": "object"
     },
-    "CardItems": {
+    "cardItems": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1129,7 +1105,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ContainerItem"
+            "$ref": "#/definitions/containerItem"
           }
         },
         "name": {
@@ -1143,7 +1119,7 @@
         }
       }
     },
-    "CardItemsList": {
+    "cardItemsList": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1156,7 +1132,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/CardItems"
+            "$ref": "#/definitions/cardItems"
           }
         },
         "namespace": {
@@ -1164,7 +1140,7 @@
         }
       }
     },
-    "CardShowResponse": {
+    "cardShowResponse": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1184,7 +1160,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ContainerItem"
+            "$ref": "#/definitions/containerItem"
           }
         },
         "name": {
@@ -1201,7 +1177,7 @@
         }
       }
     },
-    "ClusterCreateRequest": {
+    "clusterCreateRequest": {
       "type": "object",
       "properties": {
         "kube_config": {
@@ -1215,7 +1191,7 @@
         }
       }
     },
-    "ClusterCreateResponse": {
+    "clusterCreateResponse": {
       "type": "object",
       "properties": {
         "created_at": {
@@ -1236,10 +1212,10 @@
         }
       }
     },
-    "ClusterDeleteResponse": {
+    "clusterDeleteResponse": {
       "type": "object"
     },
-    "ClusterItem": {
+    "clusterItem": {
       "type": "object",
       "properties": {
         "card_id": {
@@ -1264,13 +1240,13 @@
         }
       }
     },
-    "ClusterItems": {
+    "clusterItems": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ClusterItem"
+            "$ref": "#/definitions/clusterItem"
           }
         },
         "namespace": {
@@ -1278,7 +1254,7 @@
         }
       }
     },
-    "ClusterListResponse": {
+    "clusterListResponse": {
       "type": "object",
       "properties": {
         "count": {
@@ -1288,7 +1264,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ClusterModel"
+            "$ref": "#/definitions/modelClusterModel"
           }
         },
         "page": {
@@ -1301,34 +1277,7 @@
         }
       }
     },
-    "ClusterModel": {
-      "type": "object",
-      "properties": {
-        "api_server_url": {
-          "type": "string"
-        },
-        "created_at": {
-          "type": "string"
-        },
-        "deleted_at": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "kube_config": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string"
-        }
-      }
-    },
-    "ClusterShowResponse": {
+    "clusterShowResponse": {
       "type": "object",
       "properties": {
         "api_server_url": {
@@ -1347,7 +1296,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ClusterItems"
+            "$ref": "#/definitions/clusterItems"
           }
         },
         "kube_config": {
@@ -1361,7 +1310,7 @@
         }
       }
     },
-    "ContainerCopyToPodRequest": {
+    "containerCopyToPodRequest": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1383,7 +1332,7 @@
         }
       }
     },
-    "ContainerCopyToPodResponse": {
+    "containerCopyToPodResponse": {
       "type": "object",
       "properties": {
         "file_name": {
@@ -1397,7 +1346,7 @@
         }
       }
     },
-    "ContainerExecResponse": {
+    "containerExecResponse": {
       "type": "object",
       "properties": {
         "data": {
@@ -1405,7 +1354,7 @@
         }
       }
     },
-    "ContainerIsPodExistsRequest": {
+    "containerIsPodExistsRequest": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1420,7 +1369,7 @@
         }
       }
     },
-    "ContainerIsPodExistsResponse": {
+    "containerIsPodExistsResponse": {
       "type": "object",
       "properties": {
         "exists": {
@@ -1428,7 +1377,7 @@
         }
       }
     },
-    "ContainerIsPodRunningRequest": {
+    "containerIsPodRunningRequest": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1443,7 +1392,7 @@
         }
       }
     },
-    "ContainerIsPodRunningResponse": {
+    "containerIsPodRunningResponse": {
       "type": "object",
       "properties": {
         "reason": {
@@ -1454,7 +1403,7 @@
         }
       }
     },
-    "ContainerItem": {
+    "containerItem": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1472,7 +1421,7 @@
         }
       }
     },
-    "ContainerLogResponse": {
+    "containerLogResponse": {
       "type": "object",
       "properties": {
         "container_name": {
@@ -1489,7 +1438,7 @@
         }
       }
     },
-    "ContainerStreamCopyToPodResponse": {
+    "containerStreamCopyToPodResponse": {
       "type": "object",
       "properties": {
         "container": {
@@ -1516,34 +1465,24 @@
         }
       }
     },
-    "DeleteUndocumentedFilesResponse": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/File"
-          }
-        }
-      }
+    "eventActionType": {
+      "type": "string",
+      "default": "Unknown",
+      "enum": [
+        "Unknown",
+        "Create",
+        "Update",
+        "Delete",
+        "Upload",
+        "Download",
+        "Shell"
+      ]
     },
-    "DiskInfoResponse": {
-      "type": "object",
-      "properties": {
-        "humanize_usage": {
-          "type": "string"
-        },
-        "usage": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "EventListItem": {
+    "eventListItem": {
       "type": "object",
       "properties": {
         "action": {
-          "$ref": "#/definitions/ActionType"
+          "$ref": "#/definitions/eventActionType"
         },
         "duration": {
           "type": "string"
@@ -1573,7 +1512,7 @@
         }
       }
     },
-    "EventListResponse": {
+    "eventListResponse": {
       "type": "object",
       "properties": {
         "count": {
@@ -1583,7 +1522,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/EventListItem"
+            "$ref": "#/definitions/eventListItem"
           }
         },
         "page": {
@@ -1596,7 +1535,38 @@
         }
       }
     },
-    "File": {
+    "fileDeleteResponse": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "$ref": "#/definitions/fileFile"
+        }
+      }
+    },
+    "fileDeleteUndocumentedFilesResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/fileFile"
+          }
+        }
+      }
+    },
+    "fileDiskInfoResponse": {
+      "type": "object",
+      "properties": {
+        "humanize_usage": {
+          "type": "string"
+        },
+        "usage": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "fileFile": {
       "type": "object",
       "properties": {
         "humanize_size": {
@@ -1614,15 +1584,7 @@
         }
       }
     },
-    "FileDeleteResponse": {
-      "type": "object",
-      "properties": {
-        "file": {
-          "$ref": "#/definitions/File"
-        }
-      }
-    },
-    "FileListResponse": {
+    "fileListResponse": {
       "type": "object",
       "properties": {
         "count": {
@@ -1632,7 +1594,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/FileModel"
+            "$ref": "#/definitions/modelFileModel"
           }
         },
         "page": {
@@ -1645,7 +1607,60 @@
         }
       }
     },
-    "FileModel": {
+    "metricsTopPodResponse": {
+      "type": "object",
+      "properties": {
+        "cpu": {
+          "type": "number",
+          "format": "double"
+        },
+        "humanize_cpu": {
+          "type": "string"
+        },
+        "humanize_memory": {
+          "type": "string"
+        },
+        "length": {
+          "type": "string",
+          "format": "int64"
+        },
+        "memory": {
+          "type": "number",
+          "format": "double"
+        },
+        "time": {
+          "type": "string"
+        }
+      }
+    },
+    "modelClusterModel": {
+      "type": "object",
+      "properties": {
+        "api_server_url": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "deleted_at": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "kube_config": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      }
+    },
+    "modelFileModel": {
       "type": "object",
       "properties": {
         "container": {
@@ -1688,33 +1703,45 @@
         }
       }
     },
-    "MetricsTopPodResponse": {
+    "pictureBackgroundResponse": {
       "type": "object",
       "properties": {
-        "cpu": {
-          "type": "number",
-          "format": "double"
-        },
-        "humanize_cpu": {
+        "copyright": {
           "type": "string"
         },
-        "humanize_memory": {
-          "type": "string"
-        },
-        "length": {
-          "type": "string",
-          "format": "int64"
-        },
-        "memory": {
-          "type": "number",
-          "format": "double"
-        },
-        "time": {
+        "url": {
           "type": "string"
         }
       }
     },
-    "VersionResponse": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "versionResponse": {
       "type": "object",
       "properties": {
         "build_date": {
@@ -1745,33 +1772,6 @@
           "type": "string"
         },
         "version": {
-          "type": "string"
-        }
-      }
-    },
-    "protobufAny": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    },
-    "rpcStatus": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "details": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/protobufAny"
-          }
-        },
-        "message": {
           "type": "string"
         }
       }

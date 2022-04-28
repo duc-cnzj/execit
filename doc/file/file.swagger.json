@@ -24,7 +24,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/FileListResponse"
+              "$ref": "#/definitions/fileListResponse"
             }
           },
           "default": {
@@ -69,7 +69,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/DeleteUndocumentedFilesResponse"
+              "$ref": "#/definitions/fileDeleteUndocumentedFilesResponse"
             }
           },
           "default": {
@@ -92,7 +92,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/DiskInfoResponse"
+              "$ref": "#/definitions/fileDiskInfoResponse"
             }
           },
           "default": {
@@ -115,7 +115,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/FileDeleteResponse"
+              "$ref": "#/definitions/fileDeleteResponse"
             }
           },
           "default": {
@@ -141,18 +141,26 @@
     }
   },
   "definitions": {
-    "DeleteUndocumentedFilesResponse": {
+    "fileDeleteResponse": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "$ref": "#/definitions/fileFile"
+        }
+      }
+    },
+    "fileDeleteUndocumentedFilesResponse": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/File"
+            "$ref": "#/definitions/fileFile"
           }
         }
       }
     },
-    "DiskInfoResponse": {
+    "fileDiskInfoResponse": {
       "type": "object",
       "properties": {
         "usage": {
@@ -164,7 +172,7 @@
         }
       }
     },
-    "File": {
+    "fileFile": {
       "type": "object",
       "properties": {
         "path": {
@@ -182,15 +190,7 @@
         }
       }
     },
-    "FileDeleteResponse": {
-      "type": "object",
-      "properties": {
-        "file": {
-          "$ref": "#/definitions/File"
-        }
-      }
-    },
-    "FileListResponse": {
+    "fileListResponse": {
       "type": "object",
       "properties": {
         "page": {
@@ -204,7 +204,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/FileModel"
+            "$ref": "#/definitions/modelFileModel"
           }
         },
         "count": {
@@ -213,7 +213,7 @@
         }
       }
     },
-    "FileModel": {
+    "modelFileModel": {
       "type": "object",
       "properties": {
         "id": {

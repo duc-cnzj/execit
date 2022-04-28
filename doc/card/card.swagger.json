@@ -23,7 +23,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardAllResponse"
+              "$ref": "#/definitions/cardAllResponse"
             }
           },
           "default": {
@@ -45,7 +45,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardCreateResponse"
+              "$ref": "#/definitions/cardCreateResponse"
             }
           },
           "default": {
@@ -61,7 +61,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CardCreateRequest"
+              "$ref": "#/definitions/cardCreateRequest"
             }
           }
         ],
@@ -77,7 +77,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardShowResponse"
+              "$ref": "#/definitions/cardShowResponse"
             }
           },
           "default": {
@@ -106,7 +106,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardDeleteResponse"
+              "$ref": "#/definitions/cardDeleteResponse"
             }
           },
           "default": {
@@ -137,7 +137,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardAllContainersResponse"
+              "$ref": "#/definitions/cardAllContainersResponse"
             }
           },
           "default": {
@@ -163,29 +163,29 @@
     }
   },
   "definitions": {
-    "CardAllContainersResponse": {
+    "cardAllContainersResponse": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ContainerItem"
+            "$ref": "#/definitions/containerItem"
           }
         }
       }
     },
-    "CardAllResponse": {
+    "cardAllResponse": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/CardItemsList"
+            "$ref": "#/definitions/cardItemsList"
           }
         }
       }
     },
-    "CardCreateRequest": {
+    "cardCreateRequest": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -203,7 +203,7 @@
         }
       }
     },
-    "CardCreateResponse": {
+    "cardCreateResponse": {
       "type": "object",
       "properties": {
         "id": {
@@ -234,10 +234,10 @@
         }
       }
     },
-    "CardDeleteResponse": {
+    "cardDeleteResponse": {
       "type": "object"
     },
-    "CardItems": {
+    "cardItems": {
       "type": "object",
       "properties": {
         "id": {
@@ -263,12 +263,12 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ContainerItem"
+            "$ref": "#/definitions/containerItem"
           }
         }
       }
     },
-    "CardItemsList": {
+    "cardItemsList": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -284,12 +284,12 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/CardItems"
+            "$ref": "#/definitions/cardItems"
           }
         }
       }
     },
-    "CardShowResponse": {
+    "cardShowResponse": {
       "type": "object",
       "properties": {
         "id": {
@@ -321,12 +321,12 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ContainerItem"
+            "$ref": "#/definitions/containerItem"
           }
         }
       }
     },
-    "ContainerItem": {
+    "containerItem": {
       "type": "object",
       "properties": {
         "cluster_id": {

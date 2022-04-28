@@ -27,7 +27,7 @@ type EventSvc struct {
 	event.UnsafeEventServer
 }
 
-func (e *EventSvc) List(ctx context.Context, request *event.EventListRequest) (*event.EventListResponse, error) {
+func (e *EventSvc) List(ctx context.Context, request *event.ListRequest) (*event.ListResponse, error) {
 	var (
 		page     = int(request.Page)
 		pageSize = int(request.PageSize)
@@ -41,13 +41,13 @@ func (e *EventSvc) List(ctx context.Context, request *event.EventListRequest) (*
 		return nil, err
 	}
 	app.DB().Model(&models.Event{}).Count(&count)
-	res := make([]*event.EventListItem, 0, len(events))
+	res := make([]*event.ListItem, 0, len(events))
 	for _, m := range events {
 		var fid int64
 		if m.File != nil {
 			fid = int64(m.File.ID)
 		}
-		res = append(res, &event.EventListItem{
+		res = append(res, &event.ListItem{
 			Id:       int64(m.ID),
 			Action:   event.ActionType(m.Action),
 			Username: m.Username,
@@ -60,7 +60,7 @@ func (e *EventSvc) List(ctx context.Context, request *event.EventListRequest) (*
 		})
 	}
 
-	return &event.EventListResponse{
+	return &event.ListResponse{
 		Page:     int64(page),
 		PageSize: int64(pageSize),
 		Items:    res,

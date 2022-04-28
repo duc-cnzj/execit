@@ -33,7 +33,7 @@ export const setShellSessionId = (id: string, sessionID: string) => ({
   },
 });
 
-export const setShellLog = (id: string, log: pb.TerminalMessage) => ({
+export const setShellLog = (id: string, log: pb.websocket.TerminalMessage) => ({
   type: SET_SHELL_LOG,
   data: {
     id: id,
@@ -47,18 +47,18 @@ export const setSyncCard = () => ({
   },
 });
 
-export const handleEvents = (id: string, data: pb.Metadata, input: any) => {
+export const handleEvents = (id: string, data: pb.websocket.Metadata, input: any) => {
   return function (dispatch: Dispatch) {
     switch (data.type.valueOf()) {
-      case pb.Type.SetUid:
+      case pb.websocket.Type.SetUid:
         setUid(data.data);
         break;
-      case pb.Type.HandleExecShell:
-        if (data.result === pb.ResultType.Error) {
+      case pb.websocket.Type.HandleExecShell:
+        if (data.result === pb.websocket.ResultType.Error) {
           message.error(data.data);
           break;
         }
-        let res = pb.WsHandleShellResponse.decode(input);
+        let res = pb.websocket.WsHandleShellResponse.decode(input);
 
         res.container &&
           res.terminal_message &&
@@ -69,11 +69,11 @@ export const handleEvents = (id: string, data: pb.Metadata, input: any) => {
             )
           );
         break;
-      case pb.Type.HandleSyncCard:
+      case pb.websocket.Type.HandleSyncCard:
         dispatch(setSyncCard());
         break;
-      case pb.Type.HandleExecShellMsg:
-        let logRes = pb.WsHandleShellResponse.decode(input);
+      case pb.websocket.Type.HandleExecShellMsg:
+        let logRes = pb.websocket.WsHandleShellResponse.decode(input);
         logRes.container &&
           logRes.terminal_message &&
           dispatch(

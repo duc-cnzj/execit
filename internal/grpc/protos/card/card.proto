@@ -1,52 +1,54 @@
 syntax = "proto3";
 
+package card;
+
 import "google/api/annotations.proto";
 import "validate/validate.proto";
 import "container/container.proto";
 
 option go_package = "github.com/duc-cnzj/execit-client/card;card";
 
-message CardAllRequest {}
-message CardAllResponse {
-  repeated CardItemsList items = 1;
+message AllRequest {}
+message AllResponse {
+  repeated ItemsList items = 1;
 }
 
-message CardListRequest {
+message ListRequest {
   int64 page = 1 [(validate.rules).int64.gt = 0];
   int64 page_size = 2 [(validate.rules).int64.gt = 0];
 }
 
-message CardItems {
+message Items {
   int64 id = 1;
   int64 cluster_id = 2;
   string namespace = 3;
   string name = 4;
   string type = 5;
   string cluster_name = 6;
-  repeated ContainerItem items = 7;
+  repeated container.Item items = 7;
 }
 
-message CardItemsList {
+message ItemsList {
   int64 cluster_id = 1;
   string namespace = 2;
   string cluster_name = 3;
-  repeated CardItems items = 4;
+  repeated Items items = 4;
 }
 
-message CardListResponse {
+message ListResponse {
   int64 page = 1;
   int64 page_size = 2;
   int64 count = 3;
-  repeated CardItems items = 4;
+  repeated Items items = 4;
 }
 
-message CardCreateRequest {
+message CreateRequest {
   int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
   string namespace = 2 [(validate.rules).string.min_bytes = 1];
   string name = 3 [(validate.rules).string.min_bytes = 1];
   string type = 4 [(validate.rules).string.min_bytes = 1];
 }
-message CardCreateResponse {
+message CreateResponse {
   int64 id = 1;
   string type = 2;
   string namespace = 3;
@@ -57,10 +59,10 @@ message CardCreateResponse {
   string deleted_at = 9;
 }
 
-message CardShowRequest {
+message ShowRequest {
   int64 card_id = 1 [(validate.rules).int64.gt = 0];
 }
-message CardShowResponse {
+message ShowResponse {
   int64 id = 1;
   string type = 2;
   string namespace = 3;
@@ -70,57 +72,57 @@ message CardShowResponse {
   string updated_at = 8;
   string deleted_at = 9;
 
-  repeated ContainerItem items = 10;
+  repeated container.Item items = 10;
 }
 
-message CardDeleteRequest {
+message DeleteRequest {
   int64 card_id = 1 [(validate.rules).int64.gt = 0];
 }
-message CardDeleteResponse {}
+message DeleteResponse {}
 
 service CardSvc {
-  rpc All(CardAllRequest) returns (CardAllResponse) {
+  rpc All(AllRequest) returns (AllResponse) {
     option (google.api.http) = {
       get: "/api/all_cards"
     };
   }
 
-  //  rpc List(CardListRequest) returns (CardListResponse) {
+  //  rpc List(ListRequest) returns (ListResponse) {
   //    option (google.api.http) = {
   //      get: "/api/cards"
   //    };
   //  }
 
-  rpc Create(CardCreateRequest) returns (CardCreateResponse) {
+  rpc Create(CreateRequest) returns (CreateResponse) {
     option (google.api.http) = {
       post: "/api/cards",
       body: "*"
     };
   }
 
-  rpc Show(CardShowRequest) returns (CardShowResponse) {
+  rpc Show(ShowRequest) returns (ShowResponse) {
     option (google.api.http) = {
       get: "/api/cards/{card_id}"
     };
   }
 
-  rpc Delete(CardDeleteRequest) returns (CardDeleteResponse) {
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
       delete: "/api/cards/{card_id}"
     };
   }
 
-  rpc AllContainers(CardAllContainersRequest) returns (CardAllContainersResponse) {
+  rpc AllContainers(AllContainersRequest) returns (AllContainersResponse) {
     option (google.api.http) = {
       get: "/api/cards/{card_id}/all_containers"
     };
   }
 }
 
-message CardAllContainersRequest {
+message AllContainersRequest {
   int64 card_id = 1;
 }
 
-message CardAllContainersResponse {
-  repeated ContainerItem items = 1;
+message AllContainersResponse {
+  repeated container.Item items = 1;
 }

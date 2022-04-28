@@ -23,10 +23,10 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ClusterSvcClient interface {
-	List(ctx context.Context, in *ClusterListRequest, opts ...grpc.CallOption) (*ClusterListResponse, error)
-	Create(ctx context.Context, in *ClusterCreateRequest, opts ...grpc.CallOption) (*ClusterCreateResponse, error)
-	Show(ctx context.Context, in *ClusterShowRequest, opts ...grpc.CallOption) (*ClusterShowResponse, error)
-	Delete(ctx context.Context, in *ClusterDeleteRequest, opts ...grpc.CallOption) (*ClusterDeleteResponse, error)
+	List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
+	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	Show(ctx context.Context, in *ShowRequest, opts ...grpc.CallOption) (*ShowResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 }
 
 type clusterSvcClient struct {
@@ -37,36 +37,36 @@ func NewClusterSvcClient(cc grpc.ClientConnInterface) ClusterSvcClient {
 	return &clusterSvcClient{cc}
 }
 
-func (c *clusterSvcClient) List(ctx context.Context, in *ClusterListRequest, opts ...grpc.CallOption) (*ClusterListResponse, error) {
-	out := new(ClusterListResponse)
-	err := c.cc.Invoke(ctx, "/ClusterSvc/List", in, out, opts...)
+func (c *clusterSvcClient) List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
+	out := new(ListResponse)
+	err := c.cc.Invoke(ctx, "/cluster.ClusterSvc/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *clusterSvcClient) Create(ctx context.Context, in *ClusterCreateRequest, opts ...grpc.CallOption) (*ClusterCreateResponse, error) {
-	out := new(ClusterCreateResponse)
-	err := c.cc.Invoke(ctx, "/ClusterSvc/Create", in, out, opts...)
+func (c *clusterSvcClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
+	out := new(CreateResponse)
+	err := c.cc.Invoke(ctx, "/cluster.ClusterSvc/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *clusterSvcClient) Show(ctx context.Context, in *ClusterShowRequest, opts ...grpc.CallOption) (*ClusterShowResponse, error) {
-	out := new(ClusterShowResponse)
-	err := c.cc.Invoke(ctx, "/ClusterSvc/Show", in, out, opts...)
+func (c *clusterSvcClient) Show(ctx context.Context, in *ShowRequest, opts ...grpc.CallOption) (*ShowResponse, error) {
+	out := new(ShowResponse)
+	err := c.cc.Invoke(ctx, "/cluster.ClusterSvc/Show", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *clusterSvcClient) Delete(ctx context.Context, in *ClusterDeleteRequest, opts ...grpc.CallOption) (*ClusterDeleteResponse, error) {
-	out := new(ClusterDeleteResponse)
-	err := c.cc.Invoke(ctx, "/ClusterSvc/Delete", in, out, opts...)
+func (c *clusterSvcClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
+	out := new(DeleteResponse)
+	err := c.cc.Invoke(ctx, "/cluster.ClusterSvc/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -77,10 +77,10 @@ func (c *clusterSvcClient) Delete(ctx context.Context, in *ClusterDeleteRequest,
 // All implementations must embed UnimplementedClusterSvcServer
 // for forward compatibility
 type ClusterSvcServer interface {
-	List(context.Context, *ClusterListRequest) (*ClusterListResponse, error)
-	Create(context.Context, *ClusterCreateRequest) (*ClusterCreateResponse, error)
-	Show(context.Context, *ClusterShowRequest) (*ClusterShowResponse, error)
-	Delete(context.Context, *ClusterDeleteRequest) (*ClusterDeleteResponse, error)
+	List(context.Context, *ListRequest) (*ListResponse, error)
+	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	Show(context.Context, *ShowRequest) (*ShowResponse, error)
+	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	mustEmbedUnimplementedClusterSvcServer()
 }
 
@@ -88,16 +88,16 @@ type ClusterSvcServer interface {
 type UnimplementedClusterSvcServer struct {
 }
 
-func (UnimplementedClusterSvcServer) List(context.Context, *ClusterListRequest) (*ClusterListResponse, error) {
+func (UnimplementedClusterSvcServer) List(context.Context, *ListRequest) (*ListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (UnimplementedClusterSvcServer) Create(context.Context, *ClusterCreateRequest) (*ClusterCreateResponse, error) {
+func (UnimplementedClusterSvcServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedClusterSvcServer) Show(context.Context, *ClusterShowRequest) (*ClusterShowResponse, error) {
+func (UnimplementedClusterSvcServer) Show(context.Context, *ShowRequest) (*ShowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Show not implemented")
 }
-func (UnimplementedClusterSvcServer) Delete(context.Context, *ClusterDeleteRequest) (*ClusterDeleteResponse, error) {
+func (UnimplementedClusterSvcServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedClusterSvcServer) mustEmbedUnimplementedClusterSvcServer() {}
@@ -114,7 +114,7 @@ func RegisterClusterSvcServer(s grpc.ServiceRegistrar, srv ClusterSvcServer) {
 }
 
 func _ClusterSvc_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ClusterListRequest)
+	in := new(ListRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -123,16 +123,16 @@ func _ClusterSvc_List_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ClusterSvc/List",
+		FullMethod: "/cluster.ClusterSvc/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClusterSvcServer).List(ctx, req.(*ClusterListRequest))
+		return srv.(ClusterSvcServer).List(ctx, req.(*ListRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ClusterSvc_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ClusterCreateRequest)
+	in := new(CreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -141,16 +141,16 @@ func _ClusterSvc_Create_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ClusterSvc/Create",
+		FullMethod: "/cluster.ClusterSvc/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClusterSvcServer).Create(ctx, req.(*ClusterCreateRequest))
+		return srv.(ClusterSvcServer).Create(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ClusterSvc_Show_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ClusterShowRequest)
+	in := new(ShowRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -159,16 +159,16 @@ func _ClusterSvc_Show_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ClusterSvc/Show",
+		FullMethod: "/cluster.ClusterSvc/Show",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClusterSvcServer).Show(ctx, req.(*ClusterShowRequest))
+		return srv.(ClusterSvcServer).Show(ctx, req.(*ShowRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ClusterSvc_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ClusterDeleteRequest)
+	in := new(DeleteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -177,10 +177,10 @@ func _ClusterSvc_Delete_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ClusterSvc/Delete",
+		FullMethod: "/cluster.ClusterSvc/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ClusterSvcServer).Delete(ctx, req.(*ClusterDeleteRequest))
+		return srv.(ClusterSvcServer).Delete(ctx, req.(*DeleteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -189,7 +189,7 @@ func _ClusterSvc_Delete_Handler(srv interface{}, ctx context.Context, dec func(i
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ClusterSvc_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ClusterSvc",
+	ServiceName: "cluster.ClusterSvc",
 	HandlerType: (*ClusterSvcServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

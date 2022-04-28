@@ -31,7 +31,7 @@ const TabShell: React.FC<{
   name: string;
   type: string;
 }> = ({ cardId, clusterId, name, namespace, resizeAt }) => {
-  const [list, setList] = useState<pb.ContainerItem[]>([]);
+  const [list, setList] = useState<pb.container.Item[]>([]);
   const [sessionId, setSessionId] = useState<string>("");
   const [value, setValue] = useState<string>("");
   const [term, setTerm] = useState<Terminal>();
@@ -71,8 +71,8 @@ const TabShell: React.FC<{
 
   const onTerminalSendString = useCallback((id: string, ws: WebSocket) => {
     return (str: string) => {
-      let s = pb.TerminalMessageInput.encode({
-        type: pb.Type.HandleExecShellMsg,
+      let s = pb.websocket.TerminalMessageInput.encode({
+        type: pb.websocket.Type.HandleExecShellMsg,
         message: {
           session_id: id,
           op: "stdin",
@@ -98,7 +98,7 @@ const TabShell: React.FC<{
   );
 
   const handleConnectionMessage = useCallback(
-    (frame: pb.TerminalMessage, term: Terminal) => {
+    (frame: pb.websocket.TerminalMessage, term: Terminal) => {
       if (!term) {
         return;
       }
@@ -116,9 +116,9 @@ const TabShell: React.FC<{
 
   const onTerminalResize = useCallback((id: string, ws: WebSocket) => {
     return ({ cols, rows }: { cols: number; rows: number }) => {
-      let s = pb.TerminalMessageInput.encode({
-        type: pb.Type.HandleExecShellMsg,
-        message: new pb.TerminalMessage({
+      let s = pb.websocket.TerminalMessageInput.encode({
+        type: pb.websocket.Type.HandleExecShellMsg,
+        message: new pb.websocket.TerminalMessage({
           session_id: id,
           op: "resize",
           cols: cols,
@@ -132,9 +132,9 @@ const TabShell: React.FC<{
   const handleCloseShell = useCallback(
     (id: string) => {
       if (id) {
-        let s = pb.TerminalMessageInput.encode({
-          type: pb.Type.HandleCloseShell,
-          message: new pb.TerminalMessage({ session_id: id }),
+        let s = pb.websocket.TerminalMessageInput.encode({
+          type: pb.websocket.Type.HandleCloseShell,
+          message: new pb.websocket.TerminalMessage({ session_id: id }),
         }).finish();
         sendMsg(s);
       }
@@ -204,9 +204,9 @@ const TabShell: React.FC<{
 
   const initShell = useCallback(() => {
     let s = value.split("|");
-    let ss = pb.WsHandleExecShellInput.encode({
+    let ss = pb.websocket.WsHandleExecShellInput.encode({
       cluster_id: clusterId,
-      type: pb.Type.HandleExecShell,
+      type: pb.websocket.Type.HandleExecShell,
       namespace: namespace,
       pod: s[0],
       container: s[1],

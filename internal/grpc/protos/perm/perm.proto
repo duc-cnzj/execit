@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package perm;
+
+import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
+import "validate/validate.proto";
+import "google/protobuf/descriptor.proto";
+
+option go_package = "github.com/duc-cnzj/execit-client/perm;perm";
+
+extend google.protobuf.EnumValueOptions {
+  optional string name = 12345;
+}
+
+enum UnitType {
+  KmPerHour = 0 [(name) = "km/h"];
+  MiPerHour = 1 [(name) = "mph"];
+}

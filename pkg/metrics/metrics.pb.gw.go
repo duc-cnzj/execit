@@ -32,7 +32,7 @@ var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
 func request_Metrics_TopPod_0(ctx context.Context, marshaler runtime.Marshaler, client MetricsClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq MetricsTopPodRequest
+	var protoReq TopPodRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -78,7 +78,7 @@ func request_Metrics_TopPod_0(ctx context.Context, marshaler runtime.Marshaler, 
 }
 
 func local_request_Metrics_TopPod_0(ctx context.Context, marshaler runtime.Marshaler, server MetricsServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq MetricsTopPodRequest
+	var protoReq TopPodRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -124,7 +124,7 @@ func local_request_Metrics_TopPod_0(ctx context.Context, marshaler runtime.Marsh
 }
 
 func request_Metrics_StreamTopPod_0(ctx context.Context, marshaler runtime.Marshaler, client MetricsClient, req *http.Request, pathParams map[string]string) (Metrics_StreamTopPodClient, runtime.ServerMetadata, error) {
-	var protoReq MetricsTopPodRequest
+	var protoReq TopPodRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -190,7 +190,7 @@ func RegisterMetricsHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.Metrics/TopPod", runtime.WithHTTPPathPattern("/api/metrics/clusters/{cluster_id}/namespace/{namespace}/pods/{pod}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/metrics.Metrics/TopPod", runtime.WithHTTPPathPattern("/api/metrics/clusters/{cluster_id}/namespace/{namespace}/pods/{pod}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -260,7 +260,7 @@ func RegisterMetricsHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.Metrics/TopPod", runtime.WithHTTPPathPattern("/api/metrics/clusters/{cluster_id}/namespace/{namespace}/pods/{pod}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/metrics.Metrics/TopPod", runtime.WithHTTPPathPattern("/api/metrics/clusters/{cluster_id}/namespace/{namespace}/pods/{pod}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -281,7 +281,7 @@ func RegisterMetricsHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.Metrics/StreamTopPod", runtime.WithHTTPPathPattern("/api/metrics/clusters/{cluster_id}/namespace/{namespace}/pods/{pod}/stream"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/metrics.Metrics/StreamTopPod", runtime.WithHTTPPathPattern("/api/metrics/clusters/{cluster_id}/namespace/{namespace}/pods/{pod}/stream"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

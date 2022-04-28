@@ -1,29 +1,31 @@
 syntax = "proto3";
 
+package cluster;
+
 import "google/api/annotations.proto";
 import "validate/validate.proto";
 import "model/model.proto";
 
 option go_package = "github.com/duc-cnzj/execit-client/cluster;cluster";
 
-message ClusterListRequest {
+message ListRequest {
   int64 page = 1 [(validate.rules).int64.gt = 0];
   int64 page_size = 2 [(validate.rules).int64.gt = 0];
 }
-message ClusterListResponse {
+message ListResponse {
   int64 page = 1;
   int64 page_size = 2;
   int64 count = 3;
-  repeated ClusterModel items = 4;
+  repeated model.ClusterModel items = 4;
 }
 
-message ClusterCreateRequest {
+message CreateRequest {
   string name = 1 [(validate.rules).string.min_bytes = 1];
   string kube_config = 2 [(validate.rules).string.min_bytes = 1];
   string namespace = 3;
 }
 
-message ClusterCreateResponse {
+message CreateResponse {
   int64 id = 1;
   string name = 2;
   string created_at = 4;
@@ -31,10 +33,10 @@ message ClusterCreateResponse {
   string deleted_at = 6;
 }
 
-message ClusterShowRequest {
+message ShowRequest {
   int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
 }
-message ClusterShowResponse {
+message ShowResponse {
   int64 id = 1;
   string name = 2;
   string kube_config = 3;
@@ -43,11 +45,11 @@ message ClusterShowResponse {
   string updated_at = 6;
   string deleted_at = 7;
 
-  repeated ClusterItems items = 8;
+  repeated Items items = 8;
   //  map<string, ClusterItems> items = 8;
 }
 
-message ClusterItem {
+message Item {
   string namespace = 1;
   string type = 2;
   string name = 3;
@@ -56,37 +58,37 @@ message ClusterItem {
   int64 card_id = 6;
 }
 
-message ClusterItems {
+message Items {
   string namespace = 1;
-  repeated ClusterItem items = 2;
+  repeated Item items = 2;
 }
 
-message ClusterDeleteRequest {
+message DeleteRequest {
   int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
 }
-message ClusterDeleteResponse {}
+message DeleteResponse {}
 
 service ClusterSvc {
-  rpc List(ClusterListRequest) returns (ClusterListResponse) {
+  rpc List(ListRequest) returns (ListResponse) {
     option (google.api.http) = {
       get: "/api/clusters"
     };
   }
 
-  rpc Create(ClusterCreateRequest) returns (ClusterCreateResponse) {
+  rpc Create(CreateRequest) returns (CreateResponse) {
     option (google.api.http) = {
       post: "/api/clusters",
       body: "*"
     };
   }
 
-  rpc Show(ClusterShowRequest) returns (ClusterShowResponse) {
+  rpc Show(ShowRequest) returns (ShowResponse) {
     option (google.api.http) = {
       get: "/api/clusters/{cluster_id}"
     };
   }
 
-  rpc Delete(ClusterDeleteRequest) returns (ClusterDeleteResponse) {
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
     option (google.api.http) = {
       delete: "/api/clusters/{cluster_id}"
     };

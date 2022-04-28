@@ -26,8 +26,8 @@ type Card struct {
 	Cluster Cluster
 }
 
-func (c Card) GetItems() ([]*cc.ContainerItem, error) {
-	var subItems []*cc.ContainerItem
+func (c Card) GetItems() ([]*cc.Item, error) {
+	var subItems []*cc.Item
 
 	client, err := app.App().LoadKubeClient(c.Cluster.Name, []byte(c.Cluster.KubeConfig), c.Cluster.Namespace)
 	if err != nil {
@@ -43,7 +43,7 @@ func (c Card) GetItems() ([]*cc.ContainerItem, error) {
 		list, _ := client.PodLister().Pods(c.Namespace).List(labels.SelectorFromSet(asMap))
 		for _, pod := range list {
 			for _, container := range pod.Spec.Containers {
-				subItems = append(subItems, &cc.ContainerItem{
+				subItems = append(subItems, &cc.Item{
 					ClusterId: int64(c.ClusterID),
 					Namespace: c.Namespace,
 					Pod:       pod.Name,
@@ -60,7 +60,7 @@ func (c Card) GetItems() ([]*cc.ContainerItem, error) {
 		list, _ := client.PodLister().Pods(c.Namespace).List(labels.SelectorFromSet(asMap))
 		for _, pod := range list {
 			for _, container := range pod.Spec.Containers {
-				subItems = append(subItems, &cc.ContainerItem{
+				subItems = append(subItems, &cc.Item{
 					ClusterId: int64(c.ClusterID),
 					Namespace: c.Namespace,
 					Pod:       pod.Name,

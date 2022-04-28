@@ -61,9 +61,9 @@ export const ProvideWebsocket: React.FC = ({ children }) => {
     conn.onopen = function (evt) {
       setWs({ ws: conn, ready: true });
       conn.send(
-        pb.AuthorizeTokenInput.encode({
+        pb.websocket.AuthorizeTokenInput.encode({
           token: getToken(),
-          type: pb.Type.HandleAuthorize,
+          type: pb.websocket.Type.HandleAuthorize,
         }).finish()
       );
     };
@@ -72,7 +72,7 @@ export const ProvideWebsocket: React.FC = ({ children }) => {
       console.log("ws closed");
     };
     conn.onmessage = function (evt) {
-      let data: pb.WsMetadataResponse = pb.WsMetadataResponse.decode(
+      let data: pb.websocket.WsMetadataResponse = pb.websocket.WsMetadataResponse.decode(
         new Uint8Array(evt.data)
       );
       data.metadata &&

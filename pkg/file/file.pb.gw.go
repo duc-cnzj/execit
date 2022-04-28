@@ -36,7 +36,7 @@ var (
 )
 
 func request_FileSvc_List_0(ctx context.Context, marshaler runtime.Marshaler, client FileSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq FileListRequest
+	var protoReq ListRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -52,7 +52,7 @@ func request_FileSvc_List_0(ctx context.Context, marshaler runtime.Marshaler, cl
 }
 
 func local_request_FileSvc_List_0(ctx context.Context, marshaler runtime.Marshaler, server FileSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq FileListRequest
+	var protoReq ListRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -68,7 +68,7 @@ func local_request_FileSvc_List_0(ctx context.Context, marshaler runtime.Marshal
 }
 
 func request_FileSvc_Delete_0(ctx context.Context, marshaler runtime.Marshaler, client FileSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq FileDeleteRequest
+	var protoReq DeleteRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -94,7 +94,7 @@ func request_FileSvc_Delete_0(ctx context.Context, marshaler runtime.Marshaler, 
 }
 
 func local_request_FileSvc_Delete_0(ctx context.Context, marshaler runtime.Marshaler, server FileSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq FileDeleteRequest
+	var protoReq DeleteRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -168,7 +168,7 @@ func RegisterFileSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.FileSvc/List", runtime.WithHTTPPathPattern("/api/files"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/file.FileSvc/List", runtime.WithHTTPPathPattern("/api/files"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -192,7 +192,7 @@ func RegisterFileSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.FileSvc/Delete", runtime.WithHTTPPathPattern("/api/files/{id}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/file.FileSvc/Delete", runtime.WithHTTPPathPattern("/api/files/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -216,7 +216,7 @@ func RegisterFileSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.FileSvc/DeleteUndocumentedFiles", runtime.WithHTTPPathPattern("/api/files/delete_undocumented_files"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/file.FileSvc/DeleteUndocumentedFiles", runtime.WithHTTPPathPattern("/api/files/delete_undocumented_files"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -240,7 +240,7 @@ func RegisterFileSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.FileSvc/DiskInfo", runtime.WithHTTPPathPattern("/api/files/disk_info"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/file.FileSvc/DiskInfo", runtime.WithHTTPPathPattern("/api/files/disk_info"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -303,7 +303,7 @@ func RegisterFileSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.FileSvc/List", runtime.WithHTTPPathPattern("/api/files"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/file.FileSvc/List", runtime.WithHTTPPathPattern("/api/files"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -324,7 +324,7 @@ func RegisterFileSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.FileSvc/Delete", runtime.WithHTTPPathPattern("/api/files/{id}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/file.FileSvc/Delete", runtime.WithHTTPPathPattern("/api/files/{id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -345,7 +345,7 @@ func RegisterFileSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.FileSvc/DeleteUndocumentedFiles", runtime.WithHTTPPathPattern("/api/files/delete_undocumented_files"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/file.FileSvc/DeleteUndocumentedFiles", runtime.WithHTTPPathPattern("/api/files/delete_undocumented_files"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -366,7 +366,7 @@ func RegisterFileSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.FileSvc/DiskInfo", runtime.WithHTTPPathPattern("/api/files/disk_info"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/file.FileSvc/DiskInfo", runtime.WithHTTPPathPattern("/api/files/disk_info"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

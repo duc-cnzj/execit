@@ -24,7 +24,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ContainerLogResponse"
+              "$ref": "#/definitions/containerLogResponse"
             }
           },
           "default": {
@@ -77,13 +77,13 @@
               "type": "object",
               "properties": {
                 "result": {
-                  "$ref": "#/definitions/ContainerLogResponse"
+                  "$ref": "#/definitions/containerLogResponse"
                 },
                 "error": {
                   "$ref": "#/definitions/rpcStatus"
                 }
               },
-              "title": "Stream result of ContainerLogResponse"
+              "title": "Stream result of containerLogResponse"
             }
           },
           "default": {
@@ -133,7 +133,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ContainerCopyToPodResponse"
+              "$ref": "#/definitions/containerCopyToPodResponse"
             }
           },
           "default": {
@@ -149,7 +149,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ContainerCopyToPodRequest"
+              "$ref": "#/definitions/containerCopyToPodRequest"
             }
           }
         ],
@@ -166,7 +166,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ContainerIsPodExistsResponse"
+              "$ref": "#/definitions/containerIsPodExistsResponse"
             }
           },
           "default": {
@@ -182,7 +182,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ContainerIsPodExistsRequest"
+              "$ref": "#/definitions/containerIsPodExistsRequest"
             }
           }
         ],
@@ -199,7 +199,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ContainerIsPodRunningResponse"
+              "$ref": "#/definitions/containerIsPodRunningResponse"
             }
           },
           "default": {
@@ -215,7 +215,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ContainerIsPodRunningRequest"
+              "$ref": "#/definitions/containerIsPodRunningRequest"
             }
           }
         ],
@@ -226,7 +226,7 @@
     }
   },
   "definitions": {
-    "ContainerCopyToPodRequest": {
+    "containerCopyToPodRequest": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -248,7 +248,7 @@
         }
       }
     },
-    "ContainerCopyToPodResponse": {
+    "containerCopyToPodResponse": {
       "type": "object",
       "properties": {
         "pod_file_path": {
@@ -262,7 +262,7 @@
         }
       }
     },
-    "ContainerExecResponse": {
+    "containerExecResponse": {
       "type": "object",
       "properties": {
         "data": {
@@ -270,7 +270,7 @@
         }
       }
     },
-    "ContainerIsPodExistsRequest": {
+    "containerIsPodExistsRequest": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -285,7 +285,7 @@
         }
       }
     },
-    "ContainerIsPodExistsResponse": {
+    "containerIsPodExistsResponse": {
       "type": "object",
       "properties": {
         "exists": {
@@ -293,7 +293,7 @@
         }
       }
     },
-    "ContainerIsPodRunningRequest": {
+    "containerIsPodRunningRequest": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -308,7 +308,7 @@
         }
       }
     },
-    "ContainerIsPodRunningResponse": {
+    "containerIsPodRunningResponse": {
       "type": "object",
       "properties": {
         "running": {
@@ -319,7 +319,7 @@
         }
       }
     },
-    "ContainerLogResponse": {
+    "containerLogResponse": {
       "type": "object",
       "properties": {
         "namespace": {
@@ -336,7 +336,7 @@
         }
       }
     },
-    "ContainerStreamCopyToPodResponse": {
+    "containerStreamCopyToPodResponse": {
       "type": "object",
       "properties": {
         "size": {

@@ -23,7 +23,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ClusterListResponse"
+              "$ref": "#/definitions/clusterListResponse"
             }
           },
           "default": {
@@ -59,7 +59,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ClusterCreateResponse"
+              "$ref": "#/definitions/clusterCreateResponse"
             }
           },
           "default": {
@@ -75,7 +75,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ClusterCreateRequest"
+              "$ref": "#/definitions/clusterCreateRequest"
             }
           }
         ],
@@ -91,7 +91,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ClusterShowResponse"
+              "$ref": "#/definitions/clusterShowResponse"
             }
           },
           "default": {
@@ -120,7 +120,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ClusterDeleteResponse"
+              "$ref": "#/definitions/clusterDeleteResponse"
             }
           },
           "default": {
@@ -146,7 +146,7 @@
     }
   },
   "definitions": {
-    "ClusterCreateRequest": {
+    "clusterCreateRequest": {
       "type": "object",
       "properties": {
         "name": {
@@ -160,7 +160,7 @@
         }
       }
     },
-    "ClusterCreateResponse": {
+    "clusterCreateResponse": {
       "type": "object",
       "properties": {
         "id": {
@@ -181,10 +181,10 @@
         }
       }
     },
-    "ClusterDeleteResponse": {
+    "clusterDeleteResponse": {
       "type": "object"
     },
-    "ClusterItem": {
+    "clusterItem": {
       "type": "object",
       "properties": {
         "namespace": {
@@ -209,7 +209,7 @@
         }
       }
     },
-    "ClusterItems": {
+    "clusterItems": {
       "type": "object",
       "properties": {
         "namespace": {
@@ -218,12 +218,12 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ClusterItem"
+            "$ref": "#/definitions/clusterItem"
           }
         }
       }
     },
-    "ClusterListResponse": {
+    "clusterListResponse": {
       "type": "object",
       "properties": {
         "page": {
@@ -241,39 +241,12 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ClusterModel"
+            "$ref": "#/definitions/modelClusterModel"
           }
         }
       }
     },
-    "ClusterModel": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "kube_config": {
-          "type": "string"
-        },
-        "api_server_url": {
-          "type": "string"
-        },
-        "created_at": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string"
-        },
-        "deleted_at": {
-          "type": "string"
-        }
-      }
-    },
-    "ClusterShowResponse": {
+    "clusterShowResponse": {
       "type": "object",
       "properties": {
         "id": {
@@ -301,8 +274,35 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ClusterItems"
+            "$ref": "#/definitions/clusterItems"
           }
+        }
+      }
+    },
+    "modelClusterModel": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "kube_config": {
+          "type": "string"
+        },
+        "api_server_url": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "deleted_at": {
+          "type": "string"
         }
       }
     },

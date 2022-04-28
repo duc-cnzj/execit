@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package websocket;
+
 option go_package = "github.com/duc-cnzj/execit-client/websocket;websocket";
 
 enum Type {

@@ -11,7 +11,7 @@ const Shell = lazy(() => import("./TabShell"));
 const { TabPane } = Tabs;
 
 const NamespaceCardItem: React.FC<{
-  item: pb.CardItems;
+  item: pb.card.Items;
 }> = ({ item }) => {
   const [visible, setVisible] = useState(false);
   const onOk = useCallback(() => setVisible(true), []);

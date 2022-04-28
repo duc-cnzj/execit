@@ -1,18 +1,20 @@
 syntax = "proto3";
 
+package metrics;
+
 import "google/api/annotations.proto";
 import "validate/validate.proto";
 
 option go_package = "github.com/duc-cnzj/execit-client/metrics;metrics";
 
-message MetricsTopPodRequest {
+message TopPodRequest {
   int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
 
   string namespace = 2 [(validate.rules).string.min_bytes = 1];
   string pod = 3 [(validate.rules).string.min_bytes = 1];
 }
 
-message MetricsTopPodResponse {
+message TopPodResponse {
   double cpu = 1;
   double memory = 2;
   string humanize_cpu = 3;
@@ -23,14 +25,14 @@ message MetricsTopPodResponse {
 
 service Metrics {
   //  TopPod 获取 pod 的 cpu memory 信息
-  rpc TopPod(MetricsTopPodRequest) returns (MetricsTopPodResponse) {
+  rpc TopPod(TopPodRequest) returns (TopPodResponse) {
     option (google.api.http) = {
       get: "/api/metrics/clusters/{cluster_id}/namespace/{namespace}/pods/{pod}",
     };
   }
 
   //  StreamTopPod stream 的方式获取 pod 的 cpu memory 信息
-  rpc StreamTopPod(MetricsTopPodRequest) returns (stream MetricsTopPodResponse) {
+  rpc StreamTopPod(TopPodRequest) returns (stream TopPodResponse) {
     option (google.api.http) = {
       get: "/api/metrics/clusters/{cluster_id}/namespace/{namespace}/pods/{pod}/stream",
     };

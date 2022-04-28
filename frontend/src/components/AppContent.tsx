@@ -12,7 +12,7 @@ import { selectSyncAt } from "../store/reducers/card";
 
 const AppContent: React.FC = () => {
   const { t } = useTranslation();
-  const [data, setData] = useState<pb.CardItemsList[]>([]);
+  const [data, setData] = useState<pb.card.ItemsList[]>([]);
   const h = useHistory();
   useEffect(() => {
     cardAll().then((res) => {

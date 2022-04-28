@@ -32,7 +32,7 @@ var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
 func request_ContainerSvc_CopyToPod_0(ctx context.Context, marshaler runtime.Marshaler, client ContainerSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ContainerCopyToPodRequest
+	var protoReq CopyToPodRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -49,7 +49,7 @@ func request_ContainerSvc_CopyToPod_0(ctx context.Context, marshaler runtime.Mar
 }
 
 func local_request_ContainerSvc_CopyToPod_0(ctx context.Context, marshaler runtime.Marshaler, server ContainerSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ContainerCopyToPodRequest
+	var protoReq CopyToPodRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -66,7 +66,7 @@ func local_request_ContainerSvc_CopyToPod_0(ctx context.Context, marshaler runti
 }
 
 func request_ContainerSvc_Exec_0(ctx context.Context, marshaler runtime.Marshaler, client ContainerSvcClient, req *http.Request, pathParams map[string]string) (ContainerSvc_ExecClient, runtime.ServerMetadata, error) {
-	var protoReq ContainerExecRequest
+	var protoReq ExecRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -99,7 +99,7 @@ func request_ContainerSvc_StreamCopyToPod_0(ctx context.Context, marshaler runti
 	}
 	dec := marshaler.NewDecoder(req.Body)
 	for {
-		var protoReq ContainerStreamCopyToPodRequest
+		var protoReq StreamCopyToPodRequest
 		err = dec.Decode(&protoReq)
 		if err == io.EOF {
 			break
@@ -135,7 +135,7 @@ func request_ContainerSvc_StreamCopyToPod_0(ctx context.Context, marshaler runti
 }
 
 func request_ContainerSvc_IsPodRunning_0(ctx context.Context, marshaler runtime.Marshaler, client ContainerSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ContainerIsPodRunningRequest
+	var protoReq IsPodRunningRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -152,7 +152,7 @@ func request_ContainerSvc_IsPodRunning_0(ctx context.Context, marshaler runtime.
 }
 
 func local_request_ContainerSvc_IsPodRunning_0(ctx context.Context, marshaler runtime.Marshaler, server ContainerSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ContainerIsPodRunningRequest
+	var protoReq IsPodRunningRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -169,7 +169,7 @@ func local_request_ContainerSvc_IsPodRunning_0(ctx context.Context, marshaler ru
 }
 
 func request_ContainerSvc_IsPodExists_0(ctx context.Context, marshaler runtime.Marshaler, client ContainerSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ContainerIsPodExistsRequest
+	var protoReq IsPodExistsRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -186,7 +186,7 @@ func request_ContainerSvc_IsPodExists_0(ctx context.Context, marshaler runtime.M
 }
 
 func local_request_ContainerSvc_IsPodExists_0(ctx context.Context, marshaler runtime.Marshaler, server ContainerSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ContainerIsPodExistsRequest
+	var protoReq IsPodExistsRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -203,7 +203,7 @@ func local_request_ContainerSvc_IsPodExists_0(ctx context.Context, marshaler run
 }
 
 func request_ContainerSvc_ContainerLog_0(ctx context.Context, marshaler runtime.Marshaler, client ContainerSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ContainerLogRequest
+	var protoReq LogRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -259,7 +259,7 @@ func request_ContainerSvc_ContainerLog_0(ctx context.Context, marshaler runtime.
 }
 
 func local_request_ContainerSvc_ContainerLog_0(ctx context.Context, marshaler runtime.Marshaler, server ContainerSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ContainerLogRequest
+	var protoReq LogRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -315,7 +315,7 @@ func local_request_ContainerSvc_ContainerLog_0(ctx context.Context, marshaler ru
 }
 
 func request_ContainerSvc_StreamContainerLog_0(ctx context.Context, marshaler runtime.Marshaler, client ContainerSvcClient, req *http.Request, pathParams map[string]string) (ContainerSvc_StreamContainerLogClient, runtime.ServerMetadata, error) {
-	var protoReq ContainerLogRequest
+	var protoReq LogRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -391,7 +391,7 @@ func RegisterContainerSvcHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.ContainerSvc/CopyToPod", runtime.WithHTTPPathPattern("/api/containers/copy_to_pod"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/container.ContainerSvc/CopyToPod", runtime.WithHTTPPathPattern("/api/containers/copy_to_pod"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -429,7 +429,7 @@ func RegisterContainerSvcHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.ContainerSvc/IsPodRunning", runtime.WithHTTPPathPattern("/api/containers/pod_running_status"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/container.ContainerSvc/IsPodRunning", runtime.WithHTTPPathPattern("/api/containers/pod_running_status"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -453,7 +453,7 @@ func RegisterContainerSvcHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.ContainerSvc/IsPodExists", runtime.WithHTTPPathPattern("/api/containers/pod_exists"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/container.ContainerSvc/IsPodExists", runtime.WithHTTPPathPattern("/api/containers/pod_exists"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -477,7 +477,7 @@ func RegisterContainerSvcHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.ContainerSvc/ContainerLog", runtime.WithHTTPPathPattern("/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/container.ContainerSvc/ContainerLog", runtime.WithHTTPPathPattern("/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -547,7 +547,7 @@ func RegisterContainerSvcHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.ContainerSvc/CopyToPod", runtime.WithHTTPPathPattern("/api/containers/copy_to_pod"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/CopyToPod", runtime.WithHTTPPathPattern("/api/containers/copy_to_pod"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -568,7 +568,7 @@ func RegisterContainerSvcHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.ContainerSvc/Exec", runtime.WithHTTPPathPattern("/ContainerSvc/Exec"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/Exec", runtime.WithHTTPPathPattern("/container.ContainerSvc/Exec"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -589,7 +589,7 @@ func RegisterContainerSvcHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.ContainerSvc/StreamCopyToPod", runtime.WithHTTPPathPattern("/ContainerSvc/StreamCopyToPod"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/StreamCopyToPod", runtime.WithHTTPPathPattern("/container.ContainerSvc/StreamCopyToPod"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -610,7 +610,7 @@ func RegisterContainerSvcHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.ContainerSvc/IsPodRunning", runtime.WithHTTPPathPattern("/api/containers/pod_running_status"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/IsPodRunning", runtime.WithHTTPPathPattern("/api/containers/pod_running_status"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -631,7 +631,7 @@ func RegisterContainerSvcHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.ContainerSvc/IsPodExists", runtime.WithHTTPPathPattern("/api/containers/pod_exists"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/IsPodExists", runtime.WithHTTPPathPattern("/api/containers/pod_exists"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -652,7 +652,7 @@ func RegisterContainerSvcHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.ContainerSvc/ContainerLog", runtime.WithHTTPPathPattern("/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/ContainerLog", runtime.WithHTTPPathPattern("/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -673,7 +673,7 @@ func RegisterContainerSvcHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.ContainerSvc/StreamContainerLog", runtime.WithHTTPPathPattern("/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/stream_logs"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/StreamContainerLog", runtime.WithHTTPPathPattern("/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/stream_logs"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -695,9 +695,9 @@ func RegisterContainerSvcHandlerClient(ctx context.Context, mux *runtime.ServeMu
 var (
 	pattern_ContainerSvc_CopyToPod_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "containers", "copy_to_pod"}, ""))
 
-	pattern_ContainerSvc_Exec_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ContainerSvc", "Exec"}, ""))
+	pattern_ContainerSvc_Exec_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"container.ContainerSvc", "Exec"}, ""))
 
-	pattern_ContainerSvc_StreamCopyToPod_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"ContainerSvc", "StreamCopyToPod"}, ""))
+	pattern_ContainerSvc_StreamCopyToPod_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"container.ContainerSvc", "StreamCopyToPod"}, ""))
 
 	pattern_ContainerSvc_IsPodRunning_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "containers", "pod_running_status"}, ""))
 

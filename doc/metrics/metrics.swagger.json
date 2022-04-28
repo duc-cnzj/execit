@@ -24,7 +24,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/MetricsTopPodResponse"
+              "$ref": "#/definitions/metricsTopPodResponse"
             }
           },
           "default": {
@@ -71,13 +71,13 @@
               "type": "object",
               "properties": {
                 "result": {
-                  "$ref": "#/definitions/MetricsTopPodResponse"
+                  "$ref": "#/definitions/metricsTopPodResponse"
                 },
                 "error": {
                   "$ref": "#/definitions/rpcStatus"
                 }
               },
-              "title": "Stream result of MetricsTopPodResponse"
+              "title": "Stream result of metricsTopPodResponse"
             }
           },
           "default": {
@@ -115,7 +115,7 @@
     }
   },
   "definitions": {
-    "MetricsTopPodResponse": {
+    "metricsTopPodResponse": {
       "type": "object",
       "properties": {
         "cpu": {

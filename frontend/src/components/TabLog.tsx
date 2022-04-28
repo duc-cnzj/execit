@@ -15,7 +15,7 @@ const ProjectContainerLogs: React.FC<{
 }> = ({ clusterId, namespace, name, type, cardId }) => {
   const [value, setValue] = useState<string>();
   const {t} = useTranslation()
-  const [list, setList] = useState<pb.ContainerItem[]>();
+  const [list, setList] = useState<pb.container.Item[]>();
 
   const listContainer = useCallback(async () => {
     return cardAllContainers(cardId).then(
