@@ -97,7 +97,7 @@ func (a *AuthSvc) Info(ctx context.Context, req *auth.InfoRequest) (*auth.InfoRe
 					Email:       c.Email,
 					LogoutUrl:   c.LogoutUrl,
 					IsAdmin:     c.IsAdmin(),
-					Permissions: auth2.GetUserPermissions(c.UserInfo.Email),
+					Permissions: c.Permissions,
 				}, nil
 			}
 		}

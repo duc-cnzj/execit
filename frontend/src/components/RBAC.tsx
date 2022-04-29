@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo, useMemo } from "react";
+import React, { useState, useEffect, useCallback, memo, useMemo, useRef } from "react";
 import {
   Card,
   Skeleton,
@@ -35,6 +35,9 @@ const RBAC: React.FC = () => {
     count: number;
   }>({ page: 0, page_size: defaultPageSize, count: 0 });
   const [data, setData] = useState<pb.rbac.UserPermission[]>([]);
+
+  const revokeInput = useRef<any>(null)
+  const rejectInput = useRef<any>(null)
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -341,6 +344,9 @@ const RBAC: React.FC = () => {
                       onClick={() => {
                         setRejectID(item.id);
                         setIsRejectModalVisible(true);
+                        setTimeout(() => {
+                          rejectInput.current && rejectInput.current.focus()
+                        }, 100);
                       }}
                     >
                       {t("reject")}
@@ -354,6 +360,9 @@ const RBAC: React.FC = () => {
                       onClick={() => {
                         setRevokeID(item.id);
                         setIsModalVisible(true);
+                        setTimeout(() => {
+                          revokeInput.current && revokeInput.current.focus()
+                        }, 100);
                       }}
                       danger
                     >
@@ -374,7 +383,7 @@ const RBAC: React.FC = () => {
           cancelText="No"
         >
           <Input
-            autoFocus
+            ref={revokeInput}
             placeholder={t("revoke reason")}
             value={revokeReason}
             onChange={(v) => setRevokeReason(v.target.value)}
@@ -389,7 +398,7 @@ const RBAC: React.FC = () => {
           cancelText="No"
         >
           <Input
-            autoFocus
+            ref={rejectInput}
             placeholder={t("reject reason")}
             value={rejectReason}
             onChange={(v) => setRejectReason(v.target.value)}

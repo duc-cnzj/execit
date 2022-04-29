@@ -158,11 +158,3 @@ func (r *rbacsvc) Revoke(ctx context.Context, request *rbac.RevokeRequest) (*rba
 
 	return &rbac.RevokeResponse{Permission: p.ProtoTransform()}, nil
 }
-
-func (r *rbacsvc) Authorize(ctx context.Context, fullMethodName string) (context.Context, error) {
-	if !MustGetUser(ctx).IsAdmin() {
-		return nil, status.Error(codes.PermissionDenied, ErrorPermissionDenied.Error())
-	}
-
-	return ctx, nil
-}

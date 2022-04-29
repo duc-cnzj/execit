@@ -73,51 +73,51 @@ const NamespaceCardItem: React.FC<{
   return (
     <div className="project-detail">
       {!hasCardPermission(item.id) ? (
-        <Popover
-          placement="top"
-          overlayInnerStyle={{ maxWidth: 200, whiteSpace: "pre" }}
-          content={
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "start",
-              }}
-            >
-              <Button
-                type="link"
-                size="small"
-                className="project-detail__tooltip-button"
-                onClick={() => {
-                  rbacApplyFor({
-                    subject_id: item.id,
-                    permission: pb.rbac.Permission.Card,
-                  }).then(() => {
-                    message.success(t("request sent"));
-                  });
+        <div
+          onMouseEnter={() => {
+            fetchReason(item.id);
+          }}
+        >
+          <Popover
+            placement="top"
+            overlayInnerStyle={{ maxWidth: 200, whiteSpace: "pre" }}
+            content={
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "start",
                 }}
               >
-                {t("apply for")}
-              </Button>
-              <div style={{wordBreak: "break-all", whiteSpace: "normal" }}>
-                {reason && (
-                  <p style={{ fontSize: 10}}>
-                    {t("reject reason")}: {reason}
-                  </p>
-                )}
+                <Button
+                  type="link"
+                  size="small"
+                  className="project-detail__tooltip-button"
+                  onClick={() => {
+                    rbacApplyFor({
+                      subject_id: item.id,
+                      permission: pb.rbac.Permission.Card,
+                    }).then(() => {
+                      message.success(t("request sent"));
+                    });
+                  }}
+                >
+                  {t("apply for")}
+                </Button>
+                <div style={{ wordBreak: "break-all", whiteSpace: "normal" }}>
+                  {reason && (
+                    <p style={{ fontSize: 10 }}>
+                      {t("reject reason")}: {reason}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          }
-          title={t("apply for permission")}
-        >
-          <div
-            onMouseEnter={() => {
-              fetchReason(item.id);
-            }}
+            }
+            title={t("apply for permission")}
           >
             {MyButton}
-          </div>
-        </Popover>
+          </Popover>
+        </div>
       ) : (
         <>{MyButton}</>
       )}
