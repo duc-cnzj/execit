@@ -7,17 +7,15 @@ import (
 	"sync"
 	"time"
 
-	"github.com/duc-cnzj/execit/internal/middlewares"
-
-	"github.com/duc-cnzj/execit/internal/auth"
-
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"google.golang.org/protobuf/proto"
 
 	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
+	"github.com/duc-cnzj/execit/internal/auth"
 	"github.com/duc-cnzj/execit/internal/contracts"
+	"github.com/duc-cnzj/execit/internal/middlewares"
 	"github.com/duc-cnzj/execit/internal/plugins"
 	"github.com/duc-cnzj/execit/internal/utils"
 	"github.com/duc-cnzj/execit/internal/xlog"

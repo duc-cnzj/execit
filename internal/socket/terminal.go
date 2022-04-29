@@ -13,20 +13,16 @@ import (
 	"sync"
 	"time"
 
-	trans "github.com/duc-cnzj/execit/internal/translator"
-
-	"github.com/duc-cnzj/execit-client/rbac"
-	"github.com/duc-cnzj/execit/internal/auth"
-
-	"github.com/duc-cnzj/execit/internal/utils/date"
-
 	"github.com/duc-cnzj/execit-client/event"
+	"github.com/duc-cnzj/execit-client/rbac"
+	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
+	"github.com/duc-cnzj/execit/internal/auth"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/models"
-
-	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
+	trans "github.com/duc-cnzj/execit/internal/translator"
 	"github.com/duc-cnzj/execit/internal/utils"
+	"github.com/duc-cnzj/execit/internal/utils/date"
 	"github.com/duc-cnzj/execit/internal/xlog"
 
 	v1 "k8s.io/api/core/v1"
@@ -37,15 +33,8 @@ import (
 )
 
 const (
-	TAB                 = "\u0009"
 	ETX                 = "\u0003"
 	END_OF_TRANSMISSION = "\u0004"
-	ESC                 = "\u001B"
-
-	Up    = "\u2191"
-	Down  = "\u2193"
-	Left  = "\u2190"
-	Right = "\u2192"
 )
 
 const (
