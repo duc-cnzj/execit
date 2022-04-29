@@ -251,7 +251,6 @@ func HandleWsAuthorize(c *WsConn, t websocket_pb.Type, message []byte) {
 
 func HandleWsHandleSetLang(c *WsConn, t websocket_pb.Type, message []byte) {
 	defer utils.HandlePanic("HandleWsHandleSetLang")
-	xlog.Info("Set   lang")
 	var input websocket_pb.WsHandleSetLangInput
 	if err := proto.Unmarshal(message, &input); err != nil {
 		xlog.Error("[Websocket]: " + err.Error())
