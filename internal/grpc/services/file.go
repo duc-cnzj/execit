@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/duc-cnzj/execit/internal/utils/date"
-
 	"github.com/dustin/go-humanize"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -22,6 +20,7 @@ import (
 	"github.com/duc-cnzj/execit/internal/event/events"
 	"github.com/duc-cnzj/execit/internal/models"
 	"github.com/duc-cnzj/execit/internal/scopes"
+	"github.com/duc-cnzj/execit/internal/utils/date"
 	"github.com/duc-cnzj/execit/internal/xlog"
 )
 
