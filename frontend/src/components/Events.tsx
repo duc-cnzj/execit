@@ -31,13 +31,13 @@ const defaultPageSize = 15;
 const EventList: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
-  const [diskInfo, setDiskInfo] = useState<pb.DiskInfoResponse>();
+  const [diskInfo, setDiskInfo] = useState<pb.file.DiskInfoResponse>();
   const [paginate, setPaginate] = useState<{
     page: number;
     page_size: number;
     count: number;
   }>({ page: 0, page_size: defaultPageSize, count: 0 });
-  const [data, setData] = useState<pb.EventListItem[]>([]);
+  const [data, setData] = useState<pb.event.ListItem[]>([]);
 
   useEffect(() => {
     diskInfoApi().then(({ data }) => setDiskInfo(data));
@@ -82,40 +82,40 @@ const EventList: React.FC = () => {
   const [config, setConfig] = useState({ old: "", new: "", title: "" });
 
   const getActionStyle = useCallback(
-    (type: pb.ActionType): React.ReactNode => {
+    (type: pb.event.ActionType): React.ReactNode => {
       let style = { fontSize: 12, marginLeft: 5 };
       switch (type) {
-        case pb.ActionType.Create:
+        case pb.event.ActionType.Create:
           return (
             <Tag color="#1890ff" style={style}>
               {t("Create")}
             </Tag>
           );
-        case pb.ActionType.Shell:
+        case pb.event.ActionType.Shell:
           return (
             <Tag color="#1890ff" style={style}>
               {t("Exec Shell")}
             </Tag>
           );
-        case pb.ActionType.Update:
+        case pb.event.ActionType.Update:
           return (
             <Tag color="#52c41a" style={style}>
               {t("Update")}
             </Tag>
           );
-        case pb.ActionType.Delete:
+        case pb.event.ActionType.Delete:
           return (
             <Tag color="#f5222d" style={style}>
               {t("Delete")}
             </Tag>
           );
-        case pb.ActionType.Upload:
+        case pb.event.ActionType.Upload:
           return (
             <Tag color="#fcd34d" style={style}>
               {t("Upload")}
             </Tag>
           );
-        case pb.ActionType.Download:
+        case pb.event.ActionType.Download:
           return (
             <Tag color="#2dd4bf" style={style}>
               {t("Download")}
@@ -239,7 +239,7 @@ const EventList: React.FC = () => {
         >
           <List
             dataSource={data}
-            renderItem={(item: pb.EventListItem) => (
+            renderItem={(item: pb.event.ListItem) => (
               <List.Item key={item.id} className="events__list-item">
                 <List.Item.Meta
                   title={
@@ -258,7 +258,7 @@ const EventList: React.FC = () => {
                   }
                   description={`${item.message}`}
                 />
-                {item.file_id > 0 && item.action === pb.ActionType.Shell && (
+                {item.file_id > 0 && item.action === pb.event.ActionType.Shell && (
                   <>
                     <Button
                       type="dashed"
@@ -291,7 +291,7 @@ const EventList: React.FC = () => {
                     />
                   </>
                 )}
-                {item.file_id > 0 && item.action === pb.ActionType.Upload && (
+                {item.file_id > 0 && item.action === pb.event.ActionType.Upload && (
                   <>
                     <Button
                       type="dashed"

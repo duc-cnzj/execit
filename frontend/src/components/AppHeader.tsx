@@ -1,16 +1,18 @@
 import React, { memo } from "react";
 import { Link } from "react-router-dom";
-import { useWsReady } from "../contexts/useWebsocket";
+import { useWs, useWsReady } from "../contexts/useWebsocket";
 import { UserOutlined } from "@ant-design/icons";
 import { useAuth } from "../contexts/auth";
 import { removeToken } from "../utils/token";
 import { useHistory } from "react-router-dom";
 import { Dropdown, Menu } from "antd";
+import pb from "../api/compiled";
 import {
   LogoutOutlined,
   SettingOutlined,
   ReadOutlined,
   NotificationOutlined,
+  KeyOutlined,
 } from "@ant-design/icons";
 import { useLang } from "../i18n/useI18n";
 import { useTranslation } from "react-i18next";
@@ -20,6 +22,7 @@ const AppHeader: React.FC = () => {
   const h = useHistory();
   const { user, isAdmin } = useAuth();
   const { t } = useTranslation();
+  const ws = useWs();
   return (
     <div
       style={{
@@ -57,12 +60,19 @@ const AppHeader: React.FC = () => {
           className="app__lang-switcher"
           href="javascript(0);"
           onClick={(e) => {
-            e.preventDefault()
+            e.preventDefault();
+            let langStr: string;
             if (lang.langName === "中文") {
-              lang.setLang("en");
+              langStr = "en";
             } else {
-              lang.setLang("zh");
+              langStr = "zh";
             }
+            lang.setLang(langStr);
+            let s = pb.websocket.WsHandleSetLangInput.encode({
+              type: pb.websocket.Type.HandleSetLang,
+              lang: langStr,
+            }).finish();
+            ws?.send(s);
           }}
         >
           {lang.langName}
@@ -105,6 +115,17 @@ const AppHeader: React.FC = () => {
                           }}
                         >
                           <NotificationOutlined /> {t("events")}
+                        </a>
+                      </Menu.Item>
+                      <Menu.Item style={{ fontSize: 12 }} key="3">
+                        <a
+                          href="javascript(0);"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            h.push("/rbac");
+                          }}
+                        >
+                          <KeyOutlined /> {t("rbac")}
                         </a>
                       </Menu.Item>
                     </>

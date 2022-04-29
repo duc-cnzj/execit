@@ -4,6 +4,8 @@ import (
 	"context"
 	"sort"
 
+	auth2 "github.com/duc-cnzj/execit/internal/auth"
+
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
@@ -57,9 +59,9 @@ func verify(cfg oauth2.Config, provider *oidc.Provider, code string) (*oidc.IDTo
 	return idtoken, nil
 }
 
-func (a *AuthSvc) Login(ctx context.Context, request *auth.AuthLoginRequest) (*auth.AuthLoginResponse, error) {
+func (a *AuthSvc) Login(ctx context.Context, request *auth.LoginRequest) (*auth.LoginResponse, error) {
 	if request.Username == "admin" && request.Password == a.adminPwd {
-		data, err := a.authsvc.Sign(contracts.UserInfo{
+		info := &contracts.UserInfo{
 			LogoutUrl: "",
 			Roles:     []string{"admin"},
 			OpenIDClaims: contracts.OpenIDClaims{
@@ -67,11 +69,13 @@ func (a *AuthSvc) Login(ctx context.Context, request *auth.AuthLoginRequest) (*a
 				Name:  "admin",
 				Email: "admin@execit.com",
 			},
-		})
+		}
+		info.Permissions = auth2.GetUserPermissions(info.Email)
+		data, err := a.authsvc.Sign(info)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
 		}
-		return &auth.AuthLoginResponse{
+		return &auth.LoginResponse{
 			Token:     data.Token,
 			ExpiresIn: data.ExpiredIn,
 		}, nil
@@ -80,19 +84,20 @@ func (a *AuthSvc) Login(ctx context.Context, request *auth.AuthLoginRequest) (*a
 	return nil, status.Errorf(codes.Unauthenticated, "Unauthenticated.")
 }
 
-func (a *AuthSvc) Info(ctx context.Context, req *auth.AuthInfoRequest) (*auth.AuthInfoResponse, error) {
+func (a *AuthSvc) Info(ctx context.Context, req *auth.InfoRequest) (*auth.InfoResponse, error) {
 	incomingContext, ok := metadata.FromIncomingContext(ctx)
 	if ok {
 		tokenSlice := incomingContext.Get("Authorization")
 		if len(tokenSlice) == 1 {
 			if c, b := a.authsvc.VerifyToken(tokenSlice[0]); b {
-				return &auth.AuthInfoResponse{
-					Id:        c.GetID(),
-					Avatar:    c.Picture,
-					Name:      c.Name,
-					Email:     c.Email,
-					LogoutUrl: c.LogoutUrl,
-					Roles:     c.Roles,
+				return &auth.InfoResponse{
+					Id:          c.GetID(),
+					Avatar:      c.Picture,
+					Name:        c.Name,
+					Email:       c.Email,
+					LogoutUrl:   c.LogoutUrl,
+					IsAdmin:     c.IsAdmin(),
+					Permissions: c.Permissions,
 				}, nil
 			}
 		}
@@ -101,12 +106,12 @@ func (a *AuthSvc) Info(ctx context.Context, req *auth.AuthInfoRequest) (*auth.Au
 	return nil, status.Errorf(codes.Unauthenticated, "Unauthenticated.")
 }
 
-func (a *AuthSvc) Settings(ctx context.Context, request *auth.AuthSettingsRequest) (*auth.AuthSettingsResponse, error) {
-	var items = make([]*auth.AuthSettingsResponse_OidcSetting, 0, len(a.cfg))
+func (a *AuthSvc) Settings(ctx context.Context, request *auth.SettingsRequest) (*auth.SettingsResponse, error) {
+	var items = make([]*auth.SettingsResponse_OidcSetting, 0, len(a.cfg))
 	for name, setting := range a.cfg {
 		state := utils.RandomString(32)
 
-		items = append(items, &auth.AuthSettingsResponse_OidcSetting{
+		items = append(items, &auth.SettingsResponse_OidcSetting{
 			Enabled:            true,
 			Name:               name,
 			Url:                setting.Config.AuthCodeURL(state),
@@ -119,10 +124,10 @@ func (a *AuthSvc) Settings(ctx context.Context, request *auth.AuthSettingsReques
 		return items[i].Name < items[j].Name
 	})
 
-	return &auth.AuthSettingsResponse{Items: items}, nil
+	return &auth.SettingsResponse{Items: items}, nil
 }
 
-func (a *AuthSvc) Exchange(ctx context.Context, request *auth.AuthExchangeRequest) (*auth.AuthExchangeResponse, error) {
+func (a *AuthSvc) Exchange(ctx context.Context, request *auth.ExchangeRequest) (*auth.ExchangeResponse, error) {
 	var (
 		idtoken  *oidc.IDToken
 		err      error
@@ -148,12 +153,13 @@ func (a *AuthSvc) Exchange(ctx context.Context, request *auth.AuthExchangeReques
 	userinfo.Roles = []string{}
 
 	xlog.Debug(userinfo)
-	data, err := a.authsvc.Sign(userinfo)
+	userinfo.Permissions = auth2.GetUserPermissions(userinfo.Email)
+	data, err := a.authsvc.Sign(&userinfo)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
-	return &auth.AuthExchangeResponse{
+	return &auth.ExchangeResponse{
 		Token:     data.Token,
 		ExpiresIn: data.ExpiredIn,
 	}, nil

@@ -21,7 +21,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardAllResponse"
+              "$ref": "#/definitions/cardAllResponse"
             }
           },
           "default": {
@@ -46,7 +46,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AuthExchangeRequest"
+              "$ref": "#/definitions/authExchangeRequest"
             }
           }
         ],
@@ -54,7 +54,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/AuthExchangeResponse"
+              "$ref": "#/definitions/authExchangeResponse"
             }
           },
           "default": {
@@ -77,7 +77,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/AuthInfoResponse"
+              "$ref": "#/definitions/authInfoResponse"
             }
           },
           "default": {
@@ -103,7 +103,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AuthLoginRequest"
+              "$ref": "#/definitions/authLoginRequest"
             }
           }
         ],
@@ -111,7 +111,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/AuthLoginResponse"
+              "$ref": "#/definitions/authLoginResponse"
             }
           },
           "default": {
@@ -134,7 +134,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/AuthSettingsResponse"
+              "$ref": "#/definitions/authSettingsResponse"
             }
           },
           "default": {
@@ -158,7 +158,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/CardCreateRequest"
+              "$ref": "#/definitions/cardCreateRequest"
             }
           }
         ],
@@ -166,7 +166,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardCreateResponse"
+              "$ref": "#/definitions/cardCreateResponse"
             }
           },
           "default": {
@@ -197,7 +197,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardShowResponse"
+              "$ref": "#/definitions/cardShowResponse"
             }
           },
           "default": {
@@ -226,7 +226,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardDeleteResponse"
+              "$ref": "#/definitions/cardDeleteResponse"
             }
           },
           "default": {
@@ -257,7 +257,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/CardAllContainersResponse"
+              "$ref": "#/definitions/cardAllContainersResponse"
             }
           },
           "default": {
@@ -293,7 +293,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ClusterListResponse"
+              "$ref": "#/definitions/clusterListResponse"
             }
           },
           "default": {
@@ -315,7 +315,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ClusterCreateRequest"
+              "$ref": "#/definitions/clusterCreateRequest"
             }
           }
         ],
@@ -323,7 +323,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ClusterCreateResponse"
+              "$ref": "#/definitions/clusterCreateResponse"
             }
           },
           "default": {
@@ -354,7 +354,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ClusterShowResponse"
+              "$ref": "#/definitions/clusterShowResponse"
             }
           },
           "default": {
@@ -383,7 +383,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ClusterDeleteResponse"
+              "$ref": "#/definitions/clusterDeleteResponse"
             }
           },
           "default": {
@@ -395,7 +395,7 @@
         }
       }
     },
-    "/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs": {
+    "/api/containers/cards/{card_id}/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs": {
       "get": {
         "tags": [
           "ContainerSvc"
@@ -403,6 +403,13 @@
         "summary": "ContainerLog 查看 pod 日志",
         "operationId": "ContainerSvc_ContainerLog",
         "parameters": [
+          {
+            "type": "string",
+            "format": "int64",
+            "name": "card_id",
+            "in": "path",
+            "required": true
+          },
           {
             "type": "string",
             "format": "int64",
@@ -433,7 +440,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ContainerLogResponse"
+              "$ref": "#/definitions/containerLogResponse"
             }
           },
           "default": {
@@ -445,7 +452,7 @@
         }
       }
     },
-    "/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/stream_logs": {
+    "/api/containers/cards/{card_id}/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/stream_logs": {
       "get": {
         "tags": [
           "ContainerSvc"
@@ -453,6 +460,13 @@
         "summary": "StreamContainerLog stream 方式查看 pod 日志",
         "operationId": "ContainerSvc_StreamContainerLog",
         "parameters": [
+          {
+            "type": "string",
+            "format": "int64",
+            "name": "card_id",
+            "in": "path",
+            "required": true
+          },
           {
             "type": "string",
             "format": "int64",
@@ -484,13 +498,13 @@
             "description": "A successful response.(streaming responses)",
             "schema": {
               "type": "object",
-              "title": "Stream result of ContainerLogResponse",
+              "title": "Stream result of containerLogResponse",
               "properties": {
                 "error": {
                   "$ref": "#/definitions/rpcStatus"
                 },
                 "result": {
-                  "$ref": "#/definitions/ContainerLogResponse"
+                  "$ref": "#/definitions/containerLogResponse"
                 }
               }
             }
@@ -517,7 +531,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ContainerCopyToPodRequest"
+              "$ref": "#/definitions/containerCopyToPodRequest"
             }
           }
         ],
@@ -525,7 +539,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ContainerCopyToPodResponse"
+              "$ref": "#/definitions/containerCopyToPodResponse"
             }
           },
           "default": {
@@ -550,7 +564,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ContainerIsPodExistsRequest"
+              "$ref": "#/definitions/containerIsPodExistsRequest"
             }
           }
         ],
@@ -558,7 +572,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ContainerIsPodExistsResponse"
+              "$ref": "#/definitions/containerIsPodExistsResponse"
             }
           },
           "default": {
@@ -583,7 +597,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/ContainerIsPodRunningRequest"
+              "$ref": "#/definitions/containerIsPodRunningRequest"
             }
           }
         ],
@@ -591,7 +605,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/ContainerIsPodRunningResponse"
+              "$ref": "#/definitions/containerIsPodRunningResponse"
             }
           },
           "default": {
@@ -628,7 +642,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/EventListResponse"
+              "$ref": "#/definitions/eventListResponse"
             }
           },
           "default": {
@@ -670,7 +684,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/FileListResponse"
+              "$ref": "#/definitions/fileListResponse"
             }
           },
           "default": {
@@ -693,7 +707,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/DeleteUndocumentedFilesResponse"
+              "$ref": "#/definitions/fileDeleteUndocumentedFilesResponse"
             }
           },
           "default": {
@@ -716,7 +730,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/DiskInfoResponse"
+              "$ref": "#/definitions/fileDiskInfoResponse"
             }
           },
           "default": {
@@ -748,7 +762,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/FileDeleteResponse"
+              "$ref": "#/definitions/fileDeleteResponse"
             }
           },
           "default": {
@@ -792,7 +806,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/MetricsTopPodResponse"
+              "$ref": "#/definitions/metricsTopPodResponse"
             }
           },
           "default": {
@@ -837,13 +851,13 @@
             "description": "A successful response.(streaming responses)",
             "schema": {
               "type": "object",
-              "title": "Stream result of MetricsTopPodResponse",
+              "title": "Stream result of metricsTopPodResponse",
               "properties": {
                 "error": {
                   "$ref": "#/definitions/rpcStatus"
                 },
                 "result": {
-                  "$ref": "#/definitions/MetricsTopPodResponse"
+                  "$ref": "#/definitions/metricsTopPodResponse"
                 }
               }
             }
@@ -876,7 +890,219 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/BackgroundResponse"
+              "$ref": "#/definitions/pictureBackgroundResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        }
+      }
+    },
+    "/api/rbac/permissions": {
+      "get": {
+        "tags": [
+          "RBAC"
+        ],
+        "operationId": "RBAC_List",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "int64",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "format": "int64",
+            "name": "page_size",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "_",
+              "Request",
+              "Approved",
+              "Rejected",
+              "Revoked"
+            ],
+            "type": "string",
+            "default": "_",
+            "name": "state",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "email",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacListResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "RBAC"
+        ],
+        "operationId": "RBAC_ApplyFor",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/rbacApplyForRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacApplyForResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        }
+      }
+    },
+    "/api/rbac/permissions/approve": {
+      "post": {
+        "tags": [
+          "RBAC"
+        ],
+        "operationId": "RBAC_Approve",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/rbacApproveRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacApproveResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        }
+      }
+    },
+    "/api/rbac/permissions/not_approved_reason": {
+      "post": {
+        "tags": [
+          "RBAC"
+        ],
+        "operationId": "RBAC_NotApprovedReason",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/rbacNotApprovedReasonRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacNotApprovedReasonResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        }
+      }
+    },
+    "/api/rbac/permissions/reject": {
+      "post": {
+        "tags": [
+          "RBAC"
+        ],
+        "operationId": "RBAC_Reject",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/rbacRejectRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacRejectResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        }
+      }
+    },
+    "/api/rbac/permissions/revoke": {
+      "post": {
+        "tags": [
+          "RBAC"
+        ],
+        "operationId": "RBAC_Revoke",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/rbacRevokeRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacRevokeResponse"
             }
           },
           "default": {
@@ -900,7 +1126,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/VersionResponse"
+              "$ref": "#/definitions/versionResponse"
             }
           },
           "default": {
@@ -914,100 +1140,7 @@
     }
   },
   "definitions": {
-    "ActionType": {
-      "type": "string",
-      "default": "Unknown",
-      "enum": [
-        "Unknown",
-        "Create",
-        "Update",
-        "Delete",
-        "Upload",
-        "Download",
-        "Shell"
-      ]
-    },
-    "AuthExchangeRequest": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "string"
-        }
-      }
-    },
-    "AuthExchangeResponse": {
-      "type": "object",
-      "properties": {
-        "expires_in": {
-          "type": "string",
-          "format": "int64"
-        },
-        "token": {
-          "type": "string"
-        }
-      }
-    },
-    "AuthInfoResponse": {
-      "type": "object",
-      "properties": {
-        "avatar": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string"
-        },
-        "logout_url": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "roles": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "AuthLoginRequest": {
-      "type": "object",
-      "properties": {
-        "password": {
-          "type": "string"
-        },
-        "username": {
-          "type": "string"
-        }
-      }
-    },
-    "AuthLoginResponse": {
-      "type": "object",
-      "properties": {
-        "expires_in": {
-          "type": "string",
-          "format": "int64"
-        },
-        "token": {
-          "type": "string"
-        }
-      }
-    },
-    "AuthSettingsResponse": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/AuthSettingsResponseOidcSetting"
-          }
-        }
-      }
-    },
-    "AuthSettingsResponseOidcSetting": {
+    "SettingsResponseOidcSetting": {
       "type": "object",
       "properties": {
         "enabled": {
@@ -1027,40 +1160,126 @@
         }
       }
     },
-    "BackgroundResponse": {
+    "authExchangeRequest": {
       "type": "object",
       "properties": {
-        "copyright": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "authExchangeResponse": {
+      "type": "object",
+      "properties": {
+        "expires_in": {
+          "type": "string",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "authInfoResponse": {
+      "type": "object",
+      "properties": {
+        "avatar": {
           "type": "string"
         },
-        "url": {
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "is_admin": {
+          "type": "boolean"
+        },
+        "logout_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/authPermission"
+          }
+        }
+      }
+    },
+    "authLoginRequest": {
+      "type": "object",
+      "properties": {
+        "password": {
+          "type": "string"
+        },
+        "username": {
           "type": "string"
         }
       }
     },
-    "CardAllContainersResponse": {
+    "authLoginResponse": {
+      "type": "object",
+      "properties": {
+        "expires_in": {
+          "type": "string",
+          "format": "int64"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "authPermission": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ContainerItem"
+            "type": "string"
           }
+        },
+        "permission": {
+          "$ref": "#/definitions/rbacPermission"
         }
       }
     },
-    "CardAllResponse": {
+    "authSettingsResponse": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/CardItemsList"
+            "$ref": "#/definitions/SettingsResponseOidcSetting"
           }
         }
       }
     },
-    "CardCreateRequest": {
+    "cardAllContainersResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/containerItem"
+          }
+        }
+      }
+    },
+    "cardAllResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cardItemsList"
+          }
+        }
+      }
+    },
+    "cardCreateRequest": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1078,7 +1297,7 @@
         }
       }
     },
-    "CardCreateResponse": {
+    "cardCreateResponse": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1109,10 +1328,10 @@
         }
       }
     },
-    "CardDeleteResponse": {
+    "cardDeleteResponse": {
       "type": "object"
     },
-    "CardItems": {
+    "cardItems": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1129,7 +1348,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ContainerItem"
+            "$ref": "#/definitions/containerItem"
           }
         },
         "name": {
@@ -1143,7 +1362,7 @@
         }
       }
     },
-    "CardItemsList": {
+    "cardItemsList": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1156,7 +1375,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/CardItems"
+            "$ref": "#/definitions/cardItems"
           }
         },
         "namespace": {
@@ -1164,7 +1383,7 @@
         }
       }
     },
-    "CardShowResponse": {
+    "cardShowResponse": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1184,7 +1403,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ContainerItem"
+            "$ref": "#/definitions/containerItem"
           }
         },
         "name": {
@@ -1201,7 +1420,7 @@
         }
       }
     },
-    "ClusterCreateRequest": {
+    "clusterCreateRequest": {
       "type": "object",
       "properties": {
         "kube_config": {
@@ -1215,7 +1434,7 @@
         }
       }
     },
-    "ClusterCreateResponse": {
+    "clusterCreateResponse": {
       "type": "object",
       "properties": {
         "created_at": {
@@ -1236,10 +1455,10 @@
         }
       }
     },
-    "ClusterDeleteResponse": {
+    "clusterDeleteResponse": {
       "type": "object"
     },
-    "ClusterItem": {
+    "clusterItem": {
       "type": "object",
       "properties": {
         "card_id": {
@@ -1264,13 +1483,13 @@
         }
       }
     },
-    "ClusterItems": {
+    "clusterItems": {
       "type": "object",
       "properties": {
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ClusterItem"
+            "$ref": "#/definitions/clusterItem"
           }
         },
         "namespace": {
@@ -1278,7 +1497,7 @@
         }
       }
     },
-    "ClusterListResponse": {
+    "clusterListResponse": {
       "type": "object",
       "properties": {
         "count": {
@@ -1288,7 +1507,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ClusterModel"
+            "$ref": "#/definitions/modelClusterModel"
           }
         },
         "page": {
@@ -1301,34 +1520,7 @@
         }
       }
     },
-    "ClusterModel": {
-      "type": "object",
-      "properties": {
-        "api_server_url": {
-          "type": "string"
-        },
-        "created_at": {
-          "type": "string"
-        },
-        "deleted_at": {
-          "type": "string"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "kube_config": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string"
-        }
-      }
-    },
-    "ClusterShowResponse": {
+    "clusterShowResponse": {
       "type": "object",
       "properties": {
         "api_server_url": {
@@ -1347,7 +1539,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/ClusterItems"
+            "$ref": "#/definitions/clusterItems"
           }
         },
         "kube_config": {
@@ -1361,7 +1553,7 @@
         }
       }
     },
-    "ContainerCopyToPodRequest": {
+    "containerCopyToPodRequest": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1383,7 +1575,7 @@
         }
       }
     },
-    "ContainerCopyToPodResponse": {
+    "containerCopyToPodResponse": {
       "type": "object",
       "properties": {
         "file_name": {
@@ -1397,7 +1589,7 @@
         }
       }
     },
-    "ContainerExecResponse": {
+    "containerExecResponse": {
       "type": "object",
       "properties": {
         "data": {
@@ -1405,7 +1597,7 @@
         }
       }
     },
-    "ContainerIsPodExistsRequest": {
+    "containerIsPodExistsRequest": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1420,7 +1612,7 @@
         }
       }
     },
-    "ContainerIsPodExistsResponse": {
+    "containerIsPodExistsResponse": {
       "type": "object",
       "properties": {
         "exists": {
@@ -1428,7 +1620,7 @@
         }
       }
     },
-    "ContainerIsPodRunningRequest": {
+    "containerIsPodRunningRequest": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1443,7 +1635,7 @@
         }
       }
     },
-    "ContainerIsPodRunningResponse": {
+    "containerIsPodRunningResponse": {
       "type": "object",
       "properties": {
         "reason": {
@@ -1454,7 +1646,7 @@
         }
       }
     },
-    "ContainerItem": {
+    "containerItem": {
       "type": "object",
       "properties": {
         "cluster_id": {
@@ -1472,7 +1664,7 @@
         }
       }
     },
-    "ContainerLogResponse": {
+    "containerLogResponse": {
       "type": "object",
       "properties": {
         "container_name": {
@@ -1489,7 +1681,7 @@
         }
       }
     },
-    "ContainerStreamCopyToPodResponse": {
+    "containerStreamCopyToPodResponse": {
       "type": "object",
       "properties": {
         "container": {
@@ -1516,34 +1708,24 @@
         }
       }
     },
-    "DeleteUndocumentedFilesResponse": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/File"
-          }
-        }
-      }
+    "eventActionType": {
+      "type": "string",
+      "default": "Unknown",
+      "enum": [
+        "Unknown",
+        "Create",
+        "Update",
+        "Delete",
+        "Upload",
+        "Download",
+        "Shell"
+      ]
     },
-    "DiskInfoResponse": {
-      "type": "object",
-      "properties": {
-        "humanize_usage": {
-          "type": "string"
-        },
-        "usage": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "EventListItem": {
+    "eventListItem": {
       "type": "object",
       "properties": {
         "action": {
-          "$ref": "#/definitions/ActionType"
+          "$ref": "#/definitions/eventActionType"
         },
         "duration": {
           "type": "string"
@@ -1573,7 +1755,7 @@
         }
       }
     },
-    "EventListResponse": {
+    "eventListResponse": {
       "type": "object",
       "properties": {
         "count": {
@@ -1583,7 +1765,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/EventListItem"
+            "$ref": "#/definitions/eventListItem"
           }
         },
         "page": {
@@ -1596,7 +1778,38 @@
         }
       }
     },
-    "File": {
+    "fileDeleteResponse": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "$ref": "#/definitions/fileFile"
+        }
+      }
+    },
+    "fileDeleteUndocumentedFilesResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/fileFile"
+          }
+        }
+      }
+    },
+    "fileDiskInfoResponse": {
+      "type": "object",
+      "properties": {
+        "humanize_usage": {
+          "type": "string"
+        },
+        "usage": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "fileFile": {
       "type": "object",
       "properties": {
         "humanize_size": {
@@ -1614,15 +1827,7 @@
         }
       }
     },
-    "FileDeleteResponse": {
-      "type": "object",
-      "properties": {
-        "file": {
-          "$ref": "#/definitions/File"
-        }
-      }
-    },
-    "FileListResponse": {
+    "fileListResponse": {
       "type": "object",
       "properties": {
         "count": {
@@ -1632,7 +1837,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/FileModel"
+            "$ref": "#/definitions/modelFileModel"
           }
         },
         "page": {
@@ -1645,7 +1850,60 @@
         }
       }
     },
-    "FileModel": {
+    "metricsTopPodResponse": {
+      "type": "object",
+      "properties": {
+        "cpu": {
+          "type": "number",
+          "format": "double"
+        },
+        "humanize_cpu": {
+          "type": "string"
+        },
+        "humanize_memory": {
+          "type": "string"
+        },
+        "length": {
+          "type": "string",
+          "format": "int64"
+        },
+        "memory": {
+          "type": "number",
+          "format": "double"
+        },
+        "time": {
+          "type": "string"
+        }
+      }
+    },
+    "modelClusterModel": {
+      "type": "object",
+      "properties": {
+        "api_server_url": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "deleted_at": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "kube_config": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        }
+      }
+    },
+    "modelFileModel": {
       "type": "object",
       "properties": {
         "container": {
@@ -1688,33 +1946,231 @@
         }
       }
     },
-    "MetricsTopPodResponse": {
+    "pictureBackgroundResponse": {
       "type": "object",
       "properties": {
-        "cpu": {
-          "type": "number",
-          "format": "double"
-        },
-        "humanize_cpu": {
+        "copyright": {
           "type": "string"
         },
-        "humanize_memory": {
-          "type": "string"
-        },
-        "length": {
-          "type": "string",
-          "format": "int64"
-        },
-        "memory": {
-          "type": "number",
-          "format": "double"
-        },
-        "time": {
+        "url": {
           "type": "string"
         }
       }
     },
-    "VersionResponse": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "rbacApplyForRequest": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacPermission"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "rbacApplyForResponse": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacUserPermission"
+        }
+      }
+    },
+    "rbacApproveRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "rbacApproveResponse": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacUserPermission"
+        }
+      }
+    },
+    "rbacListResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "string",
+          "format": "int64"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/rbacUserPermission"
+          }
+        },
+        "page": {
+          "type": "string",
+          "format": "int64"
+        },
+        "page_size": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "rbacNotApprovedReasonRequest": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacPermission"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "rbacNotApprovedReasonResponse": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "rbacPermission": {
+      "type": "string",
+      "default": "None",
+      "enum": [
+        "None",
+        "Card",
+        "ClusterAdd",
+        "ClusterDelete",
+        "ClusterView",
+        "FileUpload",
+        "FileDelete",
+        "FileDownload",
+        "EventView"
+      ]
+    },
+    "rbacRejectRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "rbacRejectResponse": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacUserPermission"
+        }
+      }
+    },
+    "rbacRevokeRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "rbacRevokeResponse": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacUserPermission"
+        }
+      }
+    },
+    "rbacState": {
+      "type": "string",
+      "default": "_",
+      "enum": [
+        "_",
+        "Request",
+        "Approved",
+        "Rejected",
+        "Revoked"
+      ]
+    },
+    "rbacUserPermission": {
+      "type": "object",
+      "properties": {
+        "created_at": {
+          "type": "string"
+        },
+        "deleted_at": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "permission": {
+          "$ref": "#/definitions/rbacPermission"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/definitions/rbacState"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "username": {
+          "type": "string"
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "versionResponse": {
       "type": "object",
       "properties": {
         "build_date": {
@@ -1745,33 +2201,6 @@
           "type": "string"
         },
         "version": {
-          "type": "string"
-        }
-      }
-    },
-    "protobufAny": {
-      "type": "object",
-      "properties": {
-        "@type": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false
-    },
-    "rpcStatus": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "details": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/protobufAny"
-          }
-        },
-        "message": {
           "type": "string"
         }
       }
@@ -1814,6 +2243,9 @@
     },
     {
       "name": "Picture"
+    },
+    {
+      "name": "RBAC"
     },
     {
       "name": "Version"

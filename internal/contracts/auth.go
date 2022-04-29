@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/duc-cnzj/execit-client/auth"
+
 	"github.com/golang-jwt/jwt"
 )
 
@@ -11,12 +13,13 @@ const Expired = 8 * time.Hour
 
 type JwtClaims struct {
 	*jwt.StandardClaims
-	UserInfo
+	*UserInfo
 }
 
 type UserInfo struct {
-	LogoutUrl string   `json:"logout_url"`
-	Roles     []string `json:"roles"`
+	LogoutUrl   string             `json:"logout_url"`
+	Roles       []string           `json:"roles"`
+	Permissions []*auth.Permission `json:"permissions"`
 
 	OpenIDClaims
 }
@@ -64,7 +67,7 @@ type SignData struct {
 
 type AuthInterface interface {
 	VerifyToken(string) (*JwtClaims, bool)
-	Sign(UserInfo) (*SignData, error)
+	Sign(*UserInfo) (*SignData, error)
 }
 
 type AuthorizeInterface interface {

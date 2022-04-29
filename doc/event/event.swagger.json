@@ -24,7 +24,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/EventListResponse"
+              "$ref": "#/definitions/eventListResponse"
             }
           },
           "default": {
@@ -57,7 +57,7 @@
     }
   },
   "definitions": {
-    "ActionType": {
+    "eventActionType": {
       "type": "string",
       "enum": [
         "Unknown",
@@ -70,7 +70,7 @@
       ],
       "default": "Unknown"
     },
-    "EventListItem": {
+    "eventListItem": {
       "type": "object",
       "properties": {
         "id": {
@@ -78,7 +78,7 @@
           "format": "int64"
         },
         "action": {
-          "$ref": "#/definitions/ActionType"
+          "$ref": "#/definitions/eventActionType"
         },
         "username": {
           "type": "string"
@@ -104,7 +104,7 @@
         }
       }
     },
-    "EventListResponse": {
+    "eventListResponse": {
       "type": "object",
       "properties": {
         "page": {
@@ -118,7 +118,7 @@
         "items": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/EventListItem"
+            "$ref": "#/definitions/eventListItem"
           }
         },
         "count": {

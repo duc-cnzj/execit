@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/duc-cnzj/execit/internal/utils/date"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,7 +21,6 @@ import (
 	"github.com/duc-cnzj/execit/internal/event/events"
 	"github.com/duc-cnzj/execit/internal/models"
 	"github.com/duc-cnzj/execit/internal/scopes"
-	"github.com/duc-cnzj/execit/internal/utils"
 )
 
 func init() {
@@ -33,7 +34,7 @@ type CardSvc struct {
 	card.UnimplementedCardSvcServer
 }
 
-func (c *CardSvc) All(ctx context.Context, request *card.CardAllRequest) (*card.CardAllResponse, error) {
+func (c *CardSvc) All(ctx context.Context, request *card.AllRequest) (*card.AllResponse, error) {
 	var cards []models.Card
 
 	if err := app.DB().Preload("Cluster").Order("`id` DESC").Find(&cards).Error; err != nil {
@@ -45,7 +46,7 @@ func (c *CardSvc) All(ctx context.Context, request *card.CardAllRequest) (*card.
 		clusterName string
 		namespace   string
 	}
-	var groups = make(map[Key][]*card.CardItems)
+	var groups = make(map[Key][]*card.Items)
 	fn := func(clusterID int, clusterName, ns string) Key {
 		return Key{
 			clusterID:   clusterID,
@@ -56,7 +57,7 @@ func (c *CardSvc) All(ctx context.Context, request *card.CardAllRequest) (*card.
 	for _, m := range cards {
 		k := fn(m.ClusterID, m.Cluster.Name, m.Namespace)
 		if cardItems, ok := groups[k]; ok {
-			groups[k] = append(cardItems, &card.CardItems{
+			groups[k] = append(cardItems, &card.Items{
 				Id:          int64(m.ID),
 				ClusterId:   int64(m.ClusterID),
 				Namespace:   m.Namespace,
@@ -65,7 +66,7 @@ func (c *CardSvc) All(ctx context.Context, request *card.CardAllRequest) (*card.
 				ClusterName: m.Cluster.Name,
 			})
 		} else {
-			groups[k] = []*card.CardItems{
+			groups[k] = []*card.Items{
 				{
 					Id:          int64(m.ID),
 					ClusterId:   int64(m.ClusterID),
@@ -77,9 +78,9 @@ func (c *CardSvc) All(ctx context.Context, request *card.CardAllRequest) (*card.
 			}
 		}
 	}
-	var clists []*card.CardItemsList
+	var clists []*card.ItemsList
 	for key, cardItems := range groups {
-		clists = append(clists, &card.CardItemsList{
+		clists = append(clists, &card.ItemsList{
 			ClusterId:   int64(key.clusterID),
 			Namespace:   key.namespace,
 			ClusterName: key.clusterName,
@@ -88,10 +89,10 @@ func (c *CardSvc) All(ctx context.Context, request *card.CardAllRequest) (*card.
 	}
 	sort.Sort(sortCardItemsList(clists))
 
-	return &card.CardAllResponse{Items: clists}, nil
+	return &card.AllResponse{Items: clists}, nil
 }
 
-type sortCardItemsList []*card.CardItemsList
+type sortCardItemsList []*card.ItemsList
 
 func (s sortCardItemsList) Len() int {
 	return len(s)
@@ -105,7 +106,7 @@ func (s sortCardItemsList) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
-func (c *CardSvc) List(ctx context.Context, request *card.CardListRequest) (*card.CardListResponse, error) {
+func (c *CardSvc) List(ctx context.Context, request *card.ListRequest) (*card.ListResponse, error) {
 	var (
 		page     = int(request.Page)
 		pageSize = int(request.PageSize)
@@ -117,7 +118,7 @@ func (c *CardSvc) List(ctx context.Context, request *card.CardListRequest) (*car
 	}
 	app.DB().Model(&models.Cluster{}).Count(&count)
 
-	var items []*card.CardItems
+	var items []*card.Items
 	for _, m := range cards {
 		getItems, err := m.GetItems()
 		if apierrors.IsNotFound(err) {
@@ -126,7 +127,7 @@ func (c *CardSvc) List(ctx context.Context, request *card.CardListRequest) (*car
 				Card: &m,
 			})
 		}
-		items = append(items, &card.CardItems{
+		items = append(items, &card.Items{
 			Id:          int64(m.ID),
 			ClusterId:   int64(m.ClusterID),
 			Namespace:   m.Namespace,
@@ -136,7 +137,7 @@ func (c *CardSvc) List(ctx context.Context, request *card.CardListRequest) (*car
 			Items:       getItems,
 		})
 	}
-	return &card.CardListResponse{
+	return &card.ListResponse{
 		Page:     int64(page),
 		PageSize: int64(pageSize),
 		Count:    count,
@@ -144,7 +145,7 @@ func (c *CardSvc) List(ctx context.Context, request *card.CardListRequest) (*car
 	}, nil
 }
 
-func (c *CardSvc) Create(ctx context.Context, request *card.CardCreateRequest) (*card.CardCreateResponse, error) {
+func (c *CardSvc) Create(ctx context.Context, request *card.CreateRequest) (*card.CreateResponse, error) {
 	var ca models.Card
 	if err := app.DB().Where("`type` = ? and `name` = ? and `namespace` = ? and `cluster_id` = ?", request.Type, request.Name, request.Namespace, request.ClusterId).First(&ca).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -162,36 +163,36 @@ func (c *CardSvc) Create(ctx context.Context, request *card.CardCreateRequest) (
 		Card: &ca,
 	})
 	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("add card item, cluster '%d' namesapce '%s' name '%s'", ca.ClusterID, ca.Namespace, ca.Name))
-	return &card.CardCreateResponse{
+	return &card.CreateResponse{
 		Id:        int64(ca.ID),
 		Type:      ca.Type,
 		Namespace: ca.Namespace,
 		Name:      ca.Name,
 		ClusterId: int64(ca.ClusterID),
-		CreatedAt: utils.ToRFC3339DatetimeString(&ca.CreatedAt),
-		UpdatedAt: utils.ToRFC3339DatetimeString(&ca.UpdatedAt),
-		DeletedAt: utils.ToRFC3339DatetimeString(&ca.DeletedAt.Time),
+		CreatedAt: date.ToRFC3339DatetimeString(&ca.CreatedAt),
+		UpdatedAt: date.ToRFC3339DatetimeString(&ca.UpdatedAt),
+		DeletedAt: date.ToRFC3339DatetimeString(&ca.DeletedAt.Time),
 	}, nil
 }
 
-func (c *CardSvc) Show(ctx context.Context, request *card.CardShowRequest) (*card.CardShowResponse, error) {
+func (c *CardSvc) Show(ctx context.Context, request *card.ShowRequest) (*card.ShowResponse, error) {
 	var ca models.Card
 	app.DB().Preload("Cluster").Where("`id` = ?", request.CardId).First(&ca)
 	items, _ := ca.GetItems()
-	return &card.CardShowResponse{
+	return &card.ShowResponse{
 		Id:        int64(ca.ID),
 		Type:      ca.Type,
 		Namespace: ca.Namespace,
 		Name:      ca.Name,
 		ClusterId: int64(ca.ClusterID),
-		CreatedAt: utils.ToRFC3339DatetimeString(&ca.CreatedAt),
-		UpdatedAt: utils.ToRFC3339DatetimeString(&ca.UpdatedAt),
-		DeletedAt: utils.ToRFC3339DatetimeString(&ca.DeletedAt.Time),
+		CreatedAt: date.ToRFC3339DatetimeString(&ca.CreatedAt),
+		UpdatedAt: date.ToRFC3339DatetimeString(&ca.UpdatedAt),
+		DeletedAt: date.ToRFC3339DatetimeString(&ca.DeletedAt.Time),
 		Items:     items,
 	}, nil
 }
 
-func (c *CardSvc) Delete(ctx context.Context, request *card.CardDeleteRequest) (*card.CardDeleteResponse, error) {
+func (c *CardSvc) Delete(ctx context.Context, request *card.DeleteRequest) (*card.DeleteResponse, error) {
 	var ca models.Card
 	if err := app.DB().First(&ca, request.CardId).Error; err == nil {
 		app.DB().Delete(&ca)
@@ -201,10 +202,10 @@ func (c *CardSvc) Delete(ctx context.Context, request *card.CardDeleteRequest) (
 		Card: &ca,
 	})
 
-	return &card.CardDeleteResponse{}, nil
+	return &card.DeleteResponse{}, nil
 }
 
-func (c *CardSvc) AllContainers(ctx context.Context, request *card.CardAllContainersRequest) (*card.CardAllContainersResponse, error) {
+func (c *CardSvc) AllContainers(ctx context.Context, request *card.AllContainersRequest) (*card.AllContainersResponse, error) {
 	var ca models.Card
 	app.DB().Preload("Cluster").Where("`id` = ?", request.CardId).First(&ca)
 	items, err := ca.GetItems()
@@ -212,5 +213,5 @@ func (c *CardSvc) AllContainers(ctx context.Context, request *card.CardAllContai
 		app.DB().Delete(&ca)
 		app.Event().Dispatch(events.EventCardDeleted, events.EventCardDeletedData{Card: &ca})
 	}
-	return &card.CardAllContainersResponse{Items: items}, nil
+	return &card.AllContainersResponse{Items: items}, nil
 }

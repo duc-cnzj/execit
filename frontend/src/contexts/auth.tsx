@@ -31,16 +31,17 @@ function ProvideAuth({ children }: { children: any }) {
 
 function useAuth(): {
   login: (username: string, password: string, cb: () => void) => {};
-  user: pb.AuthInfoResponse;
-  setUser: (u: pb.AuthInfoResponse) => void;
+  user: pb.auth.InfoResponse;
+  setUser: (u: pb.auth.InfoResponse) => void;
   logout: (cb: () => void) => {};
   isAdmin: () => boolean;
+  hasCardPermission: (cardID: number) => boolean;
 } {
   return useContext(authContext);
 }
 
 function useProvideAuth() {
-  const [user, setUser] = useState<pb.AuthInfoResponse>();
+  const [user, setUser] = useState<pb.auth.InfoResponse>();
 
   const h = useHistory();
   useEffect(() => {
@@ -79,7 +80,28 @@ function useProvideAuth() {
   };
 
   const isAdmin = () => {
-    return user ? user.roles.filter((item) => item === "admin").length > 0 : false;
+    return user ? user.is_admin : false;
+  };
+
+  const hasCardPermission = (cardID: number): boolean => {
+    if (user?.is_admin) {
+      return true;
+    }
+    let has: boolean = false;
+    if (user?.permissions) {
+      for (let index = 0; index < user.permissions.length; index++) {
+        const element = user?.permissions[index];
+        if (element.permission === pb.rbac.Permission.Card) {
+          for (let index = 0; index < element.items.length; index++) {
+            if (Number(element.items[index]) === Number(cardID)) {
+              return true
+            }
+          }
+          break;
+        }
+      }
+    }
+    return has;
   };
 
   return {
@@ -88,6 +110,7 @@ function useProvideAuth() {
     isAdmin,
     login: signin,
     logout: signout,
+    hasCardPermission,
   };
 }
 

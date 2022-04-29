@@ -24,7 +24,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/AuthExchangeResponse"
+              "$ref": "#/definitions/authExchangeResponse"
             }
           },
           "default": {
@@ -40,7 +40,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AuthExchangeRequest"
+              "$ref": "#/definitions/authExchangeRequest"
             }
           }
         ],
@@ -57,7 +57,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/AuthInfoResponse"
+              "$ref": "#/definitions/authInfoResponse"
             }
           },
           "default": {
@@ -80,7 +80,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/AuthLoginResponse"
+              "$ref": "#/definitions/authLoginResponse"
             }
           },
           "default": {
@@ -96,7 +96,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/AuthLoginRequest"
+              "$ref": "#/definitions/authLoginRequest"
             }
           }
         ],
@@ -114,7 +114,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/AuthSettingsResponse"
+              "$ref": "#/definitions/authSettingsResponse"
             }
           },
           "default": {
@@ -131,87 +131,7 @@
     }
   },
   "definitions": {
-    "AuthExchangeRequest": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "string"
-        }
-      }
-    },
-    "AuthExchangeResponse": {
-      "type": "object",
-      "properties": {
-        "token": {
-          "type": "string"
-        },
-        "expires_in": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "AuthInfoResponse": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "avatar": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        },
-        "logout_url": {
-          "type": "string"
-        },
-        "roles": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "AuthLoginRequest": {
-      "type": "object",
-      "properties": {
-        "username": {
-          "type": "string"
-        },
-        "password": {
-          "type": "string"
-        }
-      }
-    },
-    "AuthLoginResponse": {
-      "type": "object",
-      "properties": {
-        "token": {
-          "type": "string"
-        },
-        "expires_in": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "AuthSettingsResponse": {
-      "type": "object",
-      "properties": {
-        "items": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/AuthSettingsResponseOidcSetting"
-          }
-        }
-      }
-    },
-    "AuthSettingsResponseOidcSetting": {
+    "SettingsResponseOidcSetting": {
       "type": "object",
       "properties": {
         "enabled": {
@@ -231,6 +151,103 @@
         }
       }
     },
+    "authExchangeRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "authExchangeResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "expires_in": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "authInfoResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "avatar": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "logout_url": {
+          "type": "string"
+        },
+        "is_admin": {
+          "type": "boolean"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/authPermission"
+          }
+        }
+      }
+    },
+    "authLoginRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
+    "authLoginResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        },
+        "expires_in": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "authPermission": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacPermission"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "authSettingsResponse": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SettingsResponseOidcSetting"
+          }
+        }
+      }
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
@@ -239,6 +256,21 @@
         }
       },
       "additionalProperties": {}
+    },
+    "rbacPermission": {
+      "type": "string",
+      "enum": [
+        "None",
+        "Card",
+        "ClusterAdd",
+        "ClusterDelete",
+        "ClusterView",
+        "FileUpload",
+        "FileDelete",
+        "FileDownload",
+        "EventView"
+      ],
+      "default": "None"
     },
     "rpcStatus": {
       "type": "object",

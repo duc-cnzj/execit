@@ -35,22 +35,22 @@ var (
 	_ = sort.Sort
 )
 
-// Validate checks the field values on MetricsTopPodRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *MetricsTopPodRequest) Validate() error {
+// Validate checks the field values on TopPodRequest with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *TopPodRequest) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on MetricsTopPodRequest with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// MetricsTopPodRequestMultiError, or nil if none found.
-func (m *MetricsTopPodRequest) ValidateAll() error {
+// ValidateAll checks the field values on TopPodRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in TopPodRequestMultiError, or
+// nil if none found.
+func (m *TopPodRequest) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *MetricsTopPodRequest) validate(all bool) error {
+func (m *TopPodRequest) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -58,7 +58,7 @@ func (m *MetricsTopPodRequest) validate(all bool) error {
 	var errors []error
 
 	if m.GetClusterId() <= 0 {
-		err := MetricsTopPodRequestValidationError{
+		err := TopPodRequestValidationError{
 			field:  "ClusterId",
 			reason: "value must be greater than 0",
 		}
@@ -69,7 +69,7 @@ func (m *MetricsTopPodRequest) validate(all bool) error {
 	}
 
 	if len(m.GetNamespace()) < 1 {
-		err := MetricsTopPodRequestValidationError{
+		err := TopPodRequestValidationError{
 			field:  "Namespace",
 			reason: "value length must be at least 1 bytes",
 		}
@@ -80,7 +80,7 @@ func (m *MetricsTopPodRequest) validate(all bool) error {
 	}
 
 	if len(m.GetPod()) < 1 {
-		err := MetricsTopPodRequestValidationError{
+		err := TopPodRequestValidationError{
 			field:  "Pod",
 			reason: "value length must be at least 1 bytes",
 		}
@@ -91,19 +91,19 @@ func (m *MetricsTopPodRequest) validate(all bool) error {
 	}
 
 	if len(errors) > 0 {
-		return MetricsTopPodRequestMultiError(errors)
+		return TopPodRequestMultiError(errors)
 	}
 
 	return nil
 }
 
-// MetricsTopPodRequestMultiError is an error wrapping multiple validation
-// errors returned by MetricsTopPodRequest.ValidateAll() if the designated
-// constraints aren't met.
-type MetricsTopPodRequestMultiError []error
+// TopPodRequestMultiError is an error wrapping multiple validation errors
+// returned by TopPodRequest.ValidateAll() if the designated constraints
+// aren't met.
+type TopPodRequestMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m MetricsTopPodRequestMultiError) Error() string {
+func (m TopPodRequestMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -112,11 +112,11 @@ func (m MetricsTopPodRequestMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m MetricsTopPodRequestMultiError) AllErrors() []error { return m }
+func (m TopPodRequestMultiError) AllErrors() []error { return m }
 
-// MetricsTopPodRequestValidationError is the validation error returned by
-// MetricsTopPodRequest.Validate if the designated constraints aren't met.
-type MetricsTopPodRequestValidationError struct {
+// TopPodRequestValidationError is the validation error returned by
+// TopPodRequest.Validate if the designated constraints aren't met.
+type TopPodRequestValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -124,24 +124,22 @@ type MetricsTopPodRequestValidationError struct {
 }
 
 // Field function returns field value.
-func (e MetricsTopPodRequestValidationError) Field() string { return e.field }
+func (e TopPodRequestValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e MetricsTopPodRequestValidationError) Reason() string { return e.reason }
+func (e TopPodRequestValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e MetricsTopPodRequestValidationError) Cause() error { return e.cause }
+func (e TopPodRequestValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e MetricsTopPodRequestValidationError) Key() bool { return e.key }
+func (e TopPodRequestValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e MetricsTopPodRequestValidationError) ErrorName() string {
-	return "MetricsTopPodRequestValidationError"
-}
+func (e TopPodRequestValidationError) ErrorName() string { return "TopPodRequestValidationError" }
 
 // Error satisfies the builtin error interface
-func (e MetricsTopPodRequestValidationError) Error() string {
+func (e TopPodRequestValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -153,14 +151,14 @@ func (e MetricsTopPodRequestValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sMetricsTopPodRequest.%s: %s%s",
+		"invalid %sTopPodRequest.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = MetricsTopPodRequestValidationError{}
+var _ error = TopPodRequestValidationError{}
 
 var _ interface {
 	Field() string
@@ -168,24 +166,24 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = MetricsTopPodRequestValidationError{}
+} = TopPodRequestValidationError{}
 
-// Validate checks the field values on MetricsTopPodResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the first error encountered is returned, or nil if there are no violations.
-func (m *MetricsTopPodResponse) Validate() error {
+// Validate checks the field values on TopPodResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *TopPodResponse) Validate() error {
 	return m.validate(false)
 }
 
-// ValidateAll checks the field values on MetricsTopPodResponse with the rules
-// defined in the proto definition for this message. If any rules are
-// violated, the result is a list of violation errors wrapped in
-// MetricsTopPodResponseMultiError, or nil if none found.
-func (m *MetricsTopPodResponse) ValidateAll() error {
+// ValidateAll checks the field values on TopPodResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in TopPodResponseMultiError,
+// or nil if none found.
+func (m *TopPodResponse) ValidateAll() error {
 	return m.validate(true)
 }
 
-func (m *MetricsTopPodResponse) validate(all bool) error {
+func (m *TopPodResponse) validate(all bool) error {
 	if m == nil {
 		return nil
 	}
@@ -205,19 +203,19 @@ func (m *MetricsTopPodResponse) validate(all bool) error {
 	// no validation rules for Length
 
 	if len(errors) > 0 {
-		return MetricsTopPodResponseMultiError(errors)
+		return TopPodResponseMultiError(errors)
 	}
 
 	return nil
 }
 
-// MetricsTopPodResponseMultiError is an error wrapping multiple validation
-// errors returned by MetricsTopPodResponse.ValidateAll() if the designated
-// constraints aren't met.
-type MetricsTopPodResponseMultiError []error
+// TopPodResponseMultiError is an error wrapping multiple validation errors
+// returned by TopPodResponse.ValidateAll() if the designated constraints
+// aren't met.
+type TopPodResponseMultiError []error
 
 // Error returns a concatenation of all the error messages it wraps.
-func (m MetricsTopPodResponseMultiError) Error() string {
+func (m TopPodResponseMultiError) Error() string {
 	var msgs []string
 	for _, err := range m {
 		msgs = append(msgs, err.Error())
@@ -226,11 +224,11 @@ func (m MetricsTopPodResponseMultiError) Error() string {
 }
 
 // AllErrors returns a list of validation violation errors.
-func (m MetricsTopPodResponseMultiError) AllErrors() []error { return m }
+func (m TopPodResponseMultiError) AllErrors() []error { return m }
 
-// MetricsTopPodResponseValidationError is the validation error returned by
-// MetricsTopPodResponse.Validate if the designated constraints aren't met.
-type MetricsTopPodResponseValidationError struct {
+// TopPodResponseValidationError is the validation error returned by
+// TopPodResponse.Validate if the designated constraints aren't met.
+type TopPodResponseValidationError struct {
 	field  string
 	reason string
 	cause  error
@@ -238,24 +236,22 @@ type MetricsTopPodResponseValidationError struct {
 }
 
 // Field function returns field value.
-func (e MetricsTopPodResponseValidationError) Field() string { return e.field }
+func (e TopPodResponseValidationError) Field() string { return e.field }
 
 // Reason function returns reason value.
-func (e MetricsTopPodResponseValidationError) Reason() string { return e.reason }
+func (e TopPodResponseValidationError) Reason() string { return e.reason }
 
 // Cause function returns cause value.
-func (e MetricsTopPodResponseValidationError) Cause() error { return e.cause }
+func (e TopPodResponseValidationError) Cause() error { return e.cause }
 
 // Key function returns key value.
-func (e MetricsTopPodResponseValidationError) Key() bool { return e.key }
+func (e TopPodResponseValidationError) Key() bool { return e.key }
 
 // ErrorName returns error name.
-func (e MetricsTopPodResponseValidationError) ErrorName() string {
-	return "MetricsTopPodResponseValidationError"
-}
+func (e TopPodResponseValidationError) ErrorName() string { return "TopPodResponseValidationError" }
 
 // Error satisfies the builtin error interface
-func (e MetricsTopPodResponseValidationError) Error() string {
+func (e TopPodResponseValidationError) Error() string {
 	cause := ""
 	if e.cause != nil {
 		cause = fmt.Sprintf(" | caused by: %v", e.cause)
@@ -267,14 +263,14 @@ func (e MetricsTopPodResponseValidationError) Error() string {
 	}
 
 	return fmt.Sprintf(
-		"invalid %sMetricsTopPodResponse.%s: %s%s",
+		"invalid %sTopPodResponse.%s: %s%s",
 		key,
 		e.field,
 		e.reason,
 		cause)
 }
 
-var _ error = MetricsTopPodResponseValidationError{}
+var _ error = TopPodResponseValidationError{}
 
 var _ interface {
 	Field() string
@@ -282,4 +278,4 @@ var _ interface {
 	Key() bool
 	Cause() error
 	ErrorName() string
-} = MetricsTopPodResponseValidationError{}
+} = TopPodResponseValidationError{}

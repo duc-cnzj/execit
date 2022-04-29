@@ -14,12 +14,15 @@ import (
 	"time"
 
 	"github.com/duc-cnzj/execit-client/event"
+	"github.com/duc-cnzj/execit-client/rbac"
+	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
+	"github.com/duc-cnzj/execit/internal/auth"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/models"
-
-	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
+	trans "github.com/duc-cnzj/execit/internal/translator"
 	"github.com/duc-cnzj/execit/internal/utils"
+	"github.com/duc-cnzj/execit/internal/utils/date"
 	"github.com/duc-cnzj/execit/internal/xlog"
 
 	v1 "k8s.io/api/core/v1"
@@ -30,15 +33,8 @@ import (
 )
 
 const (
-	TAB                 = "\u0009"
 	ETX                 = "\u0003"
 	END_OF_TRANSMISSION = "\u0004"
-	ESC                 = "\u001B"
-
-	Up    = "\u2191"
-	Down  = "\u2193"
-	Left  = "\u2190"
-	Right = "\u2192"
 )
 
 const (
@@ -70,7 +66,7 @@ type Recorder struct {
 	f         *os.File
 	shell     string
 	startTime time.Time
-	user      contracts.UserInfo
+	user      *contracts.UserInfo
 
 	t    *MyPtyHandler
 	once sync.Once
@@ -128,7 +124,7 @@ func (r *Recorder) Close() error {
 			Username: r.user.Name,
 			Message:  fmt.Sprintf("user exec container: '%s' namespace: '%s', pod： '%s', cluster_id: '%d'", r.container.Container, r.container.Namespace, r.container.Pod, r.container.ClusterID),
 			FileID:   &file.ID,
-			Duration: utils.HumanDuration(time.Since(r.startTime)),
+			Duration: date.HumanDuration(time.Since(r.startTime)),
 		}
 		app.DB().Create(&emodal)
 		emptyFile = false
@@ -488,6 +484,9 @@ type TerminalResponse struct {
 }
 
 func HandleExecShell(input *websocket_pb.WsHandleExecShellInput, conn *WsConn) (string, error) {
+	if !auth.HasPermissionFor(conn.GetUser(), rbac.Permission_Card, input.CardId) {
+		return "", trans.TToError("forbidden", conn.lang.Get())
+	}
 	k8sClient := utils.K8sClientByClusterID(input.ClusterId)
 	if running, reason := utils.IsPodRunning(k8sClient.Client(), input.Namespace, input.Pod); !running {
 		return "", errors.New(reason)

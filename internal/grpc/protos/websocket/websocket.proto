@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package websocket;
+
 option go_package = "github.com/duc-cnzj/execit-client/websocket;websocket";
 
 enum Type {
@@ -12,6 +14,7 @@ enum Type {
   HandleCloseShell = 52;
   HandleAuthorize = 53;
   HandleSyncCard = 54;
+  HandleSetLang = 55;
 }
 
 enum ResultType {
@@ -69,6 +72,13 @@ message WsHandleExecShellInput {
   string namespace = 3;
   string pod = 4;
   string container = 5;
+  int64 card_id = 6;
+}
+
+message WsHandleSetLangInput {
+  Type type = 1;
+
+  string lang = 2;
 }
 
 // Response

@@ -3,8 +3,13 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
 
+	"github.com/duc-cnzj/execit-client/auth"
+	"github.com/duc-cnzj/execit-client/rbac"
+	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/contracts"
+	"github.com/duc-cnzj/execit/internal/models"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"google.golang.org/grpc"
 )
@@ -44,6 +49,29 @@ func StreamServerInterceptor() grpc.StreamServerInterceptor {
 }
 
 type CtxTokenInfo struct{}
+
+func GetUserPermissions(email string) []*auth.Permission {
+	var cardIds []string
+	var ups []*models.UserPermission
+	app.DB().Where("`email` = ? and `state` = ? and `permission` = ?", email, rbac.State_Approved, rbac.Permission_Card).Find(&ups)
+	for _, up := range ups {
+		cardIds = append(cardIds, fmt.Sprintf("%d", up.SubjectID))
+	}
+
+	return []*auth.Permission{
+		{
+			Permission: rbac.Permission_Card,
+			Items:      cardIds,
+		},
+		{Permission: rbac.Permission_ClusterAdd, Items: []string{}},
+		{Permission: rbac.Permission_ClusterDelete, Items: []string{}},
+		{Permission: rbac.Permission_ClusterView, Items: []string{}},
+		{Permission: rbac.Permission_FileDownload, Items: []string{}},
+		{Permission: rbac.Permission_FileUpload, Items: []string{}},
+		{Permission: rbac.Permission_FileDownload, Items: []string{}},
+		{Permission: rbac.Permission_EventView, Items: []string{}},
+	}
+}
 
 func SetUser(ctx context.Context, info *contracts.UserInfo) context.Context {
 	return context.WithValue(ctx, &CtxTokenInfo{}, info)

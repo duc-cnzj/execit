@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package model;
+
 option go_package = "github.com/duc-cnzj/execit-client/model;model";
 
 message ClusterModel {

@@ -24,9 +24,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ContainerSvcClient interface {
 	// CopyToPod (web): 页面上传文件到 pod 内部
-	CopyToPod(ctx context.Context, in *ContainerCopyToPodRequest, opts ...grpc.CallOption) (*ContainerCopyToPodResponse, error)
+	CopyToPod(ctx context.Context, in *CopyToPodRequest, opts ...grpc.CallOption) (*CopyToPodResponse, error)
 	// Exec grpc 执行 pod 命令
-	Exec(ctx context.Context, in *ContainerExecRequest, opts ...grpc.CallOption) (ContainerSvc_ExecClient, error)
+	Exec(ctx context.Context, in *ExecRequest, opts ...grpc.CallOption) (ContainerSvc_ExecClient, error)
 	// StreamCopyToPod grpc 上传文件到 pod
 	//  demo:
 	//  cp, _ := c.Container().StreamCopyToPod(context.TODO())
@@ -69,13 +69,13 @@ type ContainerSvcClient interface {
 	//	}
 	StreamCopyToPod(ctx context.Context, opts ...grpc.CallOption) (ContainerSvc_StreamCopyToPodClient, error)
 	// IsPodRunning pod 是否正常在跑
-	IsPodRunning(ctx context.Context, in *ContainerIsPodRunningRequest, opts ...grpc.CallOption) (*ContainerIsPodRunningResponse, error)
+	IsPodRunning(ctx context.Context, in *IsPodRunningRequest, opts ...grpc.CallOption) (*IsPodRunningResponse, error)
 	//  IsPodExists pod 是否存在
-	IsPodExists(ctx context.Context, in *ContainerIsPodExistsRequest, opts ...grpc.CallOption) (*ContainerIsPodExistsResponse, error)
+	IsPodExists(ctx context.Context, in *IsPodExistsRequest, opts ...grpc.CallOption) (*IsPodExistsResponse, error)
 	// ContainerLog 查看 pod 日志
-	ContainerLog(ctx context.Context, in *ContainerLogRequest, opts ...grpc.CallOption) (*ContainerLogResponse, error)
+	ContainerLog(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error)
 	// StreamContainerLog stream 方式查看 pod 日志
-	StreamContainerLog(ctx context.Context, in *ContainerLogRequest, opts ...grpc.CallOption) (ContainerSvc_StreamContainerLogClient, error)
+	StreamContainerLog(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (ContainerSvc_StreamContainerLogClient, error)
 }
 
 type containerSvcClient struct {
@@ -86,17 +86,17 @@ func NewContainerSvcClient(cc grpc.ClientConnInterface) ContainerSvcClient {
 	return &containerSvcClient{cc}
 }
 
-func (c *containerSvcClient) CopyToPod(ctx context.Context, in *ContainerCopyToPodRequest, opts ...grpc.CallOption) (*ContainerCopyToPodResponse, error) {
-	out := new(ContainerCopyToPodResponse)
-	err := c.cc.Invoke(ctx, "/ContainerSvc/CopyToPod", in, out, opts...)
+func (c *containerSvcClient) CopyToPod(ctx context.Context, in *CopyToPodRequest, opts ...grpc.CallOption) (*CopyToPodResponse, error) {
+	out := new(CopyToPodResponse)
+	err := c.cc.Invoke(ctx, "/container.ContainerSvc/CopyToPod", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *containerSvcClient) Exec(ctx context.Context, in *ContainerExecRequest, opts ...grpc.CallOption) (ContainerSvc_ExecClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ContainerSvc_ServiceDesc.Streams[0], "/ContainerSvc/Exec", opts...)
+func (c *containerSvcClient) Exec(ctx context.Context, in *ExecRequest, opts ...grpc.CallOption) (ContainerSvc_ExecClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ContainerSvc_ServiceDesc.Streams[0], "/container.ContainerSvc/Exec", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +111,7 @@ func (c *containerSvcClient) Exec(ctx context.Context, in *ContainerExecRequest,
 }
 
 type ContainerSvc_ExecClient interface {
-	Recv() (*ContainerExecResponse, error)
+	Recv() (*ExecResponse, error)
 	grpc.ClientStream
 }
 
@@ -119,8 +119,8 @@ type containerSvcExecClient struct {
 	grpc.ClientStream
 }
 
-func (x *containerSvcExecClient) Recv() (*ContainerExecResponse, error) {
-	m := new(ContainerExecResponse)
+func (x *containerSvcExecClient) Recv() (*ExecResponse, error) {
+	m := new(ExecResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -128,7 +128,7 @@ func (x *containerSvcExecClient) Recv() (*ContainerExecResponse, error) {
 }
 
 func (c *containerSvcClient) StreamCopyToPod(ctx context.Context, opts ...grpc.CallOption) (ContainerSvc_StreamCopyToPodClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ContainerSvc_ServiceDesc.Streams[1], "/ContainerSvc/StreamCopyToPod", opts...)
+	stream, err := c.cc.NewStream(ctx, &ContainerSvc_ServiceDesc.Streams[1], "/container.ContainerSvc/StreamCopyToPod", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -137,8 +137,8 @@ func (c *containerSvcClient) StreamCopyToPod(ctx context.Context, opts ...grpc.C
 }
 
 type ContainerSvc_StreamCopyToPodClient interface {
-	Send(*ContainerStreamCopyToPodRequest) error
-	CloseAndRecv() (*ContainerStreamCopyToPodResponse, error)
+	Send(*StreamCopyToPodRequest) error
+	CloseAndRecv() (*StreamCopyToPodResponse, error)
 	grpc.ClientStream
 }
 
@@ -146,50 +146,50 @@ type containerSvcStreamCopyToPodClient struct {
 	grpc.ClientStream
 }
 
-func (x *containerSvcStreamCopyToPodClient) Send(m *ContainerStreamCopyToPodRequest) error {
+func (x *containerSvcStreamCopyToPodClient) Send(m *StreamCopyToPodRequest) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *containerSvcStreamCopyToPodClient) CloseAndRecv() (*ContainerStreamCopyToPodResponse, error) {
+func (x *containerSvcStreamCopyToPodClient) CloseAndRecv() (*StreamCopyToPodResponse, error) {
 	if err := x.ClientStream.CloseSend(); err != nil {
 		return nil, err
 	}
-	m := new(ContainerStreamCopyToPodResponse)
+	m := new(StreamCopyToPodResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *containerSvcClient) IsPodRunning(ctx context.Context, in *ContainerIsPodRunningRequest, opts ...grpc.CallOption) (*ContainerIsPodRunningResponse, error) {
-	out := new(ContainerIsPodRunningResponse)
-	err := c.cc.Invoke(ctx, "/ContainerSvc/IsPodRunning", in, out, opts...)
+func (c *containerSvcClient) IsPodRunning(ctx context.Context, in *IsPodRunningRequest, opts ...grpc.CallOption) (*IsPodRunningResponse, error) {
+	out := new(IsPodRunningResponse)
+	err := c.cc.Invoke(ctx, "/container.ContainerSvc/IsPodRunning", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *containerSvcClient) IsPodExists(ctx context.Context, in *ContainerIsPodExistsRequest, opts ...grpc.CallOption) (*ContainerIsPodExistsResponse, error) {
-	out := new(ContainerIsPodExistsResponse)
-	err := c.cc.Invoke(ctx, "/ContainerSvc/IsPodExists", in, out, opts...)
+func (c *containerSvcClient) IsPodExists(ctx context.Context, in *IsPodExistsRequest, opts ...grpc.CallOption) (*IsPodExistsResponse, error) {
+	out := new(IsPodExistsResponse)
+	err := c.cc.Invoke(ctx, "/container.ContainerSvc/IsPodExists", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *containerSvcClient) ContainerLog(ctx context.Context, in *ContainerLogRequest, opts ...grpc.CallOption) (*ContainerLogResponse, error) {
-	out := new(ContainerLogResponse)
-	err := c.cc.Invoke(ctx, "/ContainerSvc/ContainerLog", in, out, opts...)
+func (c *containerSvcClient) ContainerLog(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error) {
+	out := new(LogResponse)
+	err := c.cc.Invoke(ctx, "/container.ContainerSvc/ContainerLog", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *containerSvcClient) StreamContainerLog(ctx context.Context, in *ContainerLogRequest, opts ...grpc.CallOption) (ContainerSvc_StreamContainerLogClient, error) {
-	stream, err := c.cc.NewStream(ctx, &ContainerSvc_ServiceDesc.Streams[2], "/ContainerSvc/StreamContainerLog", opts...)
+func (c *containerSvcClient) StreamContainerLog(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (ContainerSvc_StreamContainerLogClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ContainerSvc_ServiceDesc.Streams[2], "/container.ContainerSvc/StreamContainerLog", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +204,7 @@ func (c *containerSvcClient) StreamContainerLog(ctx context.Context, in *Contain
 }
 
 type ContainerSvc_StreamContainerLogClient interface {
-	Recv() (*ContainerLogResponse, error)
+	Recv() (*LogResponse, error)
 	grpc.ClientStream
 }
 
@@ -212,8 +212,8 @@ type containerSvcStreamContainerLogClient struct {
 	grpc.ClientStream
 }
 
-func (x *containerSvcStreamContainerLogClient) Recv() (*ContainerLogResponse, error) {
-	m := new(ContainerLogResponse)
+func (x *containerSvcStreamContainerLogClient) Recv() (*LogResponse, error) {
+	m := new(LogResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -225,9 +225,9 @@ func (x *containerSvcStreamContainerLogClient) Recv() (*ContainerLogResponse, er
 // for forward compatibility
 type ContainerSvcServer interface {
 	// CopyToPod (web): 页面上传文件到 pod 内部
-	CopyToPod(context.Context, *ContainerCopyToPodRequest) (*ContainerCopyToPodResponse, error)
+	CopyToPod(context.Context, *CopyToPodRequest) (*CopyToPodResponse, error)
 	// Exec grpc 执行 pod 命令
-	Exec(*ContainerExecRequest, ContainerSvc_ExecServer) error
+	Exec(*ExecRequest, ContainerSvc_ExecServer) error
 	// StreamCopyToPod grpc 上传文件到 pod
 	//  demo:
 	//  cp, _ := c.Container().StreamCopyToPod(context.TODO())
@@ -270,13 +270,13 @@ type ContainerSvcServer interface {
 	//	}
 	StreamCopyToPod(ContainerSvc_StreamCopyToPodServer) error
 	// IsPodRunning pod 是否正常在跑
-	IsPodRunning(context.Context, *ContainerIsPodRunningRequest) (*ContainerIsPodRunningResponse, error)
+	IsPodRunning(context.Context, *IsPodRunningRequest) (*IsPodRunningResponse, error)
 	//  IsPodExists pod 是否存在
-	IsPodExists(context.Context, *ContainerIsPodExistsRequest) (*ContainerIsPodExistsResponse, error)
+	IsPodExists(context.Context, *IsPodExistsRequest) (*IsPodExistsResponse, error)
 	// ContainerLog 查看 pod 日志
-	ContainerLog(context.Context, *ContainerLogRequest) (*ContainerLogResponse, error)
+	ContainerLog(context.Context, *LogRequest) (*LogResponse, error)
 	// StreamContainerLog stream 方式查看 pod 日志
-	StreamContainerLog(*ContainerLogRequest, ContainerSvc_StreamContainerLogServer) error
+	StreamContainerLog(*LogRequest, ContainerSvc_StreamContainerLogServer) error
 	mustEmbedUnimplementedContainerSvcServer()
 }
 
@@ -284,25 +284,25 @@ type ContainerSvcServer interface {
 type UnimplementedContainerSvcServer struct {
 }
 
-func (UnimplementedContainerSvcServer) CopyToPod(context.Context, *ContainerCopyToPodRequest) (*ContainerCopyToPodResponse, error) {
+func (UnimplementedContainerSvcServer) CopyToPod(context.Context, *CopyToPodRequest) (*CopyToPodResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CopyToPod not implemented")
 }
-func (UnimplementedContainerSvcServer) Exec(*ContainerExecRequest, ContainerSvc_ExecServer) error {
+func (UnimplementedContainerSvcServer) Exec(*ExecRequest, ContainerSvc_ExecServer) error {
 	return status.Errorf(codes.Unimplemented, "method Exec not implemented")
 }
 func (UnimplementedContainerSvcServer) StreamCopyToPod(ContainerSvc_StreamCopyToPodServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamCopyToPod not implemented")
 }
-func (UnimplementedContainerSvcServer) IsPodRunning(context.Context, *ContainerIsPodRunningRequest) (*ContainerIsPodRunningResponse, error) {
+func (UnimplementedContainerSvcServer) IsPodRunning(context.Context, *IsPodRunningRequest) (*IsPodRunningResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsPodRunning not implemented")
 }
-func (UnimplementedContainerSvcServer) IsPodExists(context.Context, *ContainerIsPodExistsRequest) (*ContainerIsPodExistsResponse, error) {
+func (UnimplementedContainerSvcServer) IsPodExists(context.Context, *IsPodExistsRequest) (*IsPodExistsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IsPodExists not implemented")
 }
-func (UnimplementedContainerSvcServer) ContainerLog(context.Context, *ContainerLogRequest) (*ContainerLogResponse, error) {
+func (UnimplementedContainerSvcServer) ContainerLog(context.Context, *LogRequest) (*LogResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ContainerLog not implemented")
 }
-func (UnimplementedContainerSvcServer) StreamContainerLog(*ContainerLogRequest, ContainerSvc_StreamContainerLogServer) error {
+func (UnimplementedContainerSvcServer) StreamContainerLog(*LogRequest, ContainerSvc_StreamContainerLogServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamContainerLog not implemented")
 }
 func (UnimplementedContainerSvcServer) mustEmbedUnimplementedContainerSvcServer() {}
@@ -319,7 +319,7 @@ func RegisterContainerSvcServer(s grpc.ServiceRegistrar, srv ContainerSvcServer)
 }
 
 func _ContainerSvc_CopyToPod_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ContainerCopyToPodRequest)
+	in := new(CopyToPodRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -328,16 +328,16 @@ func _ContainerSvc_CopyToPod_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ContainerSvc/CopyToPod",
+		FullMethod: "/container.ContainerSvc/CopyToPod",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContainerSvcServer).CopyToPod(ctx, req.(*ContainerCopyToPodRequest))
+		return srv.(ContainerSvcServer).CopyToPod(ctx, req.(*CopyToPodRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ContainerSvc_Exec_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ContainerExecRequest)
+	m := new(ExecRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -345,7 +345,7 @@ func _ContainerSvc_Exec_Handler(srv interface{}, stream grpc.ServerStream) error
 }
 
 type ContainerSvc_ExecServer interface {
-	Send(*ContainerExecResponse) error
+	Send(*ExecResponse) error
 	grpc.ServerStream
 }
 
@@ -353,7 +353,7 @@ type containerSvcExecServer struct {
 	grpc.ServerStream
 }
 
-func (x *containerSvcExecServer) Send(m *ContainerExecResponse) error {
+func (x *containerSvcExecServer) Send(m *ExecResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -362,8 +362,8 @@ func _ContainerSvc_StreamCopyToPod_Handler(srv interface{}, stream grpc.ServerSt
 }
 
 type ContainerSvc_StreamCopyToPodServer interface {
-	SendAndClose(*ContainerStreamCopyToPodResponse) error
-	Recv() (*ContainerStreamCopyToPodRequest, error)
+	SendAndClose(*StreamCopyToPodResponse) error
+	Recv() (*StreamCopyToPodRequest, error)
 	grpc.ServerStream
 }
 
@@ -371,12 +371,12 @@ type containerSvcStreamCopyToPodServer struct {
 	grpc.ServerStream
 }
 
-func (x *containerSvcStreamCopyToPodServer) SendAndClose(m *ContainerStreamCopyToPodResponse) error {
+func (x *containerSvcStreamCopyToPodServer) SendAndClose(m *StreamCopyToPodResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *containerSvcStreamCopyToPodServer) Recv() (*ContainerStreamCopyToPodRequest, error) {
-	m := new(ContainerStreamCopyToPodRequest)
+func (x *containerSvcStreamCopyToPodServer) Recv() (*StreamCopyToPodRequest, error) {
+	m := new(StreamCopyToPodRequest)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -384,7 +384,7 @@ func (x *containerSvcStreamCopyToPodServer) Recv() (*ContainerStreamCopyToPodReq
 }
 
 func _ContainerSvc_IsPodRunning_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ContainerIsPodRunningRequest)
+	in := new(IsPodRunningRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -393,16 +393,16 @@ func _ContainerSvc_IsPodRunning_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ContainerSvc/IsPodRunning",
+		FullMethod: "/container.ContainerSvc/IsPodRunning",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContainerSvcServer).IsPodRunning(ctx, req.(*ContainerIsPodRunningRequest))
+		return srv.(ContainerSvcServer).IsPodRunning(ctx, req.(*IsPodRunningRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ContainerSvc_IsPodExists_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ContainerIsPodExistsRequest)
+	in := new(IsPodExistsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -411,16 +411,16 @@ func _ContainerSvc_IsPodExists_Handler(srv interface{}, ctx context.Context, dec
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ContainerSvc/IsPodExists",
+		FullMethod: "/container.ContainerSvc/IsPodExists",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContainerSvcServer).IsPodExists(ctx, req.(*ContainerIsPodExistsRequest))
+		return srv.(ContainerSvcServer).IsPodExists(ctx, req.(*IsPodExistsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ContainerSvc_ContainerLog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ContainerLogRequest)
+	in := new(LogRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -429,16 +429,16 @@ func _ContainerSvc_ContainerLog_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ContainerSvc/ContainerLog",
+		FullMethod: "/container.ContainerSvc/ContainerLog",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ContainerSvcServer).ContainerLog(ctx, req.(*ContainerLogRequest))
+		return srv.(ContainerSvcServer).ContainerLog(ctx, req.(*LogRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ContainerSvc_StreamContainerLog_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(ContainerLogRequest)
+	m := new(LogRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -446,7 +446,7 @@ func _ContainerSvc_StreamContainerLog_Handler(srv interface{}, stream grpc.Serve
 }
 
 type ContainerSvc_StreamContainerLogServer interface {
-	Send(*ContainerLogResponse) error
+	Send(*LogResponse) error
 	grpc.ServerStream
 }
 
@@ -454,7 +454,7 @@ type containerSvcStreamContainerLogServer struct {
 	grpc.ServerStream
 }
 
-func (x *containerSvcStreamContainerLogServer) Send(m *ContainerLogResponse) error {
+func (x *containerSvcStreamContainerLogServer) Send(m *LogResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -462,7 +462,7 @@ func (x *containerSvcStreamContainerLogServer) Send(m *ContainerLogResponse) err
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ContainerSvc_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "ContainerSvc",
+	ServiceName: "container.ContainerSvc",
 	HandlerType: (*ContainerSvcServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

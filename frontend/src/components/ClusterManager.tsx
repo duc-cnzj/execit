@@ -35,13 +35,13 @@ const ClusterManager: React.FC = () => {
     page_size: number;
     count: number;
   }>({ page: 0, page_size: defaultPageSize, count: 0 });
-  const [list, setList] = useState<pb.ClusterModel[]>([]);
+  const [list, setList] = useState<pb.model.ClusterModel[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const { t } = useTranslation();
   const [current, setCurrent] = useState<{
     clusterID: number;
-    detail?: pb.ClusterShowResponse;
+    detail?: pb.cluster.ShowResponse;
   }>({
     clusterID: 0,
     detail: undefined,
@@ -79,7 +79,7 @@ const ClusterManager: React.FC = () => {
   }, [current.clusterID]);
 
   const onAdd = useCallback(
-    (item: pb.ClusterItem) => {
+    (item: pb.cluster.Item) => {
       cardCreate({
         cluster_id: item.cluster_id,
         namespace: item.namespace,
@@ -267,7 +267,7 @@ const ClusterManager: React.FC = () => {
                 </Empty>
               ),
             }}
-            renderItem={(item: pb.ClusterModel) => (
+            renderItem={(item: pb.model.ClusterModel) => (
               <List.Item
                 className="git__list-item"
                 key={item.id}
@@ -323,7 +323,7 @@ const ClusterManager: React.FC = () => {
             >
               {current.detail?.items &&
                 current.detail?.items.map(
-                  (item: pb.ClusterItems, idx: number) => (
+                  (item: pb.cluster.Items, idx: number) => (
                     <TabPane
                       tab={item.namespace}
                       key={item.namespace}
@@ -346,8 +346,8 @@ const ClusterManager: React.FC = () => {
 };
 
 const DetailItems: React.FC<{
-  items?: pb.ClusterItem[];
-  onAdd: (item: pb.ClusterItem) => void;
+  items?: pb.cluster.Item[];
+  onAdd: (item: pb.cluster.Item) => void;
   onDelete: (cardID: number) => void;
 }> = ({ items, onAdd, onDelete }) => {
   return (

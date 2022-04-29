@@ -40,7 +40,7 @@ var now = func() string {
 	return time.Now().Format("15:04:05")
 }
 
-func (m *MetricsSvc) TopPod(ctx context.Context, request *metrics.MetricsTopPodRequest) (*metrics.MetricsTopPodResponse, error) {
+func (m *MetricsSvc) TopPod(ctx context.Context, request *metrics.TopPodRequest) (*metrics.TopPodResponse, error) {
 	k8sClient := utils.K8sClientByClusterID(request.ClusterId)
 	podMetrics, err := k8sClient.MetricsClient().MetricsV1beta1().PodMetricses(request.Namespace).Get(context.TODO(), request.Pod, metav1.GetOptions{})
 	if err != nil {
@@ -54,7 +54,7 @@ func (m *MetricsSvc) TopPod(ctx context.Context, request *metrics.MetricsTopPodR
 	return m.metrics(podMetrics), nil
 }
 
-func (m *MetricsSvc) StreamTopPod(request *metrics.MetricsTopPodRequest, server metrics.Metrics_StreamTopPodServer) error {
+func (m *MetricsSvc) StreamTopPod(request *metrics.TopPodRequest, server metrics.Metrics_StreamTopPodServer) error {
 	k8sClient := utils.K8sClientByClusterID(request.ClusterId)
 
 	ticker := time.NewTicker(tickDuration)
@@ -95,7 +95,7 @@ func (m *MetricsSvc) StreamTopPod(request *metrics.MetricsTopPodRequest, server 
 	}
 }
 
-func (m *MetricsSvc) metrics(podMetrics *v1beta1.PodMetrics) *metrics.MetricsTopPodResponse {
+func (m *MetricsSvc) metrics(podMetrics *v1beta1.PodMetrics) *metrics.TopPodResponse {
 	cpu, memory := utils.GetCpuAndMemoryQuantity(*podMetrics)
 	cpuM := cpu.MilliValue()
 	var HumanizeCpu string = fmt.Sprintf("%v m", float64(cpu.MilliValue()))
@@ -104,7 +104,7 @@ func (m *MetricsSvc) metrics(podMetrics *v1beta1.PodMetrics) *metrics.MetricsTop
 	}
 	asInt64, _ := memory.AsInt64()
 
-	return &metrics.MetricsTopPodResponse{
+	return &metrics.TopPodResponse{
 		Cpu:            float64(cpu.MilliValue()),
 		Memory:         float64(memory.ScaledValue(3)),
 		HumanizeCpu:    HumanizeCpu,

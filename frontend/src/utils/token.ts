@@ -42,6 +42,7 @@ export const toggleRandomBg = (): boolean => {
 export const setLang = (lang: string) => {
   window.localStorage.setItem("lang", lang);
 };
+
 export const getLang = (): string => {
   return window.localStorage.getItem("lang") || "en";
 };

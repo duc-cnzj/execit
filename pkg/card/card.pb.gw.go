@@ -32,7 +32,7 @@ var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
 func request_CardSvc_All_0(ctx context.Context, marshaler runtime.Marshaler, client CardSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CardAllRequest
+	var protoReq AllRequest
 	var metadata runtime.ServerMetadata
 
 	msg, err := client.All(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
@@ -41,7 +41,7 @@ func request_CardSvc_All_0(ctx context.Context, marshaler runtime.Marshaler, cli
 }
 
 func local_request_CardSvc_All_0(ctx context.Context, marshaler runtime.Marshaler, server CardSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CardAllRequest
+	var protoReq AllRequest
 	var metadata runtime.ServerMetadata
 
 	msg, err := server.All(ctx, &protoReq)
@@ -50,7 +50,7 @@ func local_request_CardSvc_All_0(ctx context.Context, marshaler runtime.Marshale
 }
 
 func request_CardSvc_Create_0(ctx context.Context, marshaler runtime.Marshaler, client CardSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CardCreateRequest
+	var protoReq CreateRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -67,7 +67,7 @@ func request_CardSvc_Create_0(ctx context.Context, marshaler runtime.Marshaler, 
 }
 
 func local_request_CardSvc_Create_0(ctx context.Context, marshaler runtime.Marshaler, server CardSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CardCreateRequest
+	var protoReq CreateRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -84,7 +84,7 @@ func local_request_CardSvc_Create_0(ctx context.Context, marshaler runtime.Marsh
 }
 
 func request_CardSvc_Show_0(ctx context.Context, marshaler runtime.Marshaler, client CardSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CardShowRequest
+	var protoReq ShowRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -110,7 +110,7 @@ func request_CardSvc_Show_0(ctx context.Context, marshaler runtime.Marshaler, cl
 }
 
 func local_request_CardSvc_Show_0(ctx context.Context, marshaler runtime.Marshaler, server CardSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CardShowRequest
+	var protoReq ShowRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -136,7 +136,7 @@ func local_request_CardSvc_Show_0(ctx context.Context, marshaler runtime.Marshal
 }
 
 func request_CardSvc_Delete_0(ctx context.Context, marshaler runtime.Marshaler, client CardSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CardDeleteRequest
+	var protoReq DeleteRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -162,7 +162,7 @@ func request_CardSvc_Delete_0(ctx context.Context, marshaler runtime.Marshaler, 
 }
 
 func local_request_CardSvc_Delete_0(ctx context.Context, marshaler runtime.Marshaler, server CardSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CardDeleteRequest
+	var protoReq DeleteRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -188,7 +188,7 @@ func local_request_CardSvc_Delete_0(ctx context.Context, marshaler runtime.Marsh
 }
 
 func request_CardSvc_AllContainers_0(ctx context.Context, marshaler runtime.Marshaler, client CardSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CardAllContainersRequest
+	var protoReq AllContainersRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -214,7 +214,7 @@ func request_CardSvc_AllContainers_0(ctx context.Context, marshaler runtime.Mars
 }
 
 func local_request_CardSvc_AllContainers_0(ctx context.Context, marshaler runtime.Marshaler, server CardSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq CardAllContainersRequest
+	var protoReq AllContainersRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -252,7 +252,7 @@ func RegisterCardSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.CardSvc/All", runtime.WithHTTPPathPattern("/api/all_cards"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/card.CardSvc/All", runtime.WithHTTPPathPattern("/api/all_cards"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -276,7 +276,7 @@ func RegisterCardSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.CardSvc/Create", runtime.WithHTTPPathPattern("/api/cards"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/card.CardSvc/Create", runtime.WithHTTPPathPattern("/api/cards"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -300,7 +300,7 @@ func RegisterCardSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.CardSvc/Show", runtime.WithHTTPPathPattern("/api/cards/{card_id}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/card.CardSvc/Show", runtime.WithHTTPPathPattern("/api/cards/{card_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -324,7 +324,7 @@ func RegisterCardSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.CardSvc/Delete", runtime.WithHTTPPathPattern("/api/cards/{card_id}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/card.CardSvc/Delete", runtime.WithHTTPPathPattern("/api/cards/{card_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -348,7 +348,7 @@ func RegisterCardSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux, se
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.CardSvc/AllContainers", runtime.WithHTTPPathPattern("/api/cards/{card_id}/all_containers"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/card.CardSvc/AllContainers", runtime.WithHTTPPathPattern("/api/cards/{card_id}/all_containers"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -411,7 +411,7 @@ func RegisterCardSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.CardSvc/All", runtime.WithHTTPPathPattern("/api/all_cards"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/card.CardSvc/All", runtime.WithHTTPPathPattern("/api/all_cards"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -432,7 +432,7 @@ func RegisterCardSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.CardSvc/Create", runtime.WithHTTPPathPattern("/api/cards"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/card.CardSvc/Create", runtime.WithHTTPPathPattern("/api/cards"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -453,7 +453,7 @@ func RegisterCardSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.CardSvc/Show", runtime.WithHTTPPathPattern("/api/cards/{card_id}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/card.CardSvc/Show", runtime.WithHTTPPathPattern("/api/cards/{card_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -474,7 +474,7 @@ func RegisterCardSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.CardSvc/Delete", runtime.WithHTTPPathPattern("/api/cards/{card_id}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/card.CardSvc/Delete", runtime.WithHTTPPathPattern("/api/cards/{card_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -495,7 +495,7 @@ func RegisterCardSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux, cl
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.CardSvc/AllContainers", runtime.WithHTTPPathPattern("/api/cards/{card_id}/all_containers"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/card.CardSvc/AllContainers", runtime.WithHTTPPathPattern("/api/cards/{card_id}/all_containers"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

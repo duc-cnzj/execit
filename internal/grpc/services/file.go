@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/duc-cnzj/execit/internal/utils/date"
+
 	"github.com/dustin/go-humanize"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -20,7 +22,6 @@ import (
 	"github.com/duc-cnzj/execit/internal/event/events"
 	"github.com/duc-cnzj/execit/internal/models"
 	"github.com/duc-cnzj/execit/internal/scopes"
-	"github.com/duc-cnzj/execit/internal/utils"
 	"github.com/duc-cnzj/execit/internal/xlog"
 )
 
@@ -35,7 +36,7 @@ type FileSvc struct {
 	file.UnimplementedFileSvcServer
 }
 
-func (m *FileSvc) List(ctx context.Context, request *file.FileListRequest) (*file.FileListResponse, error) {
+func (m *FileSvc) List(ctx context.Context, request *file.ListRequest) (*file.ListResponse, error) {
 	var (
 		page     = int(request.Page)
 		pageSize = int(request.PageSize)
@@ -63,7 +64,7 @@ func (m *FileSvc) List(ctx context.Context, request *file.FileListRequest) (*fil
 		)
 		if ff.DeletedAt.Valid {
 			isDeleted = true
-			deletedAt = utils.ToRFC3339DatetimeString(&ff.DeletedAt.Time)
+			deletedAt = date.ToRFC3339DatetimeString(&ff.DeletedAt.Time)
 		}
 		res = append(res, &model.FileModel{
 			Id:            int64(ff.ID),
@@ -74,14 +75,14 @@ func (m *FileSvc) List(ctx context.Context, request *file.FileListRequest) (*fil
 			Pod:           ff.Pod,
 			Container:     ff.Container,
 			ContainerPath: ff.ContainerPath,
-			CreatedAt:     utils.ToRFC3339DatetimeString(&ff.CreatedAt),
-			UpdatedAt:     utils.ToRFC3339DatetimeString(&ff.UpdatedAt),
+			CreatedAt:     date.ToRFC3339DatetimeString(&ff.CreatedAt),
+			UpdatedAt:     date.ToRFC3339DatetimeString(&ff.UpdatedAt),
 			DeletedAt:     deletedAt,
 			IsDeleted:     isDeleted,
 		})
 	}
 
-	return &file.FileListResponse{
+	return &file.ListResponse{
 		Page:     int64(page),
 		PageSize: int64(pageSize),
 		Items:    res,
@@ -151,7 +152,7 @@ func (m *FileSvc) DeleteUndocumentedFiles(ctx context.Context, _ *file.DeleteUnd
 	return &file.DeleteUndocumentedFilesResponse{Items: clearList}, nil
 }
 
-func (*FileSvc) Delete(ctx context.Context, request *file.FileDeleteRequest) (*file.FileDeleteResponse, error) {
+func (*FileSvc) Delete(ctx context.Context, request *file.DeleteRequest) (*file.DeleteResponse, error) {
 	var f = &models.File{ID: int(request.Id)}
 	if err := app.DB().First(&f).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
@@ -165,7 +166,7 @@ func (*FileSvc) Delete(ctx context.Context, request *file.FileDeleteRequest) (*f
 		eventpb.ActionType_Delete,
 		fmt.Sprintf("Deleted file: '%s', the file was uploaded by %s, size is %s", f.Path, f.Username, humanize.Bytes(f.Size)))
 
-	return &file.FileDeleteResponse{}, nil
+	return &file.DeleteResponse{}, nil
 }
 
 func (m *FileSvc) Authorize(ctx context.Context, fullMethodName string) (context.Context, error) {

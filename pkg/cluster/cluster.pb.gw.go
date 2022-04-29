@@ -36,7 +36,7 @@ var (
 )
 
 func request_ClusterSvc_List_0(ctx context.Context, marshaler runtime.Marshaler, client ClusterSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ClusterListRequest
+	var protoReq ListRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -52,7 +52,7 @@ func request_ClusterSvc_List_0(ctx context.Context, marshaler runtime.Marshaler,
 }
 
 func local_request_ClusterSvc_List_0(ctx context.Context, marshaler runtime.Marshaler, server ClusterSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ClusterListRequest
+	var protoReq ListRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
@@ -68,7 +68,7 @@ func local_request_ClusterSvc_List_0(ctx context.Context, marshaler runtime.Mars
 }
 
 func request_ClusterSvc_Create_0(ctx context.Context, marshaler runtime.Marshaler, client ClusterSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ClusterCreateRequest
+	var protoReq CreateRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -85,7 +85,7 @@ func request_ClusterSvc_Create_0(ctx context.Context, marshaler runtime.Marshale
 }
 
 func local_request_ClusterSvc_Create_0(ctx context.Context, marshaler runtime.Marshaler, server ClusterSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ClusterCreateRequest
+	var protoReq CreateRequest
 	var metadata runtime.ServerMetadata
 
 	newReader, berr := utilities.IOReaderFactory(req.Body)
@@ -102,7 +102,7 @@ func local_request_ClusterSvc_Create_0(ctx context.Context, marshaler runtime.Ma
 }
 
 func request_ClusterSvc_Show_0(ctx context.Context, marshaler runtime.Marshaler, client ClusterSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ClusterShowRequest
+	var protoReq ShowRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -128,7 +128,7 @@ func request_ClusterSvc_Show_0(ctx context.Context, marshaler runtime.Marshaler,
 }
 
 func local_request_ClusterSvc_Show_0(ctx context.Context, marshaler runtime.Marshaler, server ClusterSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ClusterShowRequest
+	var protoReq ShowRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -154,7 +154,7 @@ func local_request_ClusterSvc_Show_0(ctx context.Context, marshaler runtime.Mars
 }
 
 func request_ClusterSvc_Delete_0(ctx context.Context, marshaler runtime.Marshaler, client ClusterSvcClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ClusterDeleteRequest
+	var protoReq DeleteRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -180,7 +180,7 @@ func request_ClusterSvc_Delete_0(ctx context.Context, marshaler runtime.Marshale
 }
 
 func local_request_ClusterSvc_Delete_0(ctx context.Context, marshaler runtime.Marshaler, server ClusterSvcServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
-	var protoReq ClusterDeleteRequest
+	var protoReq DeleteRequest
 	var metadata runtime.ServerMetadata
 
 	var (
@@ -218,7 +218,7 @@ func RegisterClusterSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.ClusterSvc/List", runtime.WithHTTPPathPattern("/api/clusters"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/cluster.ClusterSvc/List", runtime.WithHTTPPathPattern("/api/clusters"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -242,7 +242,7 @@ func RegisterClusterSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.ClusterSvc/Create", runtime.WithHTTPPathPattern("/api/clusters"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/cluster.ClusterSvc/Create", runtime.WithHTTPPathPattern("/api/clusters"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -266,7 +266,7 @@ func RegisterClusterSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.ClusterSvc/Show", runtime.WithHTTPPathPattern("/api/clusters/{cluster_id}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/cluster.ClusterSvc/Show", runtime.WithHTTPPathPattern("/api/clusters/{cluster_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -290,7 +290,7 @@ func RegisterClusterSvcHandlerServer(ctx context.Context, mux *runtime.ServeMux,
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/.ClusterSvc/Delete", runtime.WithHTTPPathPattern("/api/clusters/{cluster_id}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/cluster.ClusterSvc/Delete", runtime.WithHTTPPathPattern("/api/clusters/{cluster_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -353,7 +353,7 @@ func RegisterClusterSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.ClusterSvc/List", runtime.WithHTTPPathPattern("/api/clusters"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/cluster.ClusterSvc/List", runtime.WithHTTPPathPattern("/api/clusters"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -374,7 +374,7 @@ func RegisterClusterSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.ClusterSvc/Create", runtime.WithHTTPPathPattern("/api/clusters"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/cluster.ClusterSvc/Create", runtime.WithHTTPPathPattern("/api/clusters"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -395,7 +395,7 @@ func RegisterClusterSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.ClusterSvc/Show", runtime.WithHTTPPathPattern("/api/clusters/{cluster_id}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/cluster.ClusterSvc/Show", runtime.WithHTTPPathPattern("/api/clusters/{cluster_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -416,7 +416,7 @@ func RegisterClusterSvcHandlerClient(ctx context.Context, mux *runtime.ServeMux,
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/.ClusterSvc/Delete", runtime.WithHTTPPathPattern("/api/clusters/{cluster_id}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/cluster.ClusterSvc/Delete", runtime.WithHTTPPathPattern("/api/clusters/{cluster_id}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return

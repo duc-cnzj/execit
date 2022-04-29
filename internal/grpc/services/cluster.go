@@ -7,6 +7,8 @@ import (
 	"sort"
 	"time"
 
+	"github.com/duc-cnzj/execit/internal/utils/date"
+
 	"gorm.io/gorm"
 	authorizationv1 "k8s.io/api/authorization/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -22,7 +24,6 @@ import (
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/models"
 	"github.com/duc-cnzj/execit/internal/scopes"
-	"github.com/duc-cnzj/execit/internal/utils"
 	"github.com/duc-cnzj/execit/internal/xlog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -40,7 +41,7 @@ type ClusterSvc struct {
 	cluster.UnimplementedClusterSvcServer
 }
 
-func (c *ClusterSvc) List(ctx context.Context, request *cluster.ClusterListRequest) (*cluster.ClusterListResponse, error) {
+func (c *ClusterSvc) List(ctx context.Context, request *cluster.ListRequest) (*cluster.ListResponse, error) {
 	var (
 		page     = int(request.Page)
 		pageSize = int(request.PageSize)
@@ -58,13 +59,13 @@ func (c *ClusterSvc) List(ctx context.Context, request *cluster.ClusterListReque
 			Name:         m.Name,
 			KubeConfig:   m.KubeConfig,
 			ApiServerUrl: m.ClusterConfig().Host,
-			CreatedAt:    utils.ToRFC3339DatetimeString(&m.CreatedAt),
-			UpdatedAt:    utils.ToRFC3339DatetimeString(&m.UpdatedAt),
-			DeletedAt:    utils.ToRFC3339DatetimeString(&m.DeletedAt.Time),
+			CreatedAt:    date.ToRFC3339DatetimeString(&m.CreatedAt),
+			UpdatedAt:    date.ToRFC3339DatetimeString(&m.UpdatedAt),
+			DeletedAt:    date.ToRFC3339DatetimeString(&m.DeletedAt.Time),
 		})
 	}
 
-	return &cluster.ClusterListResponse{
+	return &cluster.ListResponse{
 		Page:     int64(page),
 		PageSize: int64(pageSize),
 		Count:    count,
@@ -174,7 +175,7 @@ func RunAccessCheck(cli kubernetes.Interface, namespace string) (bool, error) {
 	return true, nil
 }
 
-func (c *ClusterSvc) Create(ctx context.Context, request *cluster.ClusterCreateRequest) (*cluster.ClusterCreateResponse, error) {
+func (c *ClusterSvc) Create(ctx context.Context, request *cluster.CreateRequest) (*cluster.CreateResponse, error) {
 	if app.DB().Where("`name` = ?", request.Name).First(&models.Cluster{}).Error == nil {
 		return nil, status.Errorf(codes.AlreadyExists, "cluster name '%s' already exists", request.Name)
 	}
@@ -216,16 +217,16 @@ func (c *ClusterSvc) Create(ctx context.Context, request *cluster.ClusterCreateR
 
 	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("add cluster '%s' host: '%s'", clm.Name, clm.ClusterConfig().Host))
 
-	return &cluster.ClusterCreateResponse{
+	return &cluster.CreateResponse{
 		Id:        int64(clm.ID),
 		Name:      clm.Name,
-		CreatedAt: utils.ToRFC3339DatetimeString(&clm.CreatedAt),
-		UpdatedAt: utils.ToRFC3339DatetimeString(&clm.UpdatedAt),
-		DeletedAt: utils.ToRFC3339DatetimeString(&clm.DeletedAt.Time),
+		CreatedAt: date.ToRFC3339DatetimeString(&clm.CreatedAt),
+		UpdatedAt: date.ToRFC3339DatetimeString(&clm.UpdatedAt),
+		DeletedAt: date.ToRFC3339DatetimeString(&clm.DeletedAt.Time),
 	}, nil
 }
 
-type sortClusterItemsList []*cluster.ClusterItems
+type sortClusterItemsList []*cluster.Items
 
 func (s sortClusterItemsList) Len() int {
 	return len(s)
@@ -239,7 +240,7 @@ func (s sortClusterItemsList) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
-type sortClusterItems []*cluster.ClusterItem
+type sortClusterItems []*cluster.Item
 
 func (s sortClusterItems) Len() int {
 	return len(s)
@@ -253,7 +254,7 @@ func (s sortClusterItems) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
-func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ClusterShowRequest) (*cluster.ClusterShowResponse, error) {
+func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ShowRequest) (*cluster.ShowResponse, error) {
 	var cl models.Cluster
 	if err := app.DB().Where("`id` = ?", request.ClusterId).First(&cl).Error; err != nil {
 		return nil, status.Errorf(codes.NotFound, "clusterID: %d", request.ClusterId)
@@ -273,7 +274,7 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ClusterShowReque
 		return nil, err
 	}
 	list, _ := client.DeploymentLister().List(labels.Everything())
-	var items = make(map[string]*cluster.ClusterItems)
+	var items = make(map[string]*cluster.Items)
 	for _, deployment := range list {
 		var cardID int64
 		card, exists := existsMap[keyFn(cl.ID, deployment.Namespace, deployment.Name, "Deployment")]
@@ -281,8 +282,8 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ClusterShowReque
 			cardID = int64(card.ID)
 		}
 		if responseItems, ok := items[deployment.Namespace]; ok {
-			items[deployment.Namespace] = &cluster.ClusterItems{
-				Items: append(responseItems.Items, &cluster.ClusterItem{
+			items[deployment.Namespace] = &cluster.Items{
+				Items: append(responseItems.Items, &cluster.Item{
 					Namespace: deployment.Namespace,
 					Type:      "Deployment",
 					Name:      deployment.Name,
@@ -292,8 +293,8 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ClusterShowReque
 				}),
 			}
 		} else {
-			items[deployment.Namespace] = &cluster.ClusterItems{
-				Items: []*cluster.ClusterItem{
+			items[deployment.Namespace] = &cluster.Items{
+				Items: []*cluster.Item{
 					{
 						Namespace: deployment.Namespace,
 						Type:      "Deployment",
@@ -316,8 +317,8 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ClusterShowReque
 		}
 
 		if responseItems, ok := items[state.Namespace]; ok {
-			items[state.Namespace] = &cluster.ClusterItems{
-				Items: append(responseItems.Items, &cluster.ClusterItem{
+			items[state.Namespace] = &cluster.Items{
+				Items: append(responseItems.Items, &cluster.Item{
 					Namespace: state.Namespace,
 					Type:      "StatefulSet",
 					Name:      state.Name,
@@ -327,8 +328,8 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ClusterShowReque
 				}),
 			}
 		} else {
-			items[state.Namespace] = &cluster.ClusterItems{
-				Items: []*cluster.ClusterItem{
+			items[state.Namespace] = &cluster.Items{
+				Items: []*cluster.Item{
 					{
 						Namespace: state.Namespace,
 						Type:      "StatefulSet",
@@ -341,12 +342,12 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ClusterShowReque
 			}
 		}
 	}
-	var result = make([]*cluster.ClusterItems, 0)
+	var result = make([]*cluster.Items, 0)
 
 	for k, clusterItems := range items {
 		var ss = sortClusterItems(clusterItems.Items)
 		sort.Sort(ss)
-		result = append(result, &cluster.ClusterItems{
+		result = append(result, &cluster.Items{
 			Namespace: k,
 			Items:     ss,
 		})
@@ -354,18 +355,18 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ClusterShowReque
 	results := sortClusterItemsList(result)
 	sort.Sort(&results)
 
-	return &cluster.ClusterShowResponse{
+	return &cluster.ShowResponse{
 		Id:           int64(cl.ID),
 		Name:         cl.Name,
 		ApiServerUrl: cl.ClusterConfig().Host,
-		CreatedAt:    utils.ToRFC3339DatetimeString(&cl.CreatedAt),
-		UpdatedAt:    utils.ToRFC3339DatetimeString(&cl.UpdatedAt),
-		DeletedAt:    utils.ToRFC3339DatetimeString(&cl.DeletedAt.Time),
+		CreatedAt:    date.ToRFC3339DatetimeString(&cl.CreatedAt),
+		UpdatedAt:    date.ToRFC3339DatetimeString(&cl.UpdatedAt),
+		DeletedAt:    date.ToRFC3339DatetimeString(&cl.DeletedAt.Time),
 		Items:        results,
 	}, nil
 }
 
-func (c *ClusterSvc) Delete(ctx context.Context, request *cluster.ClusterDeleteRequest) (*cluster.ClusterDeleteResponse, error) {
+func (c *ClusterSvc) Delete(ctx context.Context, request *cluster.DeleteRequest) (*cluster.DeleteResponse, error) {
 	var cl models.Cluster
 	if err := app.DB().Transaction(func(db *gorm.DB) error {
 		if err := db.Where("`id` = ?", request.ClusterId).First(&cl).Error; err != nil {
@@ -387,5 +388,5 @@ func (c *ClusterSvc) Delete(ctx context.Context, request *cluster.ClusterDeleteR
 	}
 	AuditLog(MustGetUser(ctx).Name, event.ActionType_Delete, fmt.Sprintf("delete cluster '%s' host: '%s'", cl.Name, cl.ClusterConfig().Host))
 
-	return &cluster.ClusterDeleteResponse{}, nil
+	return &cluster.DeleteResponse{}, nil
 }

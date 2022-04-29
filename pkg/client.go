@@ -175,7 +175,7 @@ func (c *Client) buildDialOptions() []grpc.DialOption {
 
 func (c *Client) getToken() error {
 	login, err, _ := c.singleflight.Do("Retry", func() (interface{}, error) {
-		return c.auth.Login(context.TODO(), &auth.AuthLoginRequest{
+		return c.auth.Login(context.TODO(), &auth.LoginRequest{
 			Username: c.username,
 			Password: c.password,
 		})
@@ -184,7 +184,7 @@ func (c *Client) getToken() error {
 		return err
 	}
 
-	c.setToken(login.(*auth.AuthLoginResponse).Token)
+	c.setToken(login.(*auth.LoginResponse).Token)
 	return nil
 }
 

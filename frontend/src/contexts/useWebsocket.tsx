@@ -2,7 +2,7 @@ import React, { useContext, useState, useEffect, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import { handleEvents } from "../store/actions";
 import { getUid } from "../utils/uid";
-import { getToken } from "../utils/token";
+import { getLang, getToken } from "../utils/token";
 import { message } from "antd";
 import pb from "../api/compiled";
 import { useTranslation } from "react-i18next";
@@ -52,18 +52,19 @@ export const ProvideWebsocket: React.FC = ({ children }) => {
       let isHttps = "https:" === window.location.protocol ? true : false;
       url = `${isHttps ? "wss" : "ws"}://${window.location.host}/ws`;
     }
+    url += `?lang=${getLang()}`;
     let uid = getUid();
     if (uid) {
-      url += "?uid=" + uid;
+      url += `&uid=${uid}`;
     }
     let conn = new WebSocket(url);
     conn.binaryType = "arraybuffer";
     conn.onopen = function (evt) {
       setWs({ ws: conn, ready: true });
       conn.send(
-        pb.AuthorizeTokenInput.encode({
+        pb.websocket.AuthorizeTokenInput.encode({
           token: getToken(),
-          type: pb.Type.HandleAuthorize,
+          type: pb.websocket.Type.HandleAuthorize,
         }).finish()
       );
     };
@@ -72,7 +73,7 @@ export const ProvideWebsocket: React.FC = ({ children }) => {
       console.log("ws closed");
     };
     conn.onmessage = function (evt) {
-      let data: pb.WsMetadataResponse = pb.WsMetadataResponse.decode(
+      let data: pb.websocket.WsMetadataResponse = pb.websocket.WsMetadataResponse.decode(
         new Uint8Array(evt.data)
       );
       data.metadata &&

@@ -3,7 +3,7 @@ import { cardAllContainers } from "../api/card";
 import { Radio, Skeleton, Button, Tag } from "antd";
 import pb from "../api/compiled";
 import LazyLog from "../pkg/lazylog/components/LazyLog";
-import { getToken } from "./../utils/token";
+import { getLang, getToken } from "./../utils/token";
 import { useTranslation } from "react-i18next";
 
 const ProjectContainerLogs: React.FC<{
@@ -15,7 +15,7 @@ const ProjectContainerLogs: React.FC<{
 }> = ({ clusterId, namespace, name, type, cardId }) => {
   const [value, setValue] = useState<string>();
   const {t} = useTranslation()
-  const [list, setList] = useState<pb.ContainerItem[]>();
+  const [list, setList] = useState<pb.container.Item[]>();
 
   const listContainer = useCallback(async () => {
     return cardAllContainers(cardId).then(
@@ -40,7 +40,7 @@ const ProjectContainerLogs: React.FC<{
   const getUrl = () => {
     let [pod, container] = (value as string).split("|");
 
-    return `${process.env.REACT_APP_BASE_URL}/api/containers/clusters/${clusterId}/namespaces/${namespace}/pods/${pod}/containers/${container}/stream_logs?timestamp=${timestamp}`;
+    return `${process.env.REACT_APP_BASE_URL}/api/containers/cards/${cardId}/clusters/${clusterId}/namespaces/${namespace}/pods/${pod}/containers/${container}/stream_logs?timestamp=${timestamp}&lang=${getLang()}`;
   };
 
   const reloadLog = useCallback((e: any) => {

@@ -14,6 +14,7 @@ import (
 	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/contracts"
+	"github.com/duc-cnzj/execit/internal/middlewares"
 	"github.com/duc-cnzj/execit/internal/plugins"
 	"github.com/duc-cnzj/execit/internal/utils"
 	"github.com/duc-cnzj/execit/internal/xlog"
@@ -26,6 +27,24 @@ var handlers map[websocket_pb.Type]HandleRequestFunc = map[websocket_pb.Type]Han
 	WsHandleCloseShell:   HandleWsHandleCloseShell,
 	WsHandleExecShellMsg: HandleWsHandleExecShellMsg,
 	WsHandleExecShell:    HandleWsHandleExecShell,
+	WsHandleSetLang:      HandleWsHandleSetLang,
+}
+
+type lang struct {
+	l string
+	sync.RWMutex
+}
+
+func (l *lang) Set(lang string) {
+	l.Lock()
+	defer l.Unlock()
+	l.l = lang
+}
+
+func (l *lang) Get() string {
+	l.RLock()
+	defer l.RUnlock()
+	return l.l
 }
 
 type WsConn struct {
@@ -33,8 +52,10 @@ type WsConn struct {
 	uid  string
 	conn *websocket.Conn
 
+	lang *lang
+
 	userMu           sync.RWMutex
-	user             contracts.UserInfo
+	user             *contracts.UserInfo
 	pubSub           plugins.PubSub
 	terminalSessions SessionMapper
 }
@@ -53,6 +74,7 @@ func (wc *WebsocketManager) initConn(r *http.Request, c *websocket.Conn) *WsConn
 		id:     id,
 		uid:    uid,
 		conn:   c,
+		lang:   &lang{l: middlewares.MustGetLang(r.Context())},
 	}
 	wsconn.terminalSessions = &SessionMap{Sessions: make(map[string]*MyPtyHandler), conn: wsconn}
 	app.Metrics().IncWebsocketConn()
@@ -71,13 +93,13 @@ func (c *WsConn) Shutdown() {
 	Wait.Dec()
 }
 
-func (c *WsConn) SetUser(info contracts.UserInfo) {
+func (c *WsConn) SetUser(info *contracts.UserInfo) {
 	c.userMu.Lock()
 	defer c.userMu.Unlock()
 	c.user = info
 }
 
-func (c *WsConn) GetUser() contracts.UserInfo {
+func (c *WsConn) GetUser() *contracts.UserInfo {
 	c.userMu.RLock()
 	defer c.userMu.RUnlock()
 	return c.user
@@ -225,6 +247,17 @@ func HandleWsAuthorize(c *WsConn, t websocket_pb.Type, message []byte) {
 	if claims, b := app.Auth().VerifyToken(input.Token); b {
 		c.SetUser(claims.UserInfo)
 	}
+}
+
+func HandleWsHandleSetLang(c *WsConn, t websocket_pb.Type, message []byte) {
+	defer utils.HandlePanic("HandleWsHandleSetLang")
+	var input websocket_pb.WsHandleSetLangInput
+	if err := proto.Unmarshal(message, &input); err != nil {
+		xlog.Error("[Websocket]: " + err.Error())
+		return
+	}
+
+	c.lang.Set(input.Lang)
 }
 
 func HandleWsHandleCloseShell(c *WsConn, t websocket_pb.Type, message []byte) {

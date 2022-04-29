@@ -23,11 +23,11 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CardSvcClient interface {
-	All(ctx context.Context, in *CardAllRequest, opts ...grpc.CallOption) (*CardAllResponse, error)
-	Create(ctx context.Context, in *CardCreateRequest, opts ...grpc.CallOption) (*CardCreateResponse, error)
-	Show(ctx context.Context, in *CardShowRequest, opts ...grpc.CallOption) (*CardShowResponse, error)
-	Delete(ctx context.Context, in *CardDeleteRequest, opts ...grpc.CallOption) (*CardDeleteResponse, error)
-	AllContainers(ctx context.Context, in *CardAllContainersRequest, opts ...grpc.CallOption) (*CardAllContainersResponse, error)
+	All(ctx context.Context, in *AllRequest, opts ...grpc.CallOption) (*AllResponse, error)
+	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
+	Show(ctx context.Context, in *ShowRequest, opts ...grpc.CallOption) (*ShowResponse, error)
+	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	AllContainers(ctx context.Context, in *AllContainersRequest, opts ...grpc.CallOption) (*AllContainersResponse, error)
 }
 
 type cardSvcClient struct {
@@ -38,45 +38,45 @@ func NewCardSvcClient(cc grpc.ClientConnInterface) CardSvcClient {
 	return &cardSvcClient{cc}
 }
 
-func (c *cardSvcClient) All(ctx context.Context, in *CardAllRequest, opts ...grpc.CallOption) (*CardAllResponse, error) {
-	out := new(CardAllResponse)
-	err := c.cc.Invoke(ctx, "/CardSvc/All", in, out, opts...)
+func (c *cardSvcClient) All(ctx context.Context, in *AllRequest, opts ...grpc.CallOption) (*AllResponse, error) {
+	out := new(AllResponse)
+	err := c.cc.Invoke(ctx, "/card.CardSvc/All", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *cardSvcClient) Create(ctx context.Context, in *CardCreateRequest, opts ...grpc.CallOption) (*CardCreateResponse, error) {
-	out := new(CardCreateResponse)
-	err := c.cc.Invoke(ctx, "/CardSvc/Create", in, out, opts...)
+func (c *cardSvcClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error) {
+	out := new(CreateResponse)
+	err := c.cc.Invoke(ctx, "/card.CardSvc/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *cardSvcClient) Show(ctx context.Context, in *CardShowRequest, opts ...grpc.CallOption) (*CardShowResponse, error) {
-	out := new(CardShowResponse)
-	err := c.cc.Invoke(ctx, "/CardSvc/Show", in, out, opts...)
+func (c *cardSvcClient) Show(ctx context.Context, in *ShowRequest, opts ...grpc.CallOption) (*ShowResponse, error) {
+	out := new(ShowResponse)
+	err := c.cc.Invoke(ctx, "/card.CardSvc/Show", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *cardSvcClient) Delete(ctx context.Context, in *CardDeleteRequest, opts ...grpc.CallOption) (*CardDeleteResponse, error) {
-	out := new(CardDeleteResponse)
-	err := c.cc.Invoke(ctx, "/CardSvc/Delete", in, out, opts...)
+func (c *cardSvcClient) Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error) {
+	out := new(DeleteResponse)
+	err := c.cc.Invoke(ctx, "/card.CardSvc/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *cardSvcClient) AllContainers(ctx context.Context, in *CardAllContainersRequest, opts ...grpc.CallOption) (*CardAllContainersResponse, error) {
-	out := new(CardAllContainersResponse)
-	err := c.cc.Invoke(ctx, "/CardSvc/AllContainers", in, out, opts...)
+func (c *cardSvcClient) AllContainers(ctx context.Context, in *AllContainersRequest, opts ...grpc.CallOption) (*AllContainersResponse, error) {
+	out := new(AllContainersResponse)
+	err := c.cc.Invoke(ctx, "/card.CardSvc/AllContainers", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -87,11 +87,11 @@ func (c *cardSvcClient) AllContainers(ctx context.Context, in *CardAllContainers
 // All implementations must embed UnimplementedCardSvcServer
 // for forward compatibility
 type CardSvcServer interface {
-	All(context.Context, *CardAllRequest) (*CardAllResponse, error)
-	Create(context.Context, *CardCreateRequest) (*CardCreateResponse, error)
-	Show(context.Context, *CardShowRequest) (*CardShowResponse, error)
-	Delete(context.Context, *CardDeleteRequest) (*CardDeleteResponse, error)
-	AllContainers(context.Context, *CardAllContainersRequest) (*CardAllContainersResponse, error)
+	All(context.Context, *AllRequest) (*AllResponse, error)
+	Create(context.Context, *CreateRequest) (*CreateResponse, error)
+	Show(context.Context, *ShowRequest) (*ShowResponse, error)
+	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	AllContainers(context.Context, *AllContainersRequest) (*AllContainersResponse, error)
 	mustEmbedUnimplementedCardSvcServer()
 }
 
@@ -99,19 +99,19 @@ type CardSvcServer interface {
 type UnimplementedCardSvcServer struct {
 }
 
-func (UnimplementedCardSvcServer) All(context.Context, *CardAllRequest) (*CardAllResponse, error) {
+func (UnimplementedCardSvcServer) All(context.Context, *AllRequest) (*AllResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method All not implemented")
 }
-func (UnimplementedCardSvcServer) Create(context.Context, *CardCreateRequest) (*CardCreateResponse, error) {
+func (UnimplementedCardSvcServer) Create(context.Context, *CreateRequest) (*CreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedCardSvcServer) Show(context.Context, *CardShowRequest) (*CardShowResponse, error) {
+func (UnimplementedCardSvcServer) Show(context.Context, *ShowRequest) (*ShowResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Show not implemented")
 }
-func (UnimplementedCardSvcServer) Delete(context.Context, *CardDeleteRequest) (*CardDeleteResponse, error) {
+func (UnimplementedCardSvcServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
-func (UnimplementedCardSvcServer) AllContainers(context.Context, *CardAllContainersRequest) (*CardAllContainersResponse, error) {
+func (UnimplementedCardSvcServer) AllContainers(context.Context, *AllContainersRequest) (*AllContainersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllContainers not implemented")
 }
 func (UnimplementedCardSvcServer) mustEmbedUnimplementedCardSvcServer() {}
@@ -128,7 +128,7 @@ func RegisterCardSvcServer(s grpc.ServiceRegistrar, srv CardSvcServer) {
 }
 
 func _CardSvc_All_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CardAllRequest)
+	in := new(AllRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -137,16 +137,16 @@ func _CardSvc_All_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CardSvc/All",
+		FullMethod: "/card.CardSvc/All",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CardSvcServer).All(ctx, req.(*CardAllRequest))
+		return srv.(CardSvcServer).All(ctx, req.(*AllRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CardSvc_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CardCreateRequest)
+	in := new(CreateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -155,16 +155,16 @@ func _CardSvc_Create_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CardSvc/Create",
+		FullMethod: "/card.CardSvc/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CardSvcServer).Create(ctx, req.(*CardCreateRequest))
+		return srv.(CardSvcServer).Create(ctx, req.(*CreateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CardSvc_Show_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CardShowRequest)
+	in := new(ShowRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -173,16 +173,16 @@ func _CardSvc_Show_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CardSvc/Show",
+		FullMethod: "/card.CardSvc/Show",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CardSvcServer).Show(ctx, req.(*CardShowRequest))
+		return srv.(CardSvcServer).Show(ctx, req.(*ShowRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CardSvc_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CardDeleteRequest)
+	in := new(DeleteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -191,16 +191,16 @@ func _CardSvc_Delete_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CardSvc/Delete",
+		FullMethod: "/card.CardSvc/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CardSvcServer).Delete(ctx, req.(*CardDeleteRequest))
+		return srv.(CardSvcServer).Delete(ctx, req.(*DeleteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CardSvc_AllContainers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CardAllContainersRequest)
+	in := new(AllContainersRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -209,10 +209,10 @@ func _CardSvc_AllContainers_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CardSvc/AllContainers",
+		FullMethod: "/card.CardSvc/AllContainers",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CardSvcServer).AllContainers(ctx, req.(*CardAllContainersRequest))
+		return srv.(CardSvcServer).AllContainers(ctx, req.(*AllContainersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -221,7 +221,7 @@ func _CardSvc_AllContainers_Handler(srv interface{}, ctx context.Context, dec fu
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CardSvc_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "CardSvc",
+	ServiceName: "card.CardSvc",
 	HandlerType: (*CardSvcServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

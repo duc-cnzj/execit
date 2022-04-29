@@ -11,6 +11,11 @@ import (
 	"path/filepath"
 	"time"
 
+	trans "github.com/duc-cnzj/execit/internal/translator"
+
+	"github.com/duc-cnzj/execit-client/rbac"
+	"github.com/duc-cnzj/execit/internal/auth"
+
 	"github.com/dustin/go-humanize"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -40,22 +45,22 @@ type ContainerSvc struct {
 	container.UnsafeContainerSvcServer
 }
 
-func (c *ContainerSvc) IsPodRunning(_ context.Context, request *container.ContainerIsPodRunningRequest) (*container.ContainerIsPodRunningResponse, error) {
+func (c *ContainerSvc) IsPodRunning(_ context.Context, request *container.IsPodRunningRequest) (*container.IsPodRunningResponse, error) {
 	running, reason := utils.IsPodRunning(utils.K8sClientByClusterID(request.ClusterId).Client(), request.GetNamespace(), request.GetPod())
 
-	return &container.ContainerIsPodRunningResponse{Running: running, Reason: reason}, nil
+	return &container.IsPodRunningResponse{Running: running, Reason: reason}, nil
 }
 
-func (c *ContainerSvc) IsPodExists(_ context.Context, request *container.ContainerIsPodExistsRequest) (*container.ContainerIsPodExistsResponse, error) {
+func (c *ContainerSvc) IsPodExists(_ context.Context, request *container.IsPodExistsRequest) (*container.IsPodExistsResponse, error) {
 	_, err := utils.K8sClientByClusterID(request.ClusterId).PodLister().Pods(request.Namespace).Get(request.Pod)
 	if err != nil && apierrors.IsNotFound(err) {
-		return &container.ContainerIsPodExistsResponse{Exists: false}, nil
+		return &container.IsPodExistsResponse{Exists: false}, nil
 	}
 
-	return &container.ContainerIsPodExistsResponse{Exists: true}, nil
+	return &container.IsPodExistsResponse{Exists: true}, nil
 }
 
-func (c *ContainerSvc) Exec(request *container.ContainerExecRequest, server container.ContainerSvc_ExecServer) error {
+func (c *ContainerSvc) Exec(request *container.ExecRequest, server container.ContainerSvc_ExecServer) error {
 	k8sClient := utils.K8sClientByClusterID(request.ClusterId)
 	running, reason := utils.IsPodRunning(k8sClient.Client(), request.Namespace, request.Pod)
 	if !running {
@@ -118,7 +123,7 @@ func (c *ContainerSvc) Exec(request *container.ContainerExecRequest, server cont
 			if !ok {
 				return nil
 			}
-			if err := server.Send(&container.ContainerExecResponse{
+			if err := server.Send(&container.ExecResponse{
 				Data: msg,
 			}); err != nil {
 				return err
@@ -129,7 +134,7 @@ func (c *ContainerSvc) Exec(request *container.ContainerExecRequest, server cont
 	}
 }
 
-func (c *ContainerSvc) CopyToPod(ctx context.Context, request *container.ContainerCopyToPodRequest) (*container.ContainerCopyToPodResponse, error) {
+func (c *ContainerSvc) CopyToPod(ctx context.Context, request *container.CopyToPodRequest) (*container.CopyToPodResponse, error) {
 	k8sClient := utils.K8sClientByClusterID(request.ClusterId)
 	if running, reason := utils.IsPodRunning(k8sClient.Client(), request.Namespace, request.Pod); !running {
 		return nil, status.Error(codes.NotFound, reason)
@@ -160,7 +165,7 @@ func (c *ContainerSvc) CopyToPod(ctx context.Context, request *container.Contain
 			humanize.Bytes(file.Size),
 		), file.ID)
 
-	return &container.ContainerCopyToPodResponse{
+	return &container.CopyToPodResponse{
 		PodFilePath: res.TargetDir,
 		Output:      res.ErrOut,
 		FileName:    res.FileName,
@@ -189,7 +194,7 @@ func (c *ContainerSvc) StreamCopyToPod(server container.ContainerSvc_StreamCopyT
 
 				file := models.File{Path: f.Name(), Username: user.Name, Size: uint64(stat.Size())}
 				app.DB().Create(&file)
-				res, err := c.CopyToPod(server.Context(), &container.ContainerCopyToPodRequest{
+				res, err := c.CopyToPod(server.Context(), &container.CopyToPodRequest{
 					FileId:    int64(file.ID),
 					Namespace: namespace,
 					Pod:       pod,
@@ -198,7 +203,7 @@ func (c *ContainerSvc) StreamCopyToPod(server container.ContainerSvc_StreamCopyT
 				if err != nil {
 					return err
 				}
-				return server.SendAndClose(&container.ContainerStreamCopyToPodResponse{
+				return server.SendAndClose(&container.StreamCopyToPodResponse{
 					Size:        stat.Size(),
 					PodFilePath: res.PodFilePath,
 					Output:      res.Output,
@@ -258,7 +263,11 @@ func (c *ContainerSvc) StreamCopyToPod(server container.ContainerSvc_StreamCopyT
 	}
 }
 
-func (c *ContainerSvc) ContainerLog(ctx context.Context, request *container.ContainerLogRequest) (*container.ContainerLogResponse, error) {
+func (c *ContainerSvc) ContainerLog(ctx context.Context, request *container.LogRequest) (*container.LogResponse, error) {
+	if !auth.HasPermissionFor(MustGetUser(ctx), rbac.Permission_Card, request.CardId) {
+		return nil, trans.TToError("forbidden", MustGetLang(ctx))
+	}
+
 	kclient := utils.K8sClientByClusterID(request.ClusterId).Client()
 
 	if running, reason := utils.IsPodRunning(kclient, request.Namespace, request.Pod); !running {
@@ -276,7 +285,7 @@ func (c *ContainerSvc) ContainerLog(ctx context.Context, request *container.Cont
 		return nil, err
 	}
 
-	return &container.ContainerLogResponse{
+	return &container.LogResponse{
 		Namespace:     request.Namespace,
 		PodName:       request.Pod,
 		ContainerName: request.Container,
@@ -284,7 +293,10 @@ func (c *ContainerSvc) ContainerLog(ctx context.Context, request *container.Cont
 	}, nil
 }
 
-func (c *ContainerSvc) StreamContainerLog(request *container.ContainerLogRequest, server container.ContainerSvc_StreamContainerLogServer) error {
+func (c *ContainerSvc) StreamContainerLog(request *container.LogRequest, server container.ContainerSvc_StreamContainerLogServer) error {
+	if !auth.HasPermissionFor(MustGetUser(server.Context()), rbac.Permission_Card, request.CardId) {
+		return trans.TToError("forbidden", MustGetLang(server.Context()))
+	}
 	kclient := utils.K8sClientByClusterID(request.ClusterId).Client()
 
 	if running, reason := utils.IsPodRunning(kclient, request.Namespace, request.Pod); !running {
@@ -338,7 +350,7 @@ func (c *ContainerSvc) StreamContainerLog(request *container.ContainerLogRequest
 				return errors.New("[Stream]: channel close")
 			}
 
-			if err := server.Send(&container.ContainerLogResponse{
+			if err := server.Send(&container.LogResponse{
 				Namespace:     request.Namespace,
 				PodName:       request.Pod,
 				ContainerName: request.Container,

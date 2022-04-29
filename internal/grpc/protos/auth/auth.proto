@@ -1,44 +1,53 @@
 syntax = "proto3";
 
+package auth;
+
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "validate/validate.proto";
+import "rbac/rbac.proto";
 
 option go_package = "github.com/duc-cnzj/execit-client/auth;auth";
 
-message AuthLoginRequest {
+message LoginRequest {
   string username = 1 [(validate.rules).string.min_bytes = 1];
   string password = 2 [(validate.rules).string.min_bytes = 1];
 }
 
-message AuthLoginResponse {
+message LoginResponse {
   string token = 1;
   int64 expires_in = 2;
 }
 
-message AuthExchangeRequest {
+message ExchangeRequest {
   string code = 1 [(validate.rules).string.min_bytes = 1];
 }
 
-message AuthExchangeResponse {
+message ExchangeResponse {
   string token = 1;
   int64 expires_in = 2;
 }
 
-message AuthInfoRequest {}
+message InfoRequest {}
 
-message AuthInfoResponse {
+message Permission {
+  rbac.Permission permission = 1;
+  repeated string items = 2;
+}
+
+message InfoResponse {
   string id = 1;
   string avatar = 2;
   string name = 3;
   string email = 4;
   string logout_url = 5;
-  repeated string roles = 6;
+  bool is_admin = 6;
+  repeated Permission permissions = 7;
 }
 
-message AuthSettingsRequest {}
+message SettingsRequest {}
 
-message AuthSettingsResponse {
+message SettingsResponse {
   message OidcSetting {
     bool enabled = 1;
     string name = 2;
@@ -52,7 +61,7 @@ message AuthSettingsResponse {
 
 service Auth {
   //  Login 登录接口
-  rpc Login(AuthLoginRequest) returns (AuthLoginResponse) {
+  rpc Login(LoginRequest) returns (LoginResponse) {
     option (google.api.http) = {
       post: "/api/auth/login",
       body: "*"
@@ -64,21 +73,21 @@ service Auth {
   }
 
   //  Info 获取当前登录的用户信息
-  rpc Info(AuthInfoRequest) returns (AuthInfoResponse) {
+  rpc Info(InfoRequest) returns (InfoResponse) {
     option (google.api.http) = {
       get: "/api/auth/info"
     };
   }
 
   //  Settings 获取 sso 配置以及跳转 url
-  rpc Settings(AuthSettingsRequest) returns (AuthSettingsResponse) {
+  rpc Settings(SettingsRequest) returns (SettingsResponse) {
     option (google.api.http) = {
       get: "/api/auth/settings"
     };
   }
 
   // Exchange sso code 换取 token
-  rpc Exchange(AuthExchangeRequest) returns (AuthExchangeResponse) {
+  rpc Exchange(ExchangeRequest) returns (ExchangeResponse) {
     option (google.api.http) = {
       post: "/api/auth/exchange",
       body: "*"
