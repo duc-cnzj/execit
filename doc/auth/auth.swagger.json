@@ -131,17 +131,6 @@
     }
   },
   "definitions": {
-    "Permissionitem": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "SettingsResponseOidcSetting": {
       "type": "object",
       "properties": {
@@ -204,7 +193,10 @@
           "type": "boolean"
         },
         "permissions": {
-          "$ref": "#/definitions/authPermission"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/authPermission"
+          }
         }
       }
     },
@@ -234,10 +226,13 @@
     "authPermission": {
       "type": "object",
       "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacPermission"
+        },
         "items": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/Permissionitem"
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -261,6 +256,21 @@
         }
       },
       "additionalProperties": {}
+    },
+    "rbacPermission": {
+      "type": "string",
+      "enum": [
+        "None",
+        "Card",
+        "ClusterAdd",
+        "ClusterDelete",
+        "ClusterView",
+        "FileUpload",
+        "FileDelete",
+        "FileDownload",
+        "EventView"
+      ],
+      "default": "None"
     },
     "rpcStatus": {
       "type": "object",

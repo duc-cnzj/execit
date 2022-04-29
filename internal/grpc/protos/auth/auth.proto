@@ -5,6 +5,7 @@ package auth;
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 import "validate/validate.proto";
+import "rbac/rbac.proto";
 
 option go_package = "github.com/duc-cnzj/execit-client/auth;auth";
 
@@ -30,10 +31,8 @@ message ExchangeResponse {
 message InfoRequest {}
 
 message Permission {
-  message item {
-    repeated string data = 1;
-  }
-  map<int64, item> items = 1;
+  rbac.Permission permission = 1;
+  repeated string items = 2;
 }
 
 message InfoResponse {
@@ -43,7 +42,7 @@ message InfoResponse {
   string email = 4;
   string logout_url = 5;
   bool is_admin = 6;
-  Permission permissions = 7;
+  repeated Permission permissions = 7;
 }
 
 message SettingsRequest {}

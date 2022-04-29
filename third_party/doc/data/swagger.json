@@ -1108,17 +1108,6 @@
     }
   },
   "definitions": {
-    "Permissionitem": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "SettingsResponseOidcSetting": {
       "type": "object",
       "properties": {
@@ -1181,7 +1170,10 @@
           "type": "string"
         },
         "permissions": {
-          "$ref": "#/definitions/authPermission"
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/authPermission"
+          }
         }
       }
     },
@@ -1212,10 +1204,13 @@
       "type": "object",
       "properties": {
         "items": {
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "#/definitions/Permissionitem"
+          "type": "array",
+          "items": {
+            "type": "string"
           }
+        },
+        "permission": {
+          "$ref": "#/definitions/rbacPermission"
         }
       }
     },

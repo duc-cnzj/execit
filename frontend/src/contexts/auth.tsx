@@ -88,17 +88,15 @@ function useProvideAuth() {
       return true;
     }
     let has: boolean = false;
-    if (user?.permissions?.items[pb.rbac.Permission.Card].data) {
-      for (
-        let key = 0;
-        key < user?.permissions?.items[pb.rbac.Permission.Card].data.length;
-        key++
-      ) {
-        if (
-          Number(user.permissions.items[pb.rbac.Permission.Card].data[key]) ===
-          Number(cardID)
-        ) {
-          has = true;
+    if (user?.permissions) {
+      for (let index = 0; index < user.permissions.length; index++) {
+        const element = user?.permissions[index];
+        if (element.permission === pb.rbac.Permission.Card) {
+          for (let index = 0; index < element.items.length; index++) {
+            if (Number(element.items[index]) === Number(cardID)) {
+              return true
+            }
+          }
           break;
         }
       }

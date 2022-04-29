@@ -50,28 +50,27 @@ func StreamServerInterceptor() grpc.StreamServerInterceptor {
 
 type CtxTokenInfo struct{}
 
-func GetUserPermissions(email string) *auth.Permission {
-	var perm = &auth.Permission{Items: make(map[int64]*auth.PermissionItem)}
-	var cardItems = &auth.PermissionItem{}
+func GetUserPermissions(email string) []*auth.Permission {
 	var cardIds []string
 	var ups []*models.UserPermission
 	app.DB().Where("`email` = ? and `state` = ? and `permission` = ?", email, rbac.State_Approved, rbac.Permission_Card).Find(&ups)
 	for _, up := range ups {
 		cardIds = append(cardIds, fmt.Sprintf("%d", up.SubjectID))
 	}
-	cardItems.Data = cardIds
-	perm.Items[int64(rbac.Permission_Card)] = cardItems
 
-	perm.Items[int64(rbac.Permission_ClusterAdd)] = &auth.PermissionItem{Data: []string{}}
-	perm.Items[int64(rbac.Permission_ClusterDelete)] = &auth.PermissionItem{Data: []string{}}
-	perm.Items[int64(rbac.Permission_ClusterView)] = &auth.PermissionItem{Data: []string{}}
-
-	perm.Items[int64(rbac.Permission_FileDownload)] = &auth.PermissionItem{Data: []string{}}
-	perm.Items[int64(rbac.Permission_FileUpload)] = &auth.PermissionItem{Data: []string{}}
-	perm.Items[int64(rbac.Permission_FileDownload)] = &auth.PermissionItem{Data: []string{}}
-
-	perm.Items[int64(rbac.Permission_EventView)] = &auth.PermissionItem{Data: []string{}}
-	return perm
+	return []*auth.Permission{
+		{
+			Permission: rbac.Permission_Card,
+			Items:      cardIds,
+		},
+		{Permission: rbac.Permission_ClusterAdd, Items: []string{}},
+		{Permission: rbac.Permission_ClusterDelete, Items: []string{}},
+		{Permission: rbac.Permission_ClusterView, Items: []string{}},
+		{Permission: rbac.Permission_FileDownload, Items: []string{}},
+		{Permission: rbac.Permission_FileUpload, Items: []string{}},
+		{Permission: rbac.Permission_FileDownload, Items: []string{}},
+		{Permission: rbac.Permission_EventView, Items: []string{}},
+	}
 }
 
 func SetUser(ctx context.Context, info *contracts.UserInfo) context.Context {

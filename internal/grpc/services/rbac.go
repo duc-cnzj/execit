@@ -5,13 +5,12 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/duc-cnzj/execit-client/event"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"gorm.io/gorm"
 
+	"github.com/duc-cnzj/execit-client/event"
 	"github.com/duc-cnzj/execit-client/rbac"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/contracts"
@@ -40,10 +39,19 @@ func (r *rbacsvc) List(ctx context.Context, request *rbac.ListRequest) (*rbac.Li
 		res      []*rbac.UserPermission
 	)
 
-	if err := app.DB().Scopes(scopes.Paginate(&page, &pageSize)).Order("`id` DESC").Find(&perms).Error; err != nil {
+	fn := func(db *gorm.DB) *gorm.DB {
+		if request.State != rbac.State__ {
+			db = db.Where("`state` = ?", request.State)
+		}
+		if request.Email != "" {
+			db = db.Where("`email` LIKE ?", "%"+request.Email+"%")
+		}
+		return db
+	}
+	if err := app.DB().Scopes(scopes.Paginate(&page, &pageSize), fn).Order("`id` DESC").Find(&perms).Error; err != nil {
 		return nil, err
 	}
-	app.DB().Model(&models.UserPermission{}).Count(&count)
+	app.DB().Model(&models.UserPermission{}).Scopes(fn).Count(&count)
 	for _, perm := range perms {
 		res = append(res, perm.ProtoTransform())
 	}

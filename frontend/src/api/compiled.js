@@ -455,7 +455,8 @@ export const auth = $root.auth = (() => {
          * Properties of a Permission.
          * @memberof auth
          * @interface IPermission
-         * @property {Object.<string,auth.Permission.item>|null} [items] Permission items
+         * @property {rbac.Permission|null} [permission] Permission permission
+         * @property {Array.<string>|null} [items] Permission items
          */
 
         /**
@@ -467,7 +468,7 @@ export const auth = $root.auth = (() => {
          * @param {auth.IPermission=} [properties] Properties to set
          */
         function Permission(properties) {
-            this.items = {};
+            this.items = [];
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -475,12 +476,20 @@ export const auth = $root.auth = (() => {
         }
 
         /**
-         * Permission items.
-         * @member {Object.<string,auth.Permission.item>} items
+         * Permission permission.
+         * @member {rbac.Permission} permission
          * @memberof auth.Permission
          * @instance
          */
-        Permission.prototype.items = $util.emptyObject;
+        Permission.prototype.permission = 0;
+
+        /**
+         * Permission items.
+         * @member {Array.<string>} items
+         * @memberof auth.Permission
+         * @instance
+         */
+        Permission.prototype.items = $util.emptyArray;
 
         /**
          * Encodes the specified Permission message. Does not implicitly {@link auth.Permission.verify|verify} messages.
@@ -494,11 +503,11 @@ export const auth = $root.auth = (() => {
         Permission.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
-            if (message.items != null && Object.hasOwnProperty.call(message, "items"))
-                for (let keys = Object.keys(message.items), i = 0; i < keys.length; ++i) {
-                    writer.uint32(/* id 1, wireType 2 =*/10).fork().uint32(/* id 1, wireType 0 =*/8).int64(keys[i]);
-                    $root.auth.Permission.item.encode(message.items[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
-                }
+            if (message.permission != null && Object.hasOwnProperty.call(message, "permission"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.permission);
+            if (message.items != null && message.items.length)
+                for (let i = 0; i < message.items.length; ++i)
+                    writer.uint32(/* id 2, wireType 2 =*/18).string(message.items[i]);
             return writer;
         };
 
@@ -516,31 +525,17 @@ export const auth = $root.auth = (() => {
         Permission.decode = function decode(reader, length) {
             if (!(reader instanceof $Reader))
                 reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.auth.Permission(), key, value;
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.auth.Permission();
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
                 case 1:
-                    if (message.items === $util.emptyObject)
-                        message.items = {};
-                    let end2 = reader.uint32() + reader.pos;
-                    key = 0;
-                    value = null;
-                    while (reader.pos < end2) {
-                        let tag2 = reader.uint32();
-                        switch (tag2 >>> 3) {
-                        case 1:
-                            key = reader.int64();
-                            break;
-                        case 2:
-                            value = $root.auth.Permission.item.decode(reader, reader.uint32());
-                            break;
-                        default:
-                            reader.skipType(tag2 & 7);
-                            break;
-                        }
-                    }
-                    message.items[typeof key === "object" ? $util.longToHash(key) : key] = value;
+                    message.permission = reader.int32();
+                    break;
+                case 2:
+                    if (!(message.items && message.items.length))
+                        message.items = [];
+                    message.items.push(reader.string());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -549,91 +544,6 @@ export const auth = $root.auth = (() => {
             }
             return message;
         };
-
-        Permission.item = (function() {
-
-            /**
-             * Properties of an item.
-             * @memberof auth.Permission
-             * @interface Iitem
-             * @property {Array.<string>|null} [data] item data
-             */
-
-            /**
-             * Constructs a new item.
-             * @memberof auth.Permission
-             * @classdesc Represents an item.
-             * @implements Iitem
-             * @constructor
-             * @param {auth.Permission.Iitem=} [properties] Properties to set
-             */
-            function item(properties) {
-                this.data = [];
-                if (properties)
-                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
-            }
-
-            /**
-             * item data.
-             * @member {Array.<string>} data
-             * @memberof auth.Permission.item
-             * @instance
-             */
-            item.prototype.data = $util.emptyArray;
-
-            /**
-             * Encodes the specified item message. Does not implicitly {@link auth.Permission.item.verify|verify} messages.
-             * @function encode
-             * @memberof auth.Permission.item
-             * @static
-             * @param {auth.Permission.item} message item message or plain object to encode
-             * @param {$protobuf.Writer} [writer] Writer to encode to
-             * @returns {$protobuf.Writer} Writer
-             */
-            item.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
-                if (message.data != null && message.data.length)
-                    for (let i = 0; i < message.data.length; ++i)
-                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.data[i]);
-                return writer;
-            };
-
-            /**
-             * Decodes an item message from the specified reader or buffer.
-             * @function decode
-             * @memberof auth.Permission.item
-             * @static
-             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
-             * @param {number} [length] Message length if known beforehand
-             * @returns {auth.Permission.item} item
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            item.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.auth.Permission.item();
-                while (reader.pos < end) {
-                    let tag = reader.uint32();
-                    switch (tag >>> 3) {
-                    case 1:
-                        if (!(message.data && message.data.length))
-                            message.data = [];
-                        message.data.push(reader.string());
-                        break;
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
-                    }
-                }
-                return message;
-            };
-
-            return item;
-        })();
 
         return Permission;
     })();
@@ -650,7 +560,7 @@ export const auth = $root.auth = (() => {
          * @property {string|null} [email] InfoResponse email
          * @property {string|null} [logout_url] InfoResponse logout_url
          * @property {boolean|null} [is_admin] InfoResponse is_admin
-         * @property {auth.Permission|null} [permissions] InfoResponse permissions
+         * @property {Array.<auth.Permission>|null} [permissions] InfoResponse permissions
          */
 
         /**
@@ -662,6 +572,7 @@ export const auth = $root.auth = (() => {
          * @param {auth.IInfoResponse=} [properties] Properties to set
          */
         function InfoResponse(properties) {
+            this.permissions = [];
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -718,11 +629,11 @@ export const auth = $root.auth = (() => {
 
         /**
          * InfoResponse permissions.
-         * @member {auth.Permission|null|undefined} permissions
+         * @member {Array.<auth.Permission>} permissions
          * @memberof auth.InfoResponse
          * @instance
          */
-        InfoResponse.prototype.permissions = null;
+        InfoResponse.prototype.permissions = $util.emptyArray;
 
         /**
          * Encodes the specified InfoResponse message. Does not implicitly {@link auth.InfoResponse.verify|verify} messages.
@@ -748,8 +659,9 @@ export const auth = $root.auth = (() => {
                 writer.uint32(/* id 5, wireType 2 =*/42).string(message.logout_url);
             if (message.is_admin != null && Object.hasOwnProperty.call(message, "is_admin"))
                 writer.uint32(/* id 6, wireType 0 =*/48).bool(message.is_admin);
-            if (message.permissions != null && Object.hasOwnProperty.call(message, "permissions"))
-                $root.auth.Permission.encode(message.permissions, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+            if (message.permissions != null && message.permissions.length)
+                for (let i = 0; i < message.permissions.length; ++i)
+                    $root.auth.Permission.encode(message.permissions[i], writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             return writer;
         };
 
@@ -790,7 +702,9 @@ export const auth = $root.auth = (() => {
                     message.is_admin = reader.bool();
                     break;
                 case 7:
-                    message.permissions = $root.auth.Permission.decode(reader, reader.uint32());
+                    if (!(message.permissions && message.permissions.length))
+                        message.permissions = [];
+                    message.permissions.push($root.auth.Permission.decode(reader, reader.uint32()));
                     break;
                 default:
                     reader.skipType(tag & 7);

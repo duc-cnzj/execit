@@ -167,6 +167,14 @@ const languages: Lang = {
     en: "unknown",
     zh: "未知",
   },
+  "email": {
+    en: "email",
+    zh: "邮箱",
+  },
+  "all": {
+    en: "all",
+    zh: "全部",
+  },
   "apply for permission": {
     en: "apply for permission",
     zh: "申请权限",

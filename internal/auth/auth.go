@@ -60,10 +60,16 @@ func HasPermissionFor[T ~int | ~int64](user *contracts.UserInfo, permission rbac
 	if user.IsAdmin() {
 		return true
 	}
-	for _, datum := range user.Permissions.Items[int64(permission)].Data {
-		if datum == fmt.Sprintf("%d", id) {
-			return true
+	for _, a := range user.Permissions {
+		if a.Permission == permission {
+			for _, item := range a.Items {
+				if item == fmt.Sprintf("%d", id) {
+					return true
+				}
+			}
+			break
 		}
 	}
+
 	return false
 }

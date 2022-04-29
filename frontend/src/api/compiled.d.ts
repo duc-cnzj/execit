@@ -207,8 +207,11 @@ export namespace auth {
     /** Properties of a Permission. */
     interface IPermission {
 
+        /** Permission permission */
+        permission?: (rbac.Permission|null);
+
         /** Permission items */
-        items?: ({ [k: string]: auth.Permission.item }|null);
+        items?: (string[]|null);
     }
 
     /** Represents a Permission. */
@@ -220,8 +223,11 @@ export namespace auth {
          */
         constructor(properties?: auth.IPermission);
 
+        /** Permission permission. */
+        public permission: rbac.Permission;
+
         /** Permission items. */
-        public items: { [k: string]: auth.Permission.item };
+        public items: string[];
 
         /**
          * Encodes the specified Permission message. Does not implicitly {@link auth.Permission.verify|verify} messages.
@@ -240,47 +246,6 @@ export namespace auth {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): auth.Permission;
-    }
-
-    namespace Permission {
-
-        /** Properties of an item. */
-        interface Iitem {
-
-            /** item data */
-            data?: (string[]|null);
-        }
-
-        /** Represents an item. */
-        class item implements Iitem {
-
-            /**
-             * Constructs a new item.
-             * @param [properties] Properties to set
-             */
-            constructor(properties?: auth.Permission.Iitem);
-
-            /** item data. */
-            public data: string[];
-
-            /**
-             * Encodes the specified item message. Does not implicitly {@link auth.Permission.item.verify|verify} messages.
-             * @param message item message or plain object to encode
-             * @param [writer] Writer to encode to
-             * @returns Writer
-             */
-            public static encode(message: auth.Permission.item, writer?: $protobuf.Writer): $protobuf.Writer;
-
-            /**
-             * Decodes an item message from the specified reader or buffer.
-             * @param reader Reader or buffer to decode from
-             * @param [length] Message length if known beforehand
-             * @returns item
-             * @throws {Error} If the payload is not a reader or valid buffer
-             * @throws {$protobuf.util.ProtocolError} If required fields are missing
-             */
-            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): auth.Permission.item;
-        }
     }
 
     /** Properties of an InfoResponse. */
@@ -305,7 +270,7 @@ export namespace auth {
         is_admin?: (boolean|null);
 
         /** InfoResponse permissions */
-        permissions?: (auth.Permission|null);
+        permissions?: (auth.Permission[]|null);
     }
 
     /** Represents an InfoResponse. */
@@ -336,7 +301,7 @@ export namespace auth {
         public is_admin: boolean;
 
         /** InfoResponse permissions. */
-        public permissions?: (auth.Permission|null);
+        public permissions: auth.Permission[];
 
         /**
          * Encodes the specified InfoResponse message. Does not implicitly {@link auth.InfoResponse.verify|verify} messages.

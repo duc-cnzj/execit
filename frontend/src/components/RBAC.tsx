@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, memo } from "react";
+import React, { useState, useEffect, useCallback, memo, useMemo } from "react";
 import {
   Card,
   Skeleton,
@@ -9,15 +9,24 @@ import {
   Modal,
   Input,
   message,
+  Select,
 } from "antd";
 import pb from "../api/compiled";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { rbacList, rbacApprove, rbacRevoke, rbacReject } from "../api/rbac";
 import { useTranslation } from "react-i18next";
+import { debounce } from "lodash";
 
 const defaultPageSize = 15;
+const { Option } = Select;
 
 const RBAC: React.FC = () => {
+  const [search, setSearch] = useState<{ email: string; state: pb.rbac.State }>(
+    {
+      email: "",
+      state: 0,
+    }
+  );
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
   const [paginate, setPaginate] = useState<{
@@ -112,8 +121,8 @@ const RBAC: React.FC = () => {
     rbacList({
       page: paginate.page + 1,
       page_size: paginate.page_size,
-      email: "",
-      state: 0,
+      email: search.email,
+      state: search.state,
     })
       .then(({ data: res }) => {
         setData((data) => [...data, ...res.items]);
@@ -129,6 +138,36 @@ const RBAC: React.FC = () => {
         setLoading(false);
       });
   };
+  const fetch = useCallback((email, state) => {
+    setLoading(true);
+    rbacList({
+      page: 1,
+      page_size: defaultPageSize,
+      email: email,
+      state: state,
+    })
+      .then(({ data: res }) => {
+        setData(res.items);
+        setPaginate({
+          page: Number(res.page),
+          page_size: Number(res.page_size),
+          count: Number(res.count),
+        });
+        setLoading(false);
+      })
+      .catch((e) => {
+        message.error(e.response.data.message);
+        setLoading(false);
+      });
+  }, []);
+
+  const searchFn = useMemo(
+    () =>
+      debounce((email, state) => {
+        fetch(email, state);
+      }, 1000),
+    [fetch]
+  );
 
   useEffect(() => {
     rbacList({ page: 1, page_size: defaultPageSize, email: "", state: 0 })
@@ -203,6 +242,32 @@ const RBAC: React.FC = () => {
           }}
         >
           <div>{t("rbac")}</div>
+          <div style={{ display: "flex" }}>
+            <Input
+              allowClear
+              size="small"
+              placeholder={t("email")}
+              onChange={(v) => {
+                setSearch((s) => ({ ...s, email: v.target.value }));
+                searchFn(v.target.value, search.state);
+              }}
+            />
+            <Select
+              size="small"
+              defaultValue={pb.rbac.State._}
+              style={{ width: 120, fontSize: 12 }}
+              onChange={(v) => {
+                setSearch((s) => ({ ...s, state: v }));
+                fetch(search.email, v);
+              }}
+            >
+              <Option value={pb.rbac.State._}>{t("all")}</Option>
+              <Option value={pb.rbac.State.Approved}>{t("Approved")}</Option>
+              <Option value={pb.rbac.State.Rejected}>{t("Rejected")}</Option>
+              <Option value={pb.rbac.State.Request}>{t("Request")}</Option>
+              <Option value={pb.rbac.State.Revoked}>{t("Revoked")}</Option>
+            </Select>
+          </div>
         </div>
       }
       bordered={false}
@@ -236,9 +301,11 @@ const RBAC: React.FC = () => {
                 <div>
                   {getStateStyle(item.state)}
                   {t("The user")}:{" "}
-                  <span style={{fontSize: 16, fontWeight: "bold"}}>
+                  <span style={{ fontSize: 16, fontWeight: "bold" }}>
                     {item.username}
-                    <span style={{fontSize: 12, fontWeight: "normal"}}>({item.email})</span>
+                    <span style={{ fontSize: 12, fontWeight: "normal" }}>
+                      ({item.email})
+                    </span>
                   </span>{" "}
                   {t("Initiate a permission request")} {item.description}
                   {(item.state === pb.rbac.State.Rejected ||
