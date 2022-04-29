@@ -50,12 +50,12 @@ func StreamServerInterceptor() grpc.StreamServerInterceptor {
 
 type CtxTokenInfo struct{}
 
-func FillUserPermission(info *contracts.UserInfo) {
+func GetUserPermissions(email string) *auth.Permission {
 	var perm = &auth.Permission{Items: make(map[int64]*auth.PermissionItem)}
 	var cardItems = &auth.PermissionItem{}
 	var cardIds []string
 	var ups []*models.UserPermission
-	app.DB().Where("`email` = ? and `state` = ? and `permission` = ?", info.Email, rbac.State_Approved, rbac.Permission_Card).Find(&ups)
+	app.DB().Where("`email` = ? and `state` = ? and `permission` = ?", email, rbac.State_Approved, rbac.Permission_Card).Find(&ups)
 	for _, up := range ups {
 		cardIds = append(cardIds, fmt.Sprintf("%d", up.SubjectID))
 	}
@@ -71,11 +71,10 @@ func FillUserPermission(info *contracts.UserInfo) {
 	perm.Items[int64(rbac.Permission_FileDownload)] = &auth.PermissionItem{Data: []string{}}
 
 	perm.Items[int64(rbac.Permission_EventView)] = &auth.PermissionItem{Data: []string{}}
-	info.Permissions = perm
+	return perm
 }
 
 func SetUser(ctx context.Context, info *contracts.UserInfo) context.Context {
-	FillUserPermission(info)
 	return context.WithValue(ctx, &CtxTokenInfo{}, info)
 }
 

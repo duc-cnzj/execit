@@ -17,9 +17,9 @@ type JwtClaims struct {
 }
 
 type UserInfo struct {
-	LogoutUrl   string   `json:"logout_url"`
-	Roles       []string `json:"roles"`
-	Permissions *auth.Permission
+	LogoutUrl   string           `json:"logout_url"`
+	Roles       []string         `json:"roles"`
+	Permissions *auth.Permission `json:"permissions"`
 
 	OpenIDClaims
 }

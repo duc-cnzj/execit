@@ -16,7 +16,7 @@ type UserPermission struct {
 
 	Username    string          `json:"username"`
 	Email       string          `json:"email" gorm:"not null;index;"`
-	Permission  rbac.Permission `json:"permission"`
+	Permission  rbac.Permission `json:"permission" gorm:"index;"`
 	SubjectID   int64           `json:"subject_id"`
 	State       rbac.State      `json:"state" gorm:"index;"`
 	Reason      string          `json:"reason"`

@@ -13,7 +13,6 @@ import (
 
 	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
-	"github.com/duc-cnzj/execit/internal/auth"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/middlewares"
 	"github.com/duc-cnzj/execit/internal/plugins"
@@ -97,7 +96,6 @@ func (c *WsConn) Shutdown() {
 func (c *WsConn) SetUser(info *contracts.UserInfo) {
 	c.userMu.Lock()
 	defer c.userMu.Unlock()
-	auth.FillUserPermission(info)
 	c.user = info
 }
 
