@@ -9,6 +9,8 @@ import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { selectSyncAt } from "../store/reducers/card";
+import { sortBy } from "lodash";
+import { useAuth } from "../contexts/auth";
 
 const AppContent: React.FC = () => {
   const { t } = useTranslation();
@@ -25,6 +27,7 @@ const AppContent: React.FC = () => {
       setData(res.data.items);
     });
   }, [s]);
+  const { hasCardPermission } = useAuth();
 
   return (
     <DraggableModalProvider>
@@ -74,7 +77,10 @@ const AppContent: React.FC = () => {
                   }
                 >
                   <Row gutter={[8, 8]}>
-                    {item.items.map((data, idx) => (
+                    {sortBy(
+                      item.items,
+                      (item) => !hasCardPermission(item.id)
+                    ).map((data, idx) => (
                       <Col key={idx} md={12} xs={24} sm={24}>
                         <NamespaceCardItem item={data} />
                       </Col>

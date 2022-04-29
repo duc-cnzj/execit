@@ -94,7 +94,6 @@ function useProvideAuth() {
         key < user?.permissions?.items[pb.rbac.Permission.Card].data.length;
         key++
       ) {
-        console.log(Number(user.permissions.items[pb.rbac.Permission.Card].data[key]), cardID)
         if (
           Number(user.permissions.items[pb.rbac.Permission.Card].data[key]) ===
           Number(cardID)
@@ -113,7 +112,7 @@ function useProvideAuth() {
     isAdmin,
     login: signin,
     logout: signout,
-    hasCardPermission: hasCardPermission,
+    hasCardPermission,
   };
 }
 
