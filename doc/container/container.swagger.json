@@ -16,7 +16,7 @@
     "application/json"
   ],
   "paths": {
-    "/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs": {
+    "/api/containers/cards/{card_id}/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs": {
       "get": {
         "summary": "ContainerLog 查看 pod 日志",
         "operationId": "ContainerSvc_ContainerLog",
@@ -35,6 +35,13 @@
           }
         },
         "parameters": [
+          {
+            "name": "card_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
           {
             "name": "cluster_id",
             "in": "path",
@@ -66,7 +73,7 @@
         ]
       }
     },
-    "/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/stream_logs": {
+    "/api/containers/cards/{card_id}/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/stream_logs": {
       "get": {
         "summary": "StreamContainerLog stream 方式查看 pod 日志",
         "operationId": "ContainerSvc_StreamContainerLog",
@@ -94,6 +101,13 @@
           }
         },
         "parameters": [
+          {
+            "name": "card_id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
           {
             "name": "cluster_id",
             "in": "path",

@@ -1,11 +1,13 @@
 import React, { useState, useCallback, memo, lazy, Suspense } from "react";
 import { DraggableModal } from "../pkg/DraggableModal";
-import { Button, Tabs, Skeleton, Badge } from "antd";
+import { Button, Tabs, Skeleton, Badge, Tooltip, message } from "antd";
 import ErrorBoundary from "./ErrorBoundary";
 import pb from "../api/compiled";
+import { rbacApplyFor } from "../api/rbac";
 
 import TabLog from "./TabLog";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../contexts/auth";
 const Shell = lazy(() => import("./TabShell"));
 
 const { TabPane } = Tabs;
@@ -22,28 +24,53 @@ const NamespaceCardItem: React.FC<{
   }, []);
   const { t } = useTranslation();
 
+  const { hasCardPermission } = useAuth();
+
   return (
     <div className="project-detail">
-      <Button
-        onClick={() => {
-          onOk();
-        }}
-        title={item.type}
-        className="project-detail__show-button"
-        type="dashed"
+      <Tooltip
+        placement="top"
+        title={
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              rbacApplyFor({
+                subject_id: item.id,
+                permission: pb.rbac.Permission.Card,
+              }).then(() => {
+                message.success(t("request sent"));
+              });
+            }}
+          >
+            {t("apply for permission")}
+          </Button>
+        }
       >
-        <span
-          title={item.name}
-          style={{
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            marginRight: 5,
+        <Button
+          style={{ width: "100%" }}
+          // disabled={!hasCardPermission(item.id)}
+          onClick={() => {
+            onOk();
           }}
+          title={item.type}
+          className="project-detail__show-button"
+          type="dashed"
         >
-          {item.name}
-        </span>
-      </Button>
+          <span
+            title={item.name}
+            style={{
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              marginRight: 5,
+            }}
+          >
+            {item.name}
+          </span>
+        </Button>
+      </Tooltip>
+
       <DraggableModal
         onResize={() => {
           setResizeAt(new Date().getTime());

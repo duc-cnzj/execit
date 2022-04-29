@@ -205,6 +205,7 @@ const TabShell: React.FC<{
   const initShell = useCallback(() => {
     let s = value.split("|");
     let ss = pb.websocket.WsHandleExecShellInput.encode({
+      card_id: cardId,
       cluster_id: clusterId,
       type: pb.websocket.Type.HandleExecShell,
       namespace: namespace,
@@ -212,7 +213,7 @@ const TabShell: React.FC<{
       container: s[1],
     }).finish();
     sendMsg(ss);
-  }, [value, sendMsg, clusterId, namespace]);
+  }, [value, sendMsg, clusterId, namespace, cardId]);
 
   useEffect(() => {
     if (value && wsReady) {

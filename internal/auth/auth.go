@@ -2,9 +2,11 @@ package auth
 
 import (
 	"crypto/rsa"
+	"fmt"
 	"strings"
 	"time"
 
+	"github.com/duc-cnzj/execit-client/rbac"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/golang-jwt/jwt"
 )
@@ -35,7 +37,7 @@ func (a *Auth) VerifyToken(t string) (*contracts.JwtClaims, bool) {
 	return nil, false
 }
 
-func (a *Auth) Sign(info contracts.UserInfo) (*contracts.SignData, error) {
+func (a *Auth) Sign(info *contracts.UserInfo) (*contracts.SignData, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, &contracts.JwtClaims{
 		StandardClaims: &jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(contracts.Expired).Unix(),
@@ -52,4 +54,16 @@ func (a *Auth) Sign(info contracts.UserInfo) (*contracts.SignData, error) {
 		Token:     signedString,
 		ExpiredIn: int64(contracts.Expired.Seconds()),
 	}, nil
+}
+
+func HasPermissionFor[T ~int | ~int64](user *contracts.UserInfo, permission rbac.Permission, id T) bool {
+	if user.IsAdmin() {
+		return true
+	}
+	for _, datum := range user.Permissions.Items[int64(permission)].Data {
+		if datum == fmt.Sprintf("%d", id) {
+			return true
+		}
+	}
+	return false
 }

@@ -213,6 +213,16 @@ func request_ContainerSvc_ContainerLog_0(ctx context.Context, marshaler runtime.
 		_   = err
 	)
 
+	val, ok = pathParams["card_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "card_id")
+	}
+
+	protoReq.CardId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "card_id", err)
+	}
+
 	val, ok = pathParams["cluster_id"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "cluster_id")
@@ -269,6 +279,16 @@ func local_request_ContainerSvc_ContainerLog_0(ctx context.Context, marshaler ru
 		_   = err
 	)
 
+	val, ok = pathParams["card_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "card_id")
+	}
+
+	protoReq.CardId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "card_id", err)
+	}
+
 	val, ok = pathParams["cluster_id"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "cluster_id")
@@ -324,6 +344,16 @@ func request_ContainerSvc_StreamContainerLog_0(ctx context.Context, marshaler ru
 		err error
 		_   = err
 	)
+
+	val, ok = pathParams["card_id"]
+	if !ok {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "card_id")
+	}
+
+	protoReq.CardId, err = runtime.Int64(val)
+	if err != nil {
+		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "card_id", err)
+	}
 
 	val, ok = pathParams["cluster_id"]
 	if !ok {
@@ -477,7 +507,7 @@ func RegisterContainerSvcHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/container.ContainerSvc/ContainerLog", runtime.WithHTTPPathPattern("/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/container.ContainerSvc/ContainerLog", runtime.WithHTTPPathPattern("/api/containers/cards/{card_id}/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -652,7 +682,7 @@ func RegisterContainerSvcHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/ContainerLog", runtime.WithHTTPPathPattern("/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/ContainerLog", runtime.WithHTTPPathPattern("/api/containers/cards/{card_id}/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -673,7 +703,7 @@ func RegisterContainerSvcHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/StreamContainerLog", runtime.WithHTTPPathPattern("/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/stream_logs"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/StreamContainerLog", runtime.WithHTTPPathPattern("/api/containers/cards/{card_id}/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/stream_logs"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -703,9 +733,9 @@ var (
 
 	pattern_ContainerSvc_IsPodExists_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "containers", "pod_exists"}, ""))
 
-	pattern_ContainerSvc_ContainerLog_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7, 2, 1, 1, 0, 4, 1, 5, 8, 2, 9}, []string{"api", "containers", "clusters", "cluster_id", "namespaces", "namespace", "pods", "pod", "container", "logs"}, ""))
+	pattern_ContainerSvc_ContainerLog_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7, 2, 8, 1, 0, 4, 1, 5, 9, 2, 1, 1, 0, 4, 1, 5, 10, 2, 11}, []string{"api", "containers", "cards", "card_id", "clusters", "cluster_id", "namespaces", "namespace", "pods", "pod", "container", "logs"}, ""))
 
-	pattern_ContainerSvc_StreamContainerLog_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7, 2, 1, 1, 0, 4, 1, 5, 8, 2, 9}, []string{"api", "containers", "clusters", "cluster_id", "namespaces", "namespace", "pods", "pod", "container", "stream_logs"}, ""))
+	pattern_ContainerSvc_StreamContainerLog_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7, 2, 8, 1, 0, 4, 1, 5, 9, 2, 1, 1, 0, 4, 1, 5, 10, 2, 11}, []string{"api", "containers", "cards", "card_id", "clusters", "cluster_id", "namespaces", "namespace", "pods", "pod", "container", "stream_logs"}, ""))
 )
 
 var (

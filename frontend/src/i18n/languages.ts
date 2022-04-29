@@ -123,6 +123,94 @@ const languages: Lang = {
     en: "total",
     zh: "总数",
   },
+  Approved: {
+    en: "Approved",
+    zh: "已批准",
+  },
+  Rejected: {
+    en: "Rejected",
+    zh: "已拒绝",
+  },
+  Request: {
+    en: "Request",
+    zh: "请求中",
+  },
+  Revoked: {
+    en: "Revoked",
+    zh: "已撤销",
+  },
+  "The user": {
+    en: "The user",
+    zh: "用户",
+  },
+  "revoke reason": {
+    en: "revoke reason",
+    zh: "撤销原因",
+  },
+  "rbac.revoke_reason_empty": {
+    en: "revoke reason can't empty",
+    zh: "撤销原因不能为空",
+  },
+  "revoke permission confirm": {
+    en: "revoke permission confirm",
+    zh: "撤销权限确认",
+  },
+  "Are you sure you want to revoke this permission?": {
+    en: "Are you sure you want to revoke this permission?",
+    zh: "确定要撤销这个权限？",
+  },
+  "reject reason": {
+    en: "reject reason",
+    zh: "拒绝原因",
+  },
+  "unknown": {
+    en: "unknown",
+    zh: "未知",
+  },
+  "apply for permission": {
+    en: "apply for permission",
+    zh: "申请权限",
+  },
+  "reason": {
+    en: "reason",
+    zh: "理由",
+  },
+  "request sent": {
+    en: "request sent",
+    zh: "请求已发送",
+  },
+  "rbac.reject_reason_empty": {
+    en: "reject reason can't empty",
+    zh: "拒绝原因不能为空",
+  },
+  "reject permission confirm": {
+    en: "reject permission confirm",
+    zh: "拒绝权限确认",
+  },
+  "Are you sure you want to reject this permission?": {
+    en: "Are you sure you want to reject this permission?",
+    zh: "确定要拒绝这个权限？",
+  },
+  "Initiate a permission request": {
+    en: "Initiate a permission request",
+    zh: "发起权限申请",
+  },
+  approved: {
+    en: "approved",
+    zh: "通过",
+  },
+  reject: {
+    en: "reject",
+    zh: "驳回",
+  },
+  revoke: {
+    en: "revoke",
+    zh: "撤销",
+  },
+  rbac: {
+    en: "RBAC",
+    zh: "权限管理",
+  },
   "viewing Operation Records": {
     en: "viewing Operation Records",
     zh: "查看操作记录",

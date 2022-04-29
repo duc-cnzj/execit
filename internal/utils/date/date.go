@@ -1,4 +1,4 @@
-package utils
+package date
 
 import (
 	"fmt"
@@ -6,6 +6,9 @@ import (
 )
 
 func ToRFC3339DatetimeString(t *time.Time) string {
+	if t == nil {
+		return ""
+	}
 	return t.Format(time.RFC3339)
 }
 

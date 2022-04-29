@@ -131,6 +131,17 @@
     }
   },
   "definitions": {
+    "Permissionitem": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "SettingsResponseOidcSetting": {
       "type": "object",
       "properties": {
@@ -189,11 +200,11 @@
         "logout_url": {
           "type": "string"
         },
-        "roles": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "is_admin": {
+          "type": "boolean"
+        },
+        "permissions": {
+          "$ref": "#/definitions/authPermission"
         }
       }
     },
@@ -217,6 +228,17 @@
         "expires_in": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "authPermission": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/Permissionitem"
+          }
         }
       }
     },

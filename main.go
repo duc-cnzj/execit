@@ -15,3 +15,5 @@ var configFile []byte
 func main() {
 	cmd.Execute(configFile)
 }
+
+// Role -> xxx

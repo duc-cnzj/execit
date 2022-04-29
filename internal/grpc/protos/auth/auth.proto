@@ -29,13 +29,21 @@ message ExchangeResponse {
 
 message InfoRequest {}
 
+message Permission {
+  message item {
+    repeated string data = 1;
+  }
+  map<int64, item> items = 1;
+}
+
 message InfoResponse {
   string id = 1;
   string avatar = 2;
   string name = 3;
   string email = 4;
   string logout_url = 5;
-  repeated string roles = 6;
+  bool is_admin = 6;
+  Permission permissions = 7;
 }
 
 message SettingsRequest {}

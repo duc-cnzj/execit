@@ -1478,6 +1478,17 @@ func (m *LogRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
+	if m.GetCardId() <= 0 {
+		err := LogRequestValidationError{
+			field:  "CardId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(errors) > 0 {
 		return LogRequestMultiError(errors)
 	}

@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/duc-cnzj/execit/internal/utils/date"
+
 	"github.com/dustin/go-humanize"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -20,7 +22,6 @@ import (
 	"github.com/duc-cnzj/execit/internal/event/events"
 	"github.com/duc-cnzj/execit/internal/models"
 	"github.com/duc-cnzj/execit/internal/scopes"
-	"github.com/duc-cnzj/execit/internal/utils"
 	"github.com/duc-cnzj/execit/internal/xlog"
 )
 
@@ -63,7 +64,7 @@ func (m *FileSvc) List(ctx context.Context, request *file.ListRequest) (*file.Li
 		)
 		if ff.DeletedAt.Valid {
 			isDeleted = true
-			deletedAt = utils.ToRFC3339DatetimeString(&ff.DeletedAt.Time)
+			deletedAt = date.ToRFC3339DatetimeString(&ff.DeletedAt.Time)
 		}
 		res = append(res, &model.FileModel{
 			Id:            int64(ff.ID),
@@ -74,8 +75,8 @@ func (m *FileSvc) List(ctx context.Context, request *file.ListRequest) (*file.Li
 			Pod:           ff.Pod,
 			Container:     ff.Container,
 			ContainerPath: ff.ContainerPath,
-			CreatedAt:     utils.ToRFC3339DatetimeString(&ff.CreatedAt),
-			UpdatedAt:     utils.ToRFC3339DatetimeString(&ff.UpdatedAt),
+			CreatedAt:     date.ToRFC3339DatetimeString(&ff.CreatedAt),
+			UpdatedAt:     date.ToRFC3339DatetimeString(&ff.UpdatedAt),
 			DeletedAt:     deletedAt,
 			IsDeleted:     isDeleted,
 		})

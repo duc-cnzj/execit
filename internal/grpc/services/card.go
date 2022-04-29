@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"sort"
 
+	"github.com/duc-cnzj/execit/internal/utils/date"
+
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -19,7 +21,6 @@ import (
 	"github.com/duc-cnzj/execit/internal/event/events"
 	"github.com/duc-cnzj/execit/internal/models"
 	"github.com/duc-cnzj/execit/internal/scopes"
-	"github.com/duc-cnzj/execit/internal/utils"
 )
 
 func init() {
@@ -168,9 +169,9 @@ func (c *CardSvc) Create(ctx context.Context, request *card.CreateRequest) (*car
 		Namespace: ca.Namespace,
 		Name:      ca.Name,
 		ClusterId: int64(ca.ClusterID),
-		CreatedAt: utils.ToRFC3339DatetimeString(&ca.CreatedAt),
-		UpdatedAt: utils.ToRFC3339DatetimeString(&ca.UpdatedAt),
-		DeletedAt: utils.ToRFC3339DatetimeString(&ca.DeletedAt.Time),
+		CreatedAt: date.ToRFC3339DatetimeString(&ca.CreatedAt),
+		UpdatedAt: date.ToRFC3339DatetimeString(&ca.UpdatedAt),
+		DeletedAt: date.ToRFC3339DatetimeString(&ca.DeletedAt.Time),
 	}, nil
 }
 
@@ -184,9 +185,9 @@ func (c *CardSvc) Show(ctx context.Context, request *card.ShowRequest) (*card.Sh
 		Namespace: ca.Namespace,
 		Name:      ca.Name,
 		ClusterId: int64(ca.ClusterID),
-		CreatedAt: utils.ToRFC3339DatetimeString(&ca.CreatedAt),
-		UpdatedAt: utils.ToRFC3339DatetimeString(&ca.UpdatedAt),
-		DeletedAt: utils.ToRFC3339DatetimeString(&ca.DeletedAt.Time),
+		CreatedAt: date.ToRFC3339DatetimeString(&ca.CreatedAt),
+		UpdatedAt: date.ToRFC3339DatetimeString(&ca.UpdatedAt),
+		DeletedAt: date.ToRFC3339DatetimeString(&ca.DeletedAt.Time),
 		Items:     items,
 	}, nil
 }

@@ -11,6 +11,11 @@ import (
 	"path/filepath"
 	"time"
 
+	trans "github.com/duc-cnzj/execit/internal/translator"
+
+	"github.com/duc-cnzj/execit-client/rbac"
+	"github.com/duc-cnzj/execit/internal/auth"
+
 	"github.com/dustin/go-humanize"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -259,6 +264,10 @@ func (c *ContainerSvc) StreamCopyToPod(server container.ContainerSvc_StreamCopyT
 }
 
 func (c *ContainerSvc) ContainerLog(ctx context.Context, request *container.LogRequest) (*container.LogResponse, error) {
+	if !auth.HasPermissionFor(MustGetUser(ctx), rbac.Permission_Card, request.CardId) {
+		return nil, trans.TToError("forbidden", MustGetLang(ctx))
+	}
+
 	kclient := utils.K8sClientByClusterID(request.ClusterId).Client()
 
 	if running, reason := utils.IsPodRunning(kclient, request.Namespace, request.Pod); !running {
@@ -285,6 +294,9 @@ func (c *ContainerSvc) ContainerLog(ctx context.Context, request *container.LogR
 }
 
 func (c *ContainerSvc) StreamContainerLog(request *container.LogRequest, server container.ContainerSvc_StreamContainerLogServer) error {
+	if !auth.HasPermissionFor(MustGetUser(server.Context()), rbac.Permission_Card, request.CardId) {
+		return trans.TToError("forbidden", MustGetLang(server.Context()))
+	}
 	kclient := utils.K8sClientByClusterID(request.ClusterId).Client()
 
 	if running, reason := utils.IsPodRunning(kclient, request.Namespace, request.Pod); !running {

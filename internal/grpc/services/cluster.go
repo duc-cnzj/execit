@@ -7,6 +7,8 @@ import (
 	"sort"
 	"time"
 
+	"github.com/duc-cnzj/execit/internal/utils/date"
+
 	"gorm.io/gorm"
 	authorizationv1 "k8s.io/api/authorization/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -22,7 +24,6 @@ import (
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/models"
 	"github.com/duc-cnzj/execit/internal/scopes"
-	"github.com/duc-cnzj/execit/internal/utils"
 	"github.com/duc-cnzj/execit/internal/xlog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -58,9 +59,9 @@ func (c *ClusterSvc) List(ctx context.Context, request *cluster.ListRequest) (*c
 			Name:         m.Name,
 			KubeConfig:   m.KubeConfig,
 			ApiServerUrl: m.ClusterConfig().Host,
-			CreatedAt:    utils.ToRFC3339DatetimeString(&m.CreatedAt),
-			UpdatedAt:    utils.ToRFC3339DatetimeString(&m.UpdatedAt),
-			DeletedAt:    utils.ToRFC3339DatetimeString(&m.DeletedAt.Time),
+			CreatedAt:    date.ToRFC3339DatetimeString(&m.CreatedAt),
+			UpdatedAt:    date.ToRFC3339DatetimeString(&m.UpdatedAt),
+			DeletedAt:    date.ToRFC3339DatetimeString(&m.DeletedAt.Time),
 		})
 	}
 
@@ -219,9 +220,9 @@ func (c *ClusterSvc) Create(ctx context.Context, request *cluster.CreateRequest)
 	return &cluster.CreateResponse{
 		Id:        int64(clm.ID),
 		Name:      clm.Name,
-		CreatedAt: utils.ToRFC3339DatetimeString(&clm.CreatedAt),
-		UpdatedAt: utils.ToRFC3339DatetimeString(&clm.UpdatedAt),
-		DeletedAt: utils.ToRFC3339DatetimeString(&clm.DeletedAt.Time),
+		CreatedAt: date.ToRFC3339DatetimeString(&clm.CreatedAt),
+		UpdatedAt: date.ToRFC3339DatetimeString(&clm.UpdatedAt),
+		DeletedAt: date.ToRFC3339DatetimeString(&clm.DeletedAt.Time),
 	}, nil
 }
 
@@ -358,9 +359,9 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ShowRequest) (*c
 		Id:           int64(cl.ID),
 		Name:         cl.Name,
 		ApiServerUrl: cl.ClusterConfig().Host,
-		CreatedAt:    utils.ToRFC3339DatetimeString(&cl.CreatedAt),
-		UpdatedAt:    utils.ToRFC3339DatetimeString(&cl.UpdatedAt),
-		DeletedAt:    utils.ToRFC3339DatetimeString(&cl.DeletedAt.Time),
+		CreatedAt:    date.ToRFC3339DatetimeString(&cl.CreatedAt),
+		UpdatedAt:    date.ToRFC3339DatetimeString(&cl.UpdatedAt),
+		DeletedAt:    date.ToRFC3339DatetimeString(&cl.DeletedAt.Time),
 		Items:        results,
 	}, nil
 }

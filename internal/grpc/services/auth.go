@@ -4,6 +4,8 @@ import (
 	"context"
 	"sort"
 
+	auth2 "github.com/duc-cnzj/execit/internal/auth"
+
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
@@ -59,7 +61,7 @@ func verify(cfg oauth2.Config, provider *oidc.Provider, code string) (*oidc.IDTo
 
 func (a *AuthSvc) Login(ctx context.Context, request *auth.LoginRequest) (*auth.LoginResponse, error) {
 	if request.Username == "admin" && request.Password == a.adminPwd {
-		data, err := a.authsvc.Sign(contracts.UserInfo{
+		data, err := a.authsvc.Sign(&contracts.UserInfo{
 			LogoutUrl: "",
 			Roles:     []string{"admin"},
 			OpenIDClaims: contracts.OpenIDClaims{
@@ -86,13 +88,16 @@ func (a *AuthSvc) Info(ctx context.Context, req *auth.InfoRequest) (*auth.InfoRe
 		tokenSlice := incomingContext.Get("Authorization")
 		if len(tokenSlice) == 1 {
 			if c, b := a.authsvc.VerifyToken(tokenSlice[0]); b {
+				auth2.FillUserPermission(c.UserInfo)
+
 				return &auth.InfoResponse{
-					Id:        c.GetID(),
-					Avatar:    c.Picture,
-					Name:      c.Name,
-					Email:     c.Email,
-					LogoutUrl: c.LogoutUrl,
-					Roles:     c.Roles,
+					Id:          c.GetID(),
+					Avatar:      c.Picture,
+					Name:        c.Name,
+					Email:       c.Email,
+					LogoutUrl:   c.LogoutUrl,
+					IsAdmin:     c.IsAdmin(),
+					Permissions: c.Permissions,
 				}, nil
 			}
 		}
@@ -148,7 +153,7 @@ func (a *AuthSvc) Exchange(ctx context.Context, request *auth.ExchangeRequest) (
 	userinfo.Roles = []string{}
 
 	xlog.Debug(userinfo)
-	data, err := a.authsvc.Sign(userinfo)
+	data, err := a.authsvc.Sign(&userinfo)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}

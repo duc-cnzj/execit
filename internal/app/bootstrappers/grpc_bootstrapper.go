@@ -142,7 +142,7 @@ func Authenticate(ctx context.Context) (context.Context, error) {
 		return nil, err
 	}
 	if verifyToken, b := app.Auth().VerifyToken(token); b {
-		return myauthorizor.SetUser(ctx, &verifyToken.UserInfo), nil
+		return myauthorizor.SetUser(ctx, verifyToken.UserInfo), nil
 	}
 
 	return nil, status.Errorf(codes.Unauthenticated, "Unauthenticated.")

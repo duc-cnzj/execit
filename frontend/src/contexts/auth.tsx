@@ -35,6 +35,7 @@ function useAuth(): {
   setUser: (u: pb.auth.InfoResponse) => void;
   logout: (cb: () => void) => {};
   isAdmin: () => boolean;
+  hasCardPermission: (cardID: number) => boolean;
 } {
   return useContext(authContext);
 }
@@ -79,7 +80,31 @@ function useProvideAuth() {
   };
 
   const isAdmin = () => {
-    return user ? user.roles.filter((item) => item === "admin").length > 0 : false;
+    return user ? user.is_admin : false;
+  };
+
+  const hasCardPermission = (cardID: number): boolean => {
+    if (user?.is_admin) {
+      return true;
+    }
+    let has: boolean = false;
+    if (user?.permissions?.items[pb.rbac.Permission.Card].data) {
+      for (
+        let key = 0;
+        key < user?.permissions?.items[pb.rbac.Permission.Card].data.length;
+        key++
+      ) {
+        console.log(Number(user.permissions.items[pb.rbac.Permission.Card].data[key]), cardID)
+        if (
+          Number(user.permissions.items[pb.rbac.Permission.Card].data[key]) ===
+          Number(cardID)
+        ) {
+          has = true;
+          break;
+        }
+      }
+    }
+    return has;
   };
 
   return {
@@ -88,6 +113,7 @@ function useProvideAuth() {
     isAdmin,
     login: signin,
     logout: signout,
+    hasCardPermission: hasCardPermission,
   };
 }
 

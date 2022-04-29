@@ -574,6 +574,151 @@ var _ interface {
 	ErrorName() string
 } = InfoRequestValidationError{}
 
+// Validate checks the field values on Permission with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *Permission) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on Permission with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in PermissionMultiError, or
+// nil if none found.
+func (m *Permission) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *Permission) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	{
+		sorted_keys := make([]int64, len(m.GetItems()))
+		i := 0
+		for key := range m.GetItems() {
+			sorted_keys[i] = key
+			i++
+		}
+		sort.Slice(sorted_keys, func(i, j int) bool { return sorted_keys[i] < sorted_keys[j] })
+		for _, key := range sorted_keys {
+			val := m.GetItems()[key]
+			_ = val
+
+			// no validation rules for Items[key]
+
+			if all {
+				switch v := interface{}(val).(type) {
+				case interface{ ValidateAll() error }:
+					if err := v.ValidateAll(); err != nil {
+						errors = append(errors, PermissionValidationError{
+							field:  fmt.Sprintf("Items[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				case interface{ Validate() error }:
+					if err := v.Validate(); err != nil {
+						errors = append(errors, PermissionValidationError{
+							field:  fmt.Sprintf("Items[%v]", key),
+							reason: "embedded message failed validation",
+							cause:  err,
+						})
+					}
+				}
+			} else if v, ok := interface{}(val).(interface{ Validate() error }); ok {
+				if err := v.Validate(); err != nil {
+					return PermissionValidationError{
+						field:  fmt.Sprintf("Items[%v]", key),
+						reason: "embedded message failed validation",
+						cause:  err,
+					}
+				}
+			}
+
+		}
+	}
+
+	if len(errors) > 0 {
+		return PermissionMultiError(errors)
+	}
+
+	return nil
+}
+
+// PermissionMultiError is an error wrapping multiple validation errors
+// returned by Permission.ValidateAll() if the designated constraints aren't met.
+type PermissionMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PermissionMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PermissionMultiError) AllErrors() []error { return m }
+
+// PermissionValidationError is the validation error returned by
+// Permission.Validate if the designated constraints aren't met.
+type PermissionValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PermissionValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PermissionValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PermissionValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PermissionValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PermissionValidationError) ErrorName() string { return "PermissionValidationError" }
+
+// Error satisfies the builtin error interface
+func (e PermissionValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPermission.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PermissionValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PermissionValidationError{}
+
 // Validate checks the field values on InfoResponse with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -605,6 +750,37 @@ func (m *InfoResponse) validate(all bool) error {
 	// no validation rules for Email
 
 	// no validation rules for LogoutUrl
+
+	// no validation rules for IsAdmin
+
+	if all {
+		switch v := interface{}(m.GetPermissions()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, InfoResponseValidationError{
+					field:  "Permissions",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, InfoResponseValidationError{
+					field:  "Permissions",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPermissions()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return InfoResponseValidationError{
+				field:  "Permissions",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if len(errors) > 0 {
 		return InfoResponseMultiError(errors)
@@ -916,6 +1092,106 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = SettingsResponseValidationError{}
+
+// Validate checks the field values on PermissionItem with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *PermissionItem) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PermissionItem with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in PermissionItemMultiError,
+// or nil if none found.
+func (m *PermissionItem) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PermissionItem) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return PermissionItemMultiError(errors)
+	}
+
+	return nil
+}
+
+// PermissionItemMultiError is an error wrapping multiple validation errors
+// returned by PermissionItem.ValidateAll() if the designated constraints
+// aren't met.
+type PermissionItemMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PermissionItemMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PermissionItemMultiError) AllErrors() []error { return m }
+
+// PermissionItemValidationError is the validation error returned by
+// PermissionItem.Validate if the designated constraints aren't met.
+type PermissionItemValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PermissionItemValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PermissionItemValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PermissionItemValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PermissionItemValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PermissionItemValidationError) ErrorName() string { return "PermissionItemValidationError" }
+
+// Error satisfies the builtin error interface
+func (e PermissionItemValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPermissionItem.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PermissionItemValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PermissionItemValidationError{}
 
 // Validate checks the field values on SettingsResponse_OidcSetting with the
 // rules defined in the proto definition for this message. If any rules are

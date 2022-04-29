@@ -204,6 +204,85 @@ export namespace auth {
         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): auth.InfoRequest;
     }
 
+    /** Properties of a Permission. */
+    interface IPermission {
+
+        /** Permission items */
+        items?: ({ [k: string]: auth.Permission.item }|null);
+    }
+
+    /** Represents a Permission. */
+    class Permission implements IPermission {
+
+        /**
+         * Constructs a new Permission.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: auth.IPermission);
+
+        /** Permission items. */
+        public items: { [k: string]: auth.Permission.item };
+
+        /**
+         * Encodes the specified Permission message. Does not implicitly {@link auth.Permission.verify|verify} messages.
+         * @param message Permission message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: auth.Permission, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a Permission message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns Permission
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): auth.Permission;
+    }
+
+    namespace Permission {
+
+        /** Properties of an item. */
+        interface Iitem {
+
+            /** item data */
+            data?: (string[]|null);
+        }
+
+        /** Represents an item. */
+        class item implements Iitem {
+
+            /**
+             * Constructs a new item.
+             * @param [properties] Properties to set
+             */
+            constructor(properties?: auth.Permission.Iitem);
+
+            /** item data. */
+            public data: string[];
+
+            /**
+             * Encodes the specified item message. Does not implicitly {@link auth.Permission.item.verify|verify} messages.
+             * @param message item message or plain object to encode
+             * @param [writer] Writer to encode to
+             * @returns Writer
+             */
+            public static encode(message: auth.Permission.item, writer?: $protobuf.Writer): $protobuf.Writer;
+
+            /**
+             * Decodes an item message from the specified reader or buffer.
+             * @param reader Reader or buffer to decode from
+             * @param [length] Message length if known beforehand
+             * @returns item
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): auth.Permission.item;
+        }
+    }
+
     /** Properties of an InfoResponse. */
     interface IInfoResponse {
 
@@ -222,8 +301,11 @@ export namespace auth {
         /** InfoResponse logout_url */
         logout_url?: (string|null);
 
-        /** InfoResponse roles */
-        roles?: (string[]|null);
+        /** InfoResponse is_admin */
+        is_admin?: (boolean|null);
+
+        /** InfoResponse permissions */
+        permissions?: (auth.Permission|null);
     }
 
     /** Represents an InfoResponse. */
@@ -250,8 +332,11 @@ export namespace auth {
         /** InfoResponse logout_url. */
         public logout_url: string;
 
-        /** InfoResponse roles. */
-        public roles: string[];
+        /** InfoResponse is_admin. */
+        public is_admin: boolean;
+
+        /** InfoResponse permissions. */
+        public permissions?: (auth.Permission|null);
 
         /**
          * Encodes the specified InfoResponse message. Does not implicitly {@link auth.InfoResponse.verify|verify} messages.
@@ -1780,9 +1865,6 @@ export namespace google {
 
             /** EnumValueOptions uninterpreted_option */
             uninterpreted_option?: (google.protobuf.UninterpretedOption[]|null);
-
-            /** EnumValueOptions .perm.name */
-            ".perm.name"?: (string|null);
         }
 
         /** Represents an EnumValueOptions. */
@@ -4287,6 +4369,9 @@ export namespace container {
 
         /** LogRequest container */
         container?: (string|null);
+
+        /** LogRequest card_id */
+        card_id?: (number|null);
     }
 
     /** Represents a LogRequest. */
@@ -4309,6 +4394,9 @@ export namespace container {
 
         /** LogRequest container. */
         public container: string;
+
+        /** LogRequest card_id. */
+        public card_id: number;
 
         /**
          * Encodes the specified LogRequest message. Does not implicitly {@link container.LogRequest.verify|verify} messages.
@@ -5713,16 +5801,6 @@ export namespace model {
     }
 }
 
-/** Namespace perm. */
-export namespace perm {
-
-    /** UnitType enum. */
-    enum UnitType {
-        KmPerHour = 0,
-        MiPerHour = 1
-    }
-}
-
 /** Namespace picture. */
 export namespace picture {
 
@@ -5842,6 +5920,684 @@ export namespace picture {
          * @param [response] BackgroundResponse
          */
         type BackgroundCallback = (error: (Error|null), response?: picture.BackgroundResponse) => void;
+    }
+}
+
+/** Namespace rbac. */
+export namespace rbac {
+
+    /** Permission enum. */
+    enum Permission {
+        None = 0,
+        Card = 1,
+        ClusterAdd = 10,
+        ClusterDelete = 11,
+        ClusterView = 12,
+        FileUpload = 20,
+        FileDelete = 21,
+        FileDownload = 22,
+        EventView = 30
+    }
+
+    /** State enum. */
+    enum State {
+        _ = 0,
+        Request = 1,
+        Approved = 2,
+        Rejected = 3,
+        Revoked = 4
+    }
+
+    /** Properties of a UserPermission. */
+    interface IUserPermission {
+
+        /** UserPermission id */
+        id?: (number|null);
+
+        /** UserPermission username */
+        username?: (string|null);
+
+        /** UserPermission email */
+        email?: (string|null);
+
+        /** UserPermission permission */
+        permission?: (rbac.Permission|null);
+
+        /** UserPermission state */
+        state?: (rbac.State|null);
+
+        /** UserPermission reason */
+        reason?: (string|null);
+
+        /** UserPermission subject_id */
+        subject_id?: (number|null);
+
+        /** UserPermission description */
+        description?: (string|null);
+
+        /** UserPermission created_at */
+        created_at?: (string|null);
+
+        /** UserPermission updated_at */
+        updated_at?: (string|null);
+
+        /** UserPermission deleted_at */
+        deleted_at?: (string|null);
+    }
+
+    /** Represents a UserPermission. */
+    class UserPermission implements IUserPermission {
+
+        /**
+         * Constructs a new UserPermission.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.IUserPermission);
+
+        /** UserPermission id. */
+        public id: number;
+
+        /** UserPermission username. */
+        public username: string;
+
+        /** UserPermission email. */
+        public email: string;
+
+        /** UserPermission permission. */
+        public permission: rbac.Permission;
+
+        /** UserPermission state. */
+        public state: rbac.State;
+
+        /** UserPermission reason. */
+        public reason: string;
+
+        /** UserPermission subject_id. */
+        public subject_id: number;
+
+        /** UserPermission description. */
+        public description: string;
+
+        /** UserPermission created_at. */
+        public created_at: string;
+
+        /** UserPermission updated_at. */
+        public updated_at: string;
+
+        /** UserPermission deleted_at. */
+        public deleted_at: string;
+
+        /**
+         * Encodes the specified UserPermission message. Does not implicitly {@link rbac.UserPermission.verify|verify} messages.
+         * @param message UserPermission message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.UserPermission, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a UserPermission message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns UserPermission
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.UserPermission;
+    }
+
+    /** Properties of a ListRequest. */
+    interface IListRequest {
+
+        /** ListRequest page */
+        page?: (number|null);
+
+        /** ListRequest page_size */
+        page_size?: (number|null);
+
+        /** ListRequest state */
+        state?: (rbac.State|null);
+
+        /** ListRequest email */
+        email?: (string|null);
+    }
+
+    /** Represents a ListRequest. */
+    class ListRequest implements IListRequest {
+
+        /**
+         * Constructs a new ListRequest.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.IListRequest);
+
+        /** ListRequest page. */
+        public page: number;
+
+        /** ListRequest page_size. */
+        public page_size: number;
+
+        /** ListRequest state. */
+        public state: rbac.State;
+
+        /** ListRequest email. */
+        public email: string;
+
+        /**
+         * Encodes the specified ListRequest message. Does not implicitly {@link rbac.ListRequest.verify|verify} messages.
+         * @param message ListRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.ListRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ListRequest message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ListRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.ListRequest;
+    }
+
+    /** Properties of a ListResponse. */
+    interface IListResponse {
+
+        /** ListResponse page */
+        page?: (number|null);
+
+        /** ListResponse page_size */
+        page_size?: (number|null);
+
+        /** ListResponse items */
+        items?: (rbac.UserPermission[]|null);
+
+        /** ListResponse count */
+        count?: (number|null);
+    }
+
+    /** Represents a ListResponse. */
+    class ListResponse implements IListResponse {
+
+        /**
+         * Constructs a new ListResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.IListResponse);
+
+        /** ListResponse page. */
+        public page: number;
+
+        /** ListResponse page_size. */
+        public page_size: number;
+
+        /** ListResponse items. */
+        public items: rbac.UserPermission[];
+
+        /** ListResponse count. */
+        public count: number;
+
+        /**
+         * Encodes the specified ListResponse message. Does not implicitly {@link rbac.ListResponse.verify|verify} messages.
+         * @param message ListResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.ListResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ListResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ListResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.ListResponse;
+    }
+
+    /** Properties of an ApplyForRequest. */
+    interface IApplyForRequest {
+
+        /** ApplyForRequest subject_id */
+        subject_id?: (number|null);
+
+        /** ApplyForRequest permission */
+        permission?: (rbac.Permission|null);
+    }
+
+    /** Represents an ApplyForRequest. */
+    class ApplyForRequest implements IApplyForRequest {
+
+        /**
+         * Constructs a new ApplyForRequest.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.IApplyForRequest);
+
+        /** ApplyForRequest subject_id. */
+        public subject_id: number;
+
+        /** ApplyForRequest permission. */
+        public permission: rbac.Permission;
+
+        /**
+         * Encodes the specified ApplyForRequest message. Does not implicitly {@link rbac.ApplyForRequest.verify|verify} messages.
+         * @param message ApplyForRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.ApplyForRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an ApplyForRequest message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ApplyForRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.ApplyForRequest;
+    }
+
+    /** Properties of an ApplyForResponse. */
+    interface IApplyForResponse {
+
+        /** ApplyForResponse permission */
+        permission?: (rbac.UserPermission|null);
+    }
+
+    /** Represents an ApplyForResponse. */
+    class ApplyForResponse implements IApplyForResponse {
+
+        /**
+         * Constructs a new ApplyForResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.IApplyForResponse);
+
+        /** ApplyForResponse permission. */
+        public permission?: (rbac.UserPermission|null);
+
+        /**
+         * Encodes the specified ApplyForResponse message. Does not implicitly {@link rbac.ApplyForResponse.verify|verify} messages.
+         * @param message ApplyForResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.ApplyForResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an ApplyForResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ApplyForResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.ApplyForResponse;
+    }
+
+    /** Properties of an ApproveRequest. */
+    interface IApproveRequest {
+
+        /** ApproveRequest id */
+        id?: (number|null);
+    }
+
+    /** Represents an ApproveRequest. */
+    class ApproveRequest implements IApproveRequest {
+
+        /**
+         * Constructs a new ApproveRequest.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.IApproveRequest);
+
+        /** ApproveRequest id. */
+        public id: number;
+
+        /**
+         * Encodes the specified ApproveRequest message. Does not implicitly {@link rbac.ApproveRequest.verify|verify} messages.
+         * @param message ApproveRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.ApproveRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an ApproveRequest message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ApproveRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.ApproveRequest;
+    }
+
+    /** Properties of an ApproveResponse. */
+    interface IApproveResponse {
+
+        /** ApproveResponse permission */
+        permission?: (rbac.UserPermission|null);
+    }
+
+    /** Represents an ApproveResponse. */
+    class ApproveResponse implements IApproveResponse {
+
+        /**
+         * Constructs a new ApproveResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.IApproveResponse);
+
+        /** ApproveResponse permission. */
+        public permission?: (rbac.UserPermission|null);
+
+        /**
+         * Encodes the specified ApproveResponse message. Does not implicitly {@link rbac.ApproveResponse.verify|verify} messages.
+         * @param message ApproveResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.ApproveResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes an ApproveResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ApproveResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.ApproveResponse;
+    }
+
+    /** Properties of a RejectRequest. */
+    interface IRejectRequest {
+
+        /** RejectRequest id */
+        id?: (number|null);
+
+        /** RejectRequest reason */
+        reason?: (string|null);
+    }
+
+    /** Represents a RejectRequest. */
+    class RejectRequest implements IRejectRequest {
+
+        /**
+         * Constructs a new RejectRequest.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.IRejectRequest);
+
+        /** RejectRequest id. */
+        public id: number;
+
+        /** RejectRequest reason. */
+        public reason: string;
+
+        /**
+         * Encodes the specified RejectRequest message. Does not implicitly {@link rbac.RejectRequest.verify|verify} messages.
+         * @param message RejectRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.RejectRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a RejectRequest message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns RejectRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.RejectRequest;
+    }
+
+    /** Properties of a RejectResponse. */
+    interface IRejectResponse {
+
+        /** RejectResponse permission */
+        permission?: (rbac.UserPermission|null);
+    }
+
+    /** Represents a RejectResponse. */
+    class RejectResponse implements IRejectResponse {
+
+        /**
+         * Constructs a new RejectResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.IRejectResponse);
+
+        /** RejectResponse permission. */
+        public permission?: (rbac.UserPermission|null);
+
+        /**
+         * Encodes the specified RejectResponse message. Does not implicitly {@link rbac.RejectResponse.verify|verify} messages.
+         * @param message RejectResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.RejectResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a RejectResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns RejectResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.RejectResponse;
+    }
+
+    /** Properties of a RevokeRequest. */
+    interface IRevokeRequest {
+
+        /** RevokeRequest id */
+        id?: (number|null);
+
+        /** RevokeRequest reason */
+        reason?: (string|null);
+    }
+
+    /** Represents a RevokeRequest. */
+    class RevokeRequest implements IRevokeRequest {
+
+        /**
+         * Constructs a new RevokeRequest.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.IRevokeRequest);
+
+        /** RevokeRequest id. */
+        public id: number;
+
+        /** RevokeRequest reason. */
+        public reason: string;
+
+        /**
+         * Encodes the specified RevokeRequest message. Does not implicitly {@link rbac.RevokeRequest.verify|verify} messages.
+         * @param message RevokeRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.RevokeRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a RevokeRequest message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns RevokeRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.RevokeRequest;
+    }
+
+    /** Properties of a RevokeResponse. */
+    interface IRevokeResponse {
+
+        /** RevokeResponse permission */
+        permission?: (rbac.UserPermission|null);
+    }
+
+    /** Represents a RevokeResponse. */
+    class RevokeResponse implements IRevokeResponse {
+
+        /**
+         * Constructs a new RevokeResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.IRevokeResponse);
+
+        /** RevokeResponse permission. */
+        public permission?: (rbac.UserPermission|null);
+
+        /**
+         * Encodes the specified RevokeResponse message. Does not implicitly {@link rbac.RevokeResponse.verify|verify} messages.
+         * @param message RevokeResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.RevokeResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a RevokeResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns RevokeResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.RevokeResponse;
+    }
+
+    /** Represents a RBAC */
+    class RBAC extends $protobuf.rpc.Service {
+
+        /**
+         * Constructs a new RBAC service.
+         * @param rpcImpl RPC implementation
+         * @param [requestDelimited=false] Whether requests are length-delimited
+         * @param [responseDelimited=false] Whether responses are length-delimited
+         */
+        constructor(rpcImpl: $protobuf.RPCImpl, requestDelimited?: boolean, responseDelimited?: boolean);
+
+        /**
+         * Calls List.
+         * @param request ListRequest message or plain object
+         * @param callback Node-style callback called with the error, if any, and ListResponse
+         */
+        public list(request: rbac.ListRequest, callback: rbac.RBAC.ListCallback): void;
+
+        /**
+         * Calls List.
+         * @param request ListRequest message or plain object
+         * @returns Promise
+         */
+        public list(request: rbac.ListRequest): Promise<rbac.ListResponse>;
+
+        /**
+         * Calls ApplyFor.
+         * @param request ApplyForRequest message or plain object
+         * @param callback Node-style callback called with the error, if any, and ApplyForResponse
+         */
+        public applyFor(request: rbac.ApplyForRequest, callback: rbac.RBAC.ApplyForCallback): void;
+
+        /**
+         * Calls ApplyFor.
+         * @param request ApplyForRequest message or plain object
+         * @returns Promise
+         */
+        public applyFor(request: rbac.ApplyForRequest): Promise<rbac.ApplyForResponse>;
+
+        /**
+         * Calls Approve.
+         * @param request ApproveRequest message or plain object
+         * @param callback Node-style callback called with the error, if any, and ApproveResponse
+         */
+        public approve(request: rbac.ApproveRequest, callback: rbac.RBAC.ApproveCallback): void;
+
+        /**
+         * Calls Approve.
+         * @param request ApproveRequest message or plain object
+         * @returns Promise
+         */
+        public approve(request: rbac.ApproveRequest): Promise<rbac.ApproveResponse>;
+
+        /**
+         * Calls Reject.
+         * @param request RejectRequest message or plain object
+         * @param callback Node-style callback called with the error, if any, and RejectResponse
+         */
+        public reject(request: rbac.RejectRequest, callback: rbac.RBAC.RejectCallback): void;
+
+        /**
+         * Calls Reject.
+         * @param request RejectRequest message or plain object
+         * @returns Promise
+         */
+        public reject(request: rbac.RejectRequest): Promise<rbac.RejectResponse>;
+
+        /**
+         * Calls Revoke.
+         * @param request RevokeRequest message or plain object
+         * @param callback Node-style callback called with the error, if any, and RevokeResponse
+         */
+        public revoke(request: rbac.RevokeRequest, callback: rbac.RBAC.RevokeCallback): void;
+
+        /**
+         * Calls Revoke.
+         * @param request RevokeRequest message or plain object
+         * @returns Promise
+         */
+        public revoke(request: rbac.RevokeRequest): Promise<rbac.RevokeResponse>;
+    }
+
+    namespace RBAC {
+
+        /**
+         * Callback as used by {@link rbac.RBAC#list}.
+         * @param error Error, if any
+         * @param [response] ListResponse
+         */
+        type ListCallback = (error: (Error|null), response?: rbac.ListResponse) => void;
+
+        /**
+         * Callback as used by {@link rbac.RBAC#applyFor}.
+         * @param error Error, if any
+         * @param [response] ApplyForResponse
+         */
+        type ApplyForCallback = (error: (Error|null), response?: rbac.ApplyForResponse) => void;
+
+        /**
+         * Callback as used by {@link rbac.RBAC#approve}.
+         * @param error Error, if any
+         * @param [response] ApproveResponse
+         */
+        type ApproveCallback = (error: (Error|null), response?: rbac.ApproveResponse) => void;
+
+        /**
+         * Callback as used by {@link rbac.RBAC#reject}.
+         * @param error Error, if any
+         * @param [response] RejectResponse
+         */
+        type RejectCallback = (error: (Error|null), response?: rbac.RejectResponse) => void;
+
+        /**
+         * Callback as used by {@link rbac.RBAC#revoke}.
+         * @param error Error, if any
+         * @param [response] RevokeResponse
+         */
+        type RevokeCallback = (error: (Error|null), response?: rbac.RevokeResponse) => void;
     }
 }
 
@@ -6021,7 +6777,8 @@ export namespace websocket {
         HandleExecShellMsg = 51,
         HandleCloseShell = 52,
         HandleAuthorize = 53,
-        HandleSyncCard = 54
+        HandleSyncCard = 54,
+        HandleSetLang = 55
     }
 
     /** ResultType enum. */
@@ -6243,6 +7000,9 @@ export namespace websocket {
 
         /** WsHandleExecShellInput container */
         container?: (string|null);
+
+        /** WsHandleExecShellInput card_id */
+        card_id?: (number|null);
     }
 
     /** Represents a WsHandleExecShellInput. */
@@ -6269,6 +7029,9 @@ export namespace websocket {
         /** WsHandleExecShellInput container. */
         public container: string;
 
+        /** WsHandleExecShellInput card_id. */
+        public card_id: number;
+
         /**
          * Encodes the specified WsHandleExecShellInput message. Does not implicitly {@link websocket.WsHandleExecShellInput.verify|verify} messages.
          * @param message WsHandleExecShellInput message or plain object to encode
@@ -6286,6 +7049,50 @@ export namespace websocket {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): websocket.WsHandleExecShellInput;
+    }
+
+    /** Properties of a WsHandleSetLangInput. */
+    interface IWsHandleSetLangInput {
+
+        /** WsHandleSetLangInput type */
+        type?: (websocket.Type|null);
+
+        /** WsHandleSetLangInput lang */
+        lang?: (string|null);
+    }
+
+    /** Represents a WsHandleSetLangInput. */
+    class WsHandleSetLangInput implements IWsHandleSetLangInput {
+
+        /**
+         * Constructs a new WsHandleSetLangInput.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: websocket.IWsHandleSetLangInput);
+
+        /** WsHandleSetLangInput type. */
+        public type: websocket.Type;
+
+        /** WsHandleSetLangInput lang. */
+        public lang: string;
+
+        /**
+         * Encodes the specified WsHandleSetLangInput message. Does not implicitly {@link websocket.WsHandleSetLangInput.verify|verify} messages.
+         * @param message WsHandleSetLangInput message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: websocket.WsHandleSetLangInput, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a WsHandleSetLangInput message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns WsHandleSetLangInput
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): websocket.WsHandleSetLangInput;
     }
 
     /** Properties of a Metadata. */

@@ -6,11 +6,10 @@ import { Switch, Route } from "react-router-dom";
 import AppHeader from "./components/AppHeader";
 import AppFooter from "./components/AppFooter";
 import { PrivateRoute } from "./contexts/auth";
+import RBAC from "./components/RBAC";
 const { Header, Content, Footer } = Layout;
 
-const ClusterManager = lazy(
-  () => import("./components/ClusterManager")
-);
+const ClusterManager = lazy(() => import("./components/ClusterManager"));
 
 const Events = lazy(() => import("./components/Events"));
 
@@ -18,7 +17,15 @@ const App: FC = () => {
   return (
     <ProvideWebsocket>
       <Layout className="app">
-        <Header className="app__header" style={{ position: "fixed", zIndex: 1, width: "100%", overflow: "hidden" }}>
+        <Header
+          className="app__header"
+          style={{
+            position: "fixed",
+            zIndex: 1,
+            width: "100%",
+            overflow: "hidden",
+          }}
+        >
           <AppHeader />
         </Header>
         <Content className="app-content">
@@ -31,6 +38,11 @@ const App: FC = () => {
             <PrivateRoute path={`/events`}>
               <Suspense fallback={null}>
                 <Events />
+              </Suspense>
+            </PrivateRoute>
+            <PrivateRoute path={`/rbac`}>
+              <Suspense fallback={null}>
+                <RBAC />
               </Suspense>
             </PrivateRoute>
             <PrivateRoute path={`/`} exact>

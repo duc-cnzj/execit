@@ -1,0 +1,128 @@
+syntax = "proto3";
+
+package rbac;
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+option go_package = "github.com/duc-cnzj/execit-client/rbac;rbac";
+
+
+enum Permission {
+  None = 0;
+  Card = 1;
+
+  ClusterAdd = 10;
+  ClusterDelete = 11;
+  ClusterView = 12;
+
+  FileUpload = 20;
+  FileDelete = 21;
+  FileDownload = 22;
+
+  EventView = 30;
+}
+
+enum State {
+  _ = 0;
+  Request = 1;
+  Approved = 2;
+  Rejected = 3;
+  Revoked = 4;
+}
+
+message UserPermission {
+  int64 id = 1;
+  string username = 2;
+  string email = 3;
+  Permission permission = 4;
+  State state = 5;
+  string reason = 6;
+  int64 subject_id = 7;
+  string description = 8;
+
+  string created_at = 100;
+  string updated_at = 101;
+  string deleted_at = 102;
+}
+
+message ListRequest {
+  int64 page = 1 [(validate.rules).int64.gte = 1];
+  int64 page_size = 2 [(validate.rules).int64.gte = 1];
+  State state = 3;
+  string email = 4;
+}
+message ListResponse {
+  int64 page = 1;
+  int64 page_size = 2;
+  repeated UserPermission items = 3;
+  int64 count = 4;
+}
+
+message ApplyForRequest {
+  int64 subject_id = 1 [(validate.rules).int64.gte = 0];
+  Permission permission = 2;
+}
+
+message ApplyForResponse {
+  UserPermission permission = 1;
+}
+
+message ApproveRequest {
+  int64 id = 1 [(validate.rules).int64.gte = 0];
+}
+message ApproveResponse {
+  UserPermission permission = 1;
+}
+
+message RejectRequest {
+  int64 id = 1 [(validate.rules).int64.gte = 0];
+  string reason = 2;
+}
+message RejectResponse {
+  UserPermission permission = 1;
+}
+
+message RevokeRequest {
+  int64 id = 1 [(validate.rules).int64.gte = 0];
+  string reason = 2;
+}
+message RevokeResponse {
+    UserPermission permission = 1;
+}
+
+service RBAC {
+  rpc List(ListRequest) returns (ListResponse) {
+    option (google.api.http) = {
+      get: "/api/rbac/permissions"
+    };
+  }
+
+  rpc ApplyFor(ApplyForRequest) returns (ApplyForResponse) {
+    option (google.api.http) = {
+      post: "/api/rbac/permissions",
+      body: "*"
+    };
+  }
+
+  rpc Approve(ApproveRequest) returns (ApproveResponse) {
+    option (google.api.http) = {
+      post: "/api/rbac/permissions/approve",
+      body: "*"
+    };
+  }
+
+  rpc Reject(RejectRequest) returns (RejectResponse) {
+    option (google.api.http) = {
+      post: "/api/rbac/permissions/reject",
+      body: "*"
+    };
+  }
+
+  rpc Revoke(RevokeRequest) returns (RevokeResponse) {
+    option (google.api.http) = {
+      post: "/api/rbac/permissions/revoke",
+      body: "*"
+    };
+  }
+}

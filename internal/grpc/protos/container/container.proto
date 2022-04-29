@@ -85,6 +85,7 @@ message LogRequest {
   string namespace = 2 [(validate.rules).string.min_bytes = 1];
   string pod = 3 [(validate.rules).string.min_bytes = 1];
   string container = 4 [(validate.rules).string.min_bytes = 1];
+  int64 card_id = 5 [(validate.rules).int64.gt = 0];
 }
 
 message LogResponse {
@@ -167,14 +168,14 @@ service ContainerSvc {
   // ContainerLog 查看 pod 日志
   rpc ContainerLog(LogRequest) returns (LogResponse) {
     option (google.api.http) = {
-      get: "/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs"
+      get: "/api/containers/cards/{card_id}/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/logs"
     };
   }
 
   // StreamContainerLog stream 方式查看 pod 日志
   rpc StreamContainerLog(LogRequest) returns (stream LogResponse) {
     option (google.api.http) = {
-      get: "/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/stream_logs"
+      get: "/api/containers/cards/{card_id}/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/stream_logs"
     };
   }
 }

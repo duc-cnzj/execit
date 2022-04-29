@@ -449,6 +449,195 @@ export const auth = $root.auth = (() => {
         return InfoRequest;
     })();
 
+    auth.Permission = (function() {
+
+        /**
+         * Properties of a Permission.
+         * @memberof auth
+         * @interface IPermission
+         * @property {Object.<string,auth.Permission.item>|null} [items] Permission items
+         */
+
+        /**
+         * Constructs a new Permission.
+         * @memberof auth
+         * @classdesc Represents a Permission.
+         * @implements IPermission
+         * @constructor
+         * @param {auth.IPermission=} [properties] Properties to set
+         */
+        function Permission(properties) {
+            this.items = {};
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * Permission items.
+         * @member {Object.<string,auth.Permission.item>} items
+         * @memberof auth.Permission
+         * @instance
+         */
+        Permission.prototype.items = $util.emptyObject;
+
+        /**
+         * Encodes the specified Permission message. Does not implicitly {@link auth.Permission.verify|verify} messages.
+         * @function encode
+         * @memberof auth.Permission
+         * @static
+         * @param {auth.Permission} message Permission message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        Permission.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.items != null && Object.hasOwnProperty.call(message, "items"))
+                for (let keys = Object.keys(message.items), i = 0; i < keys.length; ++i) {
+                    writer.uint32(/* id 1, wireType 2 =*/10).fork().uint32(/* id 1, wireType 0 =*/8).int64(keys[i]);
+                    $root.auth.Permission.item.encode(message.items[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                }
+            return writer;
+        };
+
+        /**
+         * Decodes a Permission message from the specified reader or buffer.
+         * @function decode
+         * @memberof auth.Permission
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {auth.Permission} Permission
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        Permission.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.auth.Permission(), key, value;
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    if (message.items === $util.emptyObject)
+                        message.items = {};
+                    let end2 = reader.uint32() + reader.pos;
+                    key = 0;
+                    value = null;
+                    while (reader.pos < end2) {
+                        let tag2 = reader.uint32();
+                        switch (tag2 >>> 3) {
+                        case 1:
+                            key = reader.int64();
+                            break;
+                        case 2:
+                            value = $root.auth.Permission.item.decode(reader, reader.uint32());
+                            break;
+                        default:
+                            reader.skipType(tag2 & 7);
+                            break;
+                        }
+                    }
+                    message.items[typeof key === "object" ? $util.longToHash(key) : key] = value;
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        Permission.item = (function() {
+
+            /**
+             * Properties of an item.
+             * @memberof auth.Permission
+             * @interface Iitem
+             * @property {Array.<string>|null} [data] item data
+             */
+
+            /**
+             * Constructs a new item.
+             * @memberof auth.Permission
+             * @classdesc Represents an item.
+             * @implements Iitem
+             * @constructor
+             * @param {auth.Permission.Iitem=} [properties] Properties to set
+             */
+            function item(properties) {
+                this.data = [];
+                if (properties)
+                    for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                        if (properties[keys[i]] != null)
+                            this[keys[i]] = properties[keys[i]];
+            }
+
+            /**
+             * item data.
+             * @member {Array.<string>} data
+             * @memberof auth.Permission.item
+             * @instance
+             */
+            item.prototype.data = $util.emptyArray;
+
+            /**
+             * Encodes the specified item message. Does not implicitly {@link auth.Permission.item.verify|verify} messages.
+             * @function encode
+             * @memberof auth.Permission.item
+             * @static
+             * @param {auth.Permission.item} message item message or plain object to encode
+             * @param {$protobuf.Writer} [writer] Writer to encode to
+             * @returns {$protobuf.Writer} Writer
+             */
+            item.encode = function encode(message, writer) {
+                if (!writer)
+                    writer = $Writer.create();
+                if (message.data != null && message.data.length)
+                    for (let i = 0; i < message.data.length; ++i)
+                        writer.uint32(/* id 1, wireType 2 =*/10).string(message.data[i]);
+                return writer;
+            };
+
+            /**
+             * Decodes an item message from the specified reader or buffer.
+             * @function decode
+             * @memberof auth.Permission.item
+             * @static
+             * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+             * @param {number} [length] Message length if known beforehand
+             * @returns {auth.Permission.item} item
+             * @throws {Error} If the payload is not a reader or valid buffer
+             * @throws {$protobuf.util.ProtocolError} If required fields are missing
+             */
+            item.decode = function decode(reader, length) {
+                if (!(reader instanceof $Reader))
+                    reader = $Reader.create(reader);
+                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.auth.Permission.item();
+                while (reader.pos < end) {
+                    let tag = reader.uint32();
+                    switch (tag >>> 3) {
+                    case 1:
+                        if (!(message.data && message.data.length))
+                            message.data = [];
+                        message.data.push(reader.string());
+                        break;
+                    default:
+                        reader.skipType(tag & 7);
+                        break;
+                    }
+                }
+                return message;
+            };
+
+            return item;
+        })();
+
+        return Permission;
+    })();
+
     auth.InfoResponse = (function() {
 
         /**
@@ -460,7 +649,8 @@ export const auth = $root.auth = (() => {
          * @property {string|null} [name] InfoResponse name
          * @property {string|null} [email] InfoResponse email
          * @property {string|null} [logout_url] InfoResponse logout_url
-         * @property {Array.<string>|null} [roles] InfoResponse roles
+         * @property {boolean|null} [is_admin] InfoResponse is_admin
+         * @property {auth.Permission|null} [permissions] InfoResponse permissions
          */
 
         /**
@@ -472,7 +662,6 @@ export const auth = $root.auth = (() => {
          * @param {auth.IInfoResponse=} [properties] Properties to set
          */
         function InfoResponse(properties) {
-            this.roles = [];
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -520,12 +709,20 @@ export const auth = $root.auth = (() => {
         InfoResponse.prototype.logout_url = "";
 
         /**
-         * InfoResponse roles.
-         * @member {Array.<string>} roles
+         * InfoResponse is_admin.
+         * @member {boolean} is_admin
          * @memberof auth.InfoResponse
          * @instance
          */
-        InfoResponse.prototype.roles = $util.emptyArray;
+        InfoResponse.prototype.is_admin = false;
+
+        /**
+         * InfoResponse permissions.
+         * @member {auth.Permission|null|undefined} permissions
+         * @memberof auth.InfoResponse
+         * @instance
+         */
+        InfoResponse.prototype.permissions = null;
 
         /**
          * Encodes the specified InfoResponse message. Does not implicitly {@link auth.InfoResponse.verify|verify} messages.
@@ -549,9 +746,10 @@ export const auth = $root.auth = (() => {
                 writer.uint32(/* id 4, wireType 2 =*/34).string(message.email);
             if (message.logout_url != null && Object.hasOwnProperty.call(message, "logout_url"))
                 writer.uint32(/* id 5, wireType 2 =*/42).string(message.logout_url);
-            if (message.roles != null && message.roles.length)
-                for (let i = 0; i < message.roles.length; ++i)
-                    writer.uint32(/* id 6, wireType 2 =*/50).string(message.roles[i]);
+            if (message.is_admin != null && Object.hasOwnProperty.call(message, "is_admin"))
+                writer.uint32(/* id 6, wireType 0 =*/48).bool(message.is_admin);
+            if (message.permissions != null && Object.hasOwnProperty.call(message, "permissions"))
+                $root.auth.Permission.encode(message.permissions, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
             return writer;
         };
 
@@ -589,9 +787,10 @@ export const auth = $root.auth = (() => {
                     message.logout_url = reader.string();
                     break;
                 case 6:
-                    if (!(message.roles && message.roles.length))
-                        message.roles = [];
-                    message.roles.push(reader.string());
+                    message.is_admin = reader.bool();
+                    break;
+                case 7:
+                    message.permissions = $root.auth.Permission.decode(reader, reader.uint32());
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -3952,7 +4151,6 @@ export const google = $root.google = (() => {
              * @interface IEnumValueOptions
              * @property {boolean|null} [deprecated] EnumValueOptions deprecated
              * @property {Array.<google.protobuf.UninterpretedOption>|null} [uninterpreted_option] EnumValueOptions uninterpreted_option
-             * @property {string|null} [".perm.name"] EnumValueOptions .perm.name
              */
 
             /**
@@ -3988,14 +4186,6 @@ export const google = $root.google = (() => {
             EnumValueOptions.prototype.uninterpreted_option = $util.emptyArray;
 
             /**
-             * EnumValueOptions .perm.name.
-             * @member {string} .perm.name
-             * @memberof google.protobuf.EnumValueOptions
-             * @instance
-             */
-            EnumValueOptions.prototype[".perm.name"] = "";
-
-            /**
              * Encodes the specified EnumValueOptions message. Does not implicitly {@link google.protobuf.EnumValueOptions.verify|verify} messages.
              * @function encode
              * @memberof google.protobuf.EnumValueOptions
@@ -4012,8 +4202,6 @@ export const google = $root.google = (() => {
                 if (message.uninterpreted_option != null && message.uninterpreted_option.length)
                     for (let i = 0; i < message.uninterpreted_option.length; ++i)
                         $root.google.protobuf.UninterpretedOption.encode(message.uninterpreted_option[i], writer.uint32(/* id 999, wireType 2 =*/7994).fork()).ldelim();
-                if (message[".perm.name"] != null && Object.hasOwnProperty.call(message, ".perm.name"))
-                    writer.uint32(/* id 12345, wireType 2 =*/98762).string(message[".perm.name"]);
                 return writer;
             };
 
@@ -4042,9 +4230,6 @@ export const google = $root.google = (() => {
                         if (!(message.uninterpreted_option && message.uninterpreted_option.length))
                             message.uninterpreted_option = [];
                         message.uninterpreted_option.push($root.google.protobuf.UninterpretedOption.decode(reader, reader.uint32()));
-                        break;
-                    case 12345:
-                        message[".perm.name"] = reader.string();
                         break;
                     default:
                         reader.skipType(tag & 7);
@@ -9388,6 +9573,7 @@ export const container = $root.container = (() => {
          * @property {string|null} [namespace] LogRequest namespace
          * @property {string|null} [pod] LogRequest pod
          * @property {string|null} [container] LogRequest container
+         * @property {number|null} [card_id] LogRequest card_id
          */
 
         /**
@@ -9438,6 +9624,14 @@ export const container = $root.container = (() => {
         LogRequest.prototype.container = "";
 
         /**
+         * LogRequest card_id.
+         * @member {number} card_id
+         * @memberof container.LogRequest
+         * @instance
+         */
+        LogRequest.prototype.card_id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
          * Encodes the specified LogRequest message. Does not implicitly {@link container.LogRequest.verify|verify} messages.
          * @function encode
          * @memberof container.LogRequest
@@ -9457,6 +9651,8 @@ export const container = $root.container = (() => {
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.pod);
             if (message.container != null && Object.hasOwnProperty.call(message, "container"))
                 writer.uint32(/* id 4, wireType 2 =*/34).string(message.container);
+            if (message.card_id != null && Object.hasOwnProperty.call(message, "card_id"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int64(message.card_id);
             return writer;
         };
 
@@ -9489,6 +9685,9 @@ export const container = $root.container = (() => {
                     break;
                 case 4:
                     message.container = reader.string();
+                    break;
+                case 5:
+                    message.card_id = reader.int64();
                     break;
                 default:
                     reader.skipType(tag & 7);
@@ -12334,32 +12533,6 @@ export const model = $root.model = (() => {
     return model;
 })();
 
-export const perm = $root.perm = (() => {
-
-    /**
-     * Namespace perm.
-     * @exports perm
-     * @namespace
-     */
-    const perm = {};
-
-    /**
-     * UnitType enum.
-     * @name perm.UnitType
-     * @enum {number}
-     * @property {number} KmPerHour=0 KmPerHour value
-     * @property {number} MiPerHour=1 MiPerHour value
-     */
-    perm.UnitType = (function() {
-        const valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "KmPerHour"] = 0;
-        values[valuesById[1] = "MiPerHour"] = 1;
-        return values;
-    })();
-
-    return perm;
-})();
-
 export const picture = $root.picture = (() => {
 
     /**
@@ -12600,6 +12773,1413 @@ export const picture = $root.picture = (() => {
     })();
 
     return picture;
+})();
+
+export const rbac = $root.rbac = (() => {
+
+    /**
+     * Namespace rbac.
+     * @exports rbac
+     * @namespace
+     */
+    const rbac = {};
+
+    /**
+     * Permission enum.
+     * @name rbac.Permission
+     * @enum {number}
+     * @property {number} None=0 None value
+     * @property {number} Card=1 Card value
+     * @property {number} ClusterAdd=10 ClusterAdd value
+     * @property {number} ClusterDelete=11 ClusterDelete value
+     * @property {number} ClusterView=12 ClusterView value
+     * @property {number} FileUpload=20 FileUpload value
+     * @property {number} FileDelete=21 FileDelete value
+     * @property {number} FileDownload=22 FileDownload value
+     * @property {number} EventView=30 EventView value
+     */
+    rbac.Permission = (function() {
+        const valuesById = {}, values = Object.create(valuesById);
+        values[valuesById[0] = "None"] = 0;
+        values[valuesById[1] = "Card"] = 1;
+        values[valuesById[10] = "ClusterAdd"] = 10;
+        values[valuesById[11] = "ClusterDelete"] = 11;
+        values[valuesById[12] = "ClusterView"] = 12;
+        values[valuesById[20] = "FileUpload"] = 20;
+        values[valuesById[21] = "FileDelete"] = 21;
+        values[valuesById[22] = "FileDownload"] = 22;
+        values[valuesById[30] = "EventView"] = 30;
+        return values;
+    })();
+
+    /**
+     * State enum.
+     * @name rbac.State
+     * @enum {number}
+     * @property {number} _=0 _ value
+     * @property {number} Request=1 Request value
+     * @property {number} Approved=2 Approved value
+     * @property {number} Rejected=3 Rejected value
+     * @property {number} Revoked=4 Revoked value
+     */
+    rbac.State = (function() {
+        const valuesById = {}, values = Object.create(valuesById);
+        values[valuesById[0] = "_"] = 0;
+        values[valuesById[1] = "Request"] = 1;
+        values[valuesById[2] = "Approved"] = 2;
+        values[valuesById[3] = "Rejected"] = 3;
+        values[valuesById[4] = "Revoked"] = 4;
+        return values;
+    })();
+
+    rbac.UserPermission = (function() {
+
+        /**
+         * Properties of a UserPermission.
+         * @memberof rbac
+         * @interface IUserPermission
+         * @property {number|null} [id] UserPermission id
+         * @property {string|null} [username] UserPermission username
+         * @property {string|null} [email] UserPermission email
+         * @property {rbac.Permission|null} [permission] UserPermission permission
+         * @property {rbac.State|null} [state] UserPermission state
+         * @property {string|null} [reason] UserPermission reason
+         * @property {number|null} [subject_id] UserPermission subject_id
+         * @property {string|null} [description] UserPermission description
+         * @property {string|null} [created_at] UserPermission created_at
+         * @property {string|null} [updated_at] UserPermission updated_at
+         * @property {string|null} [deleted_at] UserPermission deleted_at
+         */
+
+        /**
+         * Constructs a new UserPermission.
+         * @memberof rbac
+         * @classdesc Represents a UserPermission.
+         * @implements IUserPermission
+         * @constructor
+         * @param {rbac.IUserPermission=} [properties] Properties to set
+         */
+        function UserPermission(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * UserPermission id.
+         * @member {number} id
+         * @memberof rbac.UserPermission
+         * @instance
+         */
+        UserPermission.prototype.id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * UserPermission username.
+         * @member {string} username
+         * @memberof rbac.UserPermission
+         * @instance
+         */
+        UserPermission.prototype.username = "";
+
+        /**
+         * UserPermission email.
+         * @member {string} email
+         * @memberof rbac.UserPermission
+         * @instance
+         */
+        UserPermission.prototype.email = "";
+
+        /**
+         * UserPermission permission.
+         * @member {rbac.Permission} permission
+         * @memberof rbac.UserPermission
+         * @instance
+         */
+        UserPermission.prototype.permission = 0;
+
+        /**
+         * UserPermission state.
+         * @member {rbac.State} state
+         * @memberof rbac.UserPermission
+         * @instance
+         */
+        UserPermission.prototype.state = 0;
+
+        /**
+         * UserPermission reason.
+         * @member {string} reason
+         * @memberof rbac.UserPermission
+         * @instance
+         */
+        UserPermission.prototype.reason = "";
+
+        /**
+         * UserPermission subject_id.
+         * @member {number} subject_id
+         * @memberof rbac.UserPermission
+         * @instance
+         */
+        UserPermission.prototype.subject_id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * UserPermission description.
+         * @member {string} description
+         * @memberof rbac.UserPermission
+         * @instance
+         */
+        UserPermission.prototype.description = "";
+
+        /**
+         * UserPermission created_at.
+         * @member {string} created_at
+         * @memberof rbac.UserPermission
+         * @instance
+         */
+        UserPermission.prototype.created_at = "";
+
+        /**
+         * UserPermission updated_at.
+         * @member {string} updated_at
+         * @memberof rbac.UserPermission
+         * @instance
+         */
+        UserPermission.prototype.updated_at = "";
+
+        /**
+         * UserPermission deleted_at.
+         * @member {string} deleted_at
+         * @memberof rbac.UserPermission
+         * @instance
+         */
+        UserPermission.prototype.deleted_at = "";
+
+        /**
+         * Encodes the specified UserPermission message. Does not implicitly {@link rbac.UserPermission.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.UserPermission
+         * @static
+         * @param {rbac.UserPermission} message UserPermission message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        UserPermission.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.id);
+            if (message.username != null && Object.hasOwnProperty.call(message, "username"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.username);
+            if (message.email != null && Object.hasOwnProperty.call(message, "email"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.email);
+            if (message.permission != null && Object.hasOwnProperty.call(message, "permission"))
+                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.permission);
+            if (message.state != null && Object.hasOwnProperty.call(message, "state"))
+                writer.uint32(/* id 5, wireType 0 =*/40).int32(message.state);
+            if (message.reason != null && Object.hasOwnProperty.call(message, "reason"))
+                writer.uint32(/* id 6, wireType 2 =*/50).string(message.reason);
+            if (message.subject_id != null && Object.hasOwnProperty.call(message, "subject_id"))
+                writer.uint32(/* id 7, wireType 0 =*/56).int64(message.subject_id);
+            if (message.description != null && Object.hasOwnProperty.call(message, "description"))
+                writer.uint32(/* id 8, wireType 2 =*/66).string(message.description);
+            if (message.created_at != null && Object.hasOwnProperty.call(message, "created_at"))
+                writer.uint32(/* id 100, wireType 2 =*/802).string(message.created_at);
+            if (message.updated_at != null && Object.hasOwnProperty.call(message, "updated_at"))
+                writer.uint32(/* id 101, wireType 2 =*/810).string(message.updated_at);
+            if (message.deleted_at != null && Object.hasOwnProperty.call(message, "deleted_at"))
+                writer.uint32(/* id 102, wireType 2 =*/818).string(message.deleted_at);
+            return writer;
+        };
+
+        /**
+         * Decodes a UserPermission message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.UserPermission
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.UserPermission} UserPermission
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        UserPermission.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.UserPermission();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.id = reader.int64();
+                    break;
+                case 2:
+                    message.username = reader.string();
+                    break;
+                case 3:
+                    message.email = reader.string();
+                    break;
+                case 4:
+                    message.permission = reader.int32();
+                    break;
+                case 5:
+                    message.state = reader.int32();
+                    break;
+                case 6:
+                    message.reason = reader.string();
+                    break;
+                case 7:
+                    message.subject_id = reader.int64();
+                    break;
+                case 8:
+                    message.description = reader.string();
+                    break;
+                case 100:
+                    message.created_at = reader.string();
+                    break;
+                case 101:
+                    message.updated_at = reader.string();
+                    break;
+                case 102:
+                    message.deleted_at = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return UserPermission;
+    })();
+
+    rbac.ListRequest = (function() {
+
+        /**
+         * Properties of a ListRequest.
+         * @memberof rbac
+         * @interface IListRequest
+         * @property {number|null} [page] ListRequest page
+         * @property {number|null} [page_size] ListRequest page_size
+         * @property {rbac.State|null} [state] ListRequest state
+         * @property {string|null} [email] ListRequest email
+         */
+
+        /**
+         * Constructs a new ListRequest.
+         * @memberof rbac
+         * @classdesc Represents a ListRequest.
+         * @implements IListRequest
+         * @constructor
+         * @param {rbac.IListRequest=} [properties] Properties to set
+         */
+        function ListRequest(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ListRequest page.
+         * @member {number} page
+         * @memberof rbac.ListRequest
+         * @instance
+         */
+        ListRequest.prototype.page = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * ListRequest page_size.
+         * @member {number} page_size
+         * @memberof rbac.ListRequest
+         * @instance
+         */
+        ListRequest.prototype.page_size = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * ListRequest state.
+         * @member {rbac.State} state
+         * @memberof rbac.ListRequest
+         * @instance
+         */
+        ListRequest.prototype.state = 0;
+
+        /**
+         * ListRequest email.
+         * @member {string} email
+         * @memberof rbac.ListRequest
+         * @instance
+         */
+        ListRequest.prototype.email = "";
+
+        /**
+         * Encodes the specified ListRequest message. Does not implicitly {@link rbac.ListRequest.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.ListRequest
+         * @static
+         * @param {rbac.ListRequest} message ListRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ListRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.page != null && Object.hasOwnProperty.call(message, "page"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.page);
+            if (message.page_size != null && Object.hasOwnProperty.call(message, "page_size"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.page_size);
+            if (message.state != null && Object.hasOwnProperty.call(message, "state"))
+                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.state);
+            if (message.email != null && Object.hasOwnProperty.call(message, "email"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.email);
+            return writer;
+        };
+
+        /**
+         * Decodes a ListRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.ListRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.ListRequest} ListRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ListRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.ListRequest();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.page = reader.int64();
+                    break;
+                case 2:
+                    message.page_size = reader.int64();
+                    break;
+                case 3:
+                    message.state = reader.int32();
+                    break;
+                case 4:
+                    message.email = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return ListRequest;
+    })();
+
+    rbac.ListResponse = (function() {
+
+        /**
+         * Properties of a ListResponse.
+         * @memberof rbac
+         * @interface IListResponse
+         * @property {number|null} [page] ListResponse page
+         * @property {number|null} [page_size] ListResponse page_size
+         * @property {Array.<rbac.UserPermission>|null} [items] ListResponse items
+         * @property {number|null} [count] ListResponse count
+         */
+
+        /**
+         * Constructs a new ListResponse.
+         * @memberof rbac
+         * @classdesc Represents a ListResponse.
+         * @implements IListResponse
+         * @constructor
+         * @param {rbac.IListResponse=} [properties] Properties to set
+         */
+        function ListResponse(properties) {
+            this.items = [];
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ListResponse page.
+         * @member {number} page
+         * @memberof rbac.ListResponse
+         * @instance
+         */
+        ListResponse.prototype.page = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * ListResponse page_size.
+         * @member {number} page_size
+         * @memberof rbac.ListResponse
+         * @instance
+         */
+        ListResponse.prototype.page_size = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * ListResponse items.
+         * @member {Array.<rbac.UserPermission>} items
+         * @memberof rbac.ListResponse
+         * @instance
+         */
+        ListResponse.prototype.items = $util.emptyArray;
+
+        /**
+         * ListResponse count.
+         * @member {number} count
+         * @memberof rbac.ListResponse
+         * @instance
+         */
+        ListResponse.prototype.count = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * Encodes the specified ListResponse message. Does not implicitly {@link rbac.ListResponse.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.ListResponse
+         * @static
+         * @param {rbac.ListResponse} message ListResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ListResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.page != null && Object.hasOwnProperty.call(message, "page"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.page);
+            if (message.page_size != null && Object.hasOwnProperty.call(message, "page_size"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int64(message.page_size);
+            if (message.items != null && message.items.length)
+                for (let i = 0; i < message.items.length; ++i)
+                    $root.rbac.UserPermission.encode(message.items[i], writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+            if (message.count != null && Object.hasOwnProperty.call(message, "count"))
+                writer.uint32(/* id 4, wireType 0 =*/32).int64(message.count);
+            return writer;
+        };
+
+        /**
+         * Decodes a ListResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.ListResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.ListResponse} ListResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ListResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.ListResponse();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.page = reader.int64();
+                    break;
+                case 2:
+                    message.page_size = reader.int64();
+                    break;
+                case 3:
+                    if (!(message.items && message.items.length))
+                        message.items = [];
+                    message.items.push($root.rbac.UserPermission.decode(reader, reader.uint32()));
+                    break;
+                case 4:
+                    message.count = reader.int64();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return ListResponse;
+    })();
+
+    rbac.ApplyForRequest = (function() {
+
+        /**
+         * Properties of an ApplyForRequest.
+         * @memberof rbac
+         * @interface IApplyForRequest
+         * @property {number|null} [subject_id] ApplyForRequest subject_id
+         * @property {rbac.Permission|null} [permission] ApplyForRequest permission
+         */
+
+        /**
+         * Constructs a new ApplyForRequest.
+         * @memberof rbac
+         * @classdesc Represents an ApplyForRequest.
+         * @implements IApplyForRequest
+         * @constructor
+         * @param {rbac.IApplyForRequest=} [properties] Properties to set
+         */
+        function ApplyForRequest(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ApplyForRequest subject_id.
+         * @member {number} subject_id
+         * @memberof rbac.ApplyForRequest
+         * @instance
+         */
+        ApplyForRequest.prototype.subject_id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * ApplyForRequest permission.
+         * @member {rbac.Permission} permission
+         * @memberof rbac.ApplyForRequest
+         * @instance
+         */
+        ApplyForRequest.prototype.permission = 0;
+
+        /**
+         * Encodes the specified ApplyForRequest message. Does not implicitly {@link rbac.ApplyForRequest.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.ApplyForRequest
+         * @static
+         * @param {rbac.ApplyForRequest} message ApplyForRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ApplyForRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.subject_id != null && Object.hasOwnProperty.call(message, "subject_id"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.subject_id);
+            if (message.permission != null && Object.hasOwnProperty.call(message, "permission"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.permission);
+            return writer;
+        };
+
+        /**
+         * Decodes an ApplyForRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.ApplyForRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.ApplyForRequest} ApplyForRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ApplyForRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.ApplyForRequest();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.subject_id = reader.int64();
+                    break;
+                case 2:
+                    message.permission = reader.int32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return ApplyForRequest;
+    })();
+
+    rbac.ApplyForResponse = (function() {
+
+        /**
+         * Properties of an ApplyForResponse.
+         * @memberof rbac
+         * @interface IApplyForResponse
+         * @property {rbac.UserPermission|null} [permission] ApplyForResponse permission
+         */
+
+        /**
+         * Constructs a new ApplyForResponse.
+         * @memberof rbac
+         * @classdesc Represents an ApplyForResponse.
+         * @implements IApplyForResponse
+         * @constructor
+         * @param {rbac.IApplyForResponse=} [properties] Properties to set
+         */
+        function ApplyForResponse(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ApplyForResponse permission.
+         * @member {rbac.UserPermission|null|undefined} permission
+         * @memberof rbac.ApplyForResponse
+         * @instance
+         */
+        ApplyForResponse.prototype.permission = null;
+
+        /**
+         * Encodes the specified ApplyForResponse message. Does not implicitly {@link rbac.ApplyForResponse.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.ApplyForResponse
+         * @static
+         * @param {rbac.ApplyForResponse} message ApplyForResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ApplyForResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.permission != null && Object.hasOwnProperty.call(message, "permission"))
+                $root.rbac.UserPermission.encode(message.permission, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Decodes an ApplyForResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.ApplyForResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.ApplyForResponse} ApplyForResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ApplyForResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.ApplyForResponse();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.permission = $root.rbac.UserPermission.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return ApplyForResponse;
+    })();
+
+    rbac.ApproveRequest = (function() {
+
+        /**
+         * Properties of an ApproveRequest.
+         * @memberof rbac
+         * @interface IApproveRequest
+         * @property {number|null} [id] ApproveRequest id
+         */
+
+        /**
+         * Constructs a new ApproveRequest.
+         * @memberof rbac
+         * @classdesc Represents an ApproveRequest.
+         * @implements IApproveRequest
+         * @constructor
+         * @param {rbac.IApproveRequest=} [properties] Properties to set
+         */
+        function ApproveRequest(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ApproveRequest id.
+         * @member {number} id
+         * @memberof rbac.ApproveRequest
+         * @instance
+         */
+        ApproveRequest.prototype.id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * Encodes the specified ApproveRequest message. Does not implicitly {@link rbac.ApproveRequest.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.ApproveRequest
+         * @static
+         * @param {rbac.ApproveRequest} message ApproveRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ApproveRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.id);
+            return writer;
+        };
+
+        /**
+         * Decodes an ApproveRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.ApproveRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.ApproveRequest} ApproveRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ApproveRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.ApproveRequest();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.id = reader.int64();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return ApproveRequest;
+    })();
+
+    rbac.ApproveResponse = (function() {
+
+        /**
+         * Properties of an ApproveResponse.
+         * @memberof rbac
+         * @interface IApproveResponse
+         * @property {rbac.UserPermission|null} [permission] ApproveResponse permission
+         */
+
+        /**
+         * Constructs a new ApproveResponse.
+         * @memberof rbac
+         * @classdesc Represents an ApproveResponse.
+         * @implements IApproveResponse
+         * @constructor
+         * @param {rbac.IApproveResponse=} [properties] Properties to set
+         */
+        function ApproveResponse(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ApproveResponse permission.
+         * @member {rbac.UserPermission|null|undefined} permission
+         * @memberof rbac.ApproveResponse
+         * @instance
+         */
+        ApproveResponse.prototype.permission = null;
+
+        /**
+         * Encodes the specified ApproveResponse message. Does not implicitly {@link rbac.ApproveResponse.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.ApproveResponse
+         * @static
+         * @param {rbac.ApproveResponse} message ApproveResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ApproveResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.permission != null && Object.hasOwnProperty.call(message, "permission"))
+                $root.rbac.UserPermission.encode(message.permission, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Decodes an ApproveResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.ApproveResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.ApproveResponse} ApproveResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ApproveResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.ApproveResponse();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.permission = $root.rbac.UserPermission.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return ApproveResponse;
+    })();
+
+    rbac.RejectRequest = (function() {
+
+        /**
+         * Properties of a RejectRequest.
+         * @memberof rbac
+         * @interface IRejectRequest
+         * @property {number|null} [id] RejectRequest id
+         * @property {string|null} [reason] RejectRequest reason
+         */
+
+        /**
+         * Constructs a new RejectRequest.
+         * @memberof rbac
+         * @classdesc Represents a RejectRequest.
+         * @implements IRejectRequest
+         * @constructor
+         * @param {rbac.IRejectRequest=} [properties] Properties to set
+         */
+        function RejectRequest(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * RejectRequest id.
+         * @member {number} id
+         * @memberof rbac.RejectRequest
+         * @instance
+         */
+        RejectRequest.prototype.id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * RejectRequest reason.
+         * @member {string} reason
+         * @memberof rbac.RejectRequest
+         * @instance
+         */
+        RejectRequest.prototype.reason = "";
+
+        /**
+         * Encodes the specified RejectRequest message. Does not implicitly {@link rbac.RejectRequest.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.RejectRequest
+         * @static
+         * @param {rbac.RejectRequest} message RejectRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RejectRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.id);
+            if (message.reason != null && Object.hasOwnProperty.call(message, "reason"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.reason);
+            return writer;
+        };
+
+        /**
+         * Decodes a RejectRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.RejectRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.RejectRequest} RejectRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RejectRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.RejectRequest();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.id = reader.int64();
+                    break;
+                case 2:
+                    message.reason = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return RejectRequest;
+    })();
+
+    rbac.RejectResponse = (function() {
+
+        /**
+         * Properties of a RejectResponse.
+         * @memberof rbac
+         * @interface IRejectResponse
+         * @property {rbac.UserPermission|null} [permission] RejectResponse permission
+         */
+
+        /**
+         * Constructs a new RejectResponse.
+         * @memberof rbac
+         * @classdesc Represents a RejectResponse.
+         * @implements IRejectResponse
+         * @constructor
+         * @param {rbac.IRejectResponse=} [properties] Properties to set
+         */
+        function RejectResponse(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * RejectResponse permission.
+         * @member {rbac.UserPermission|null|undefined} permission
+         * @memberof rbac.RejectResponse
+         * @instance
+         */
+        RejectResponse.prototype.permission = null;
+
+        /**
+         * Encodes the specified RejectResponse message. Does not implicitly {@link rbac.RejectResponse.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.RejectResponse
+         * @static
+         * @param {rbac.RejectResponse} message RejectResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RejectResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.permission != null && Object.hasOwnProperty.call(message, "permission"))
+                $root.rbac.UserPermission.encode(message.permission, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Decodes a RejectResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.RejectResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.RejectResponse} RejectResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RejectResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.RejectResponse();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.permission = $root.rbac.UserPermission.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return RejectResponse;
+    })();
+
+    rbac.RevokeRequest = (function() {
+
+        /**
+         * Properties of a RevokeRequest.
+         * @memberof rbac
+         * @interface IRevokeRequest
+         * @property {number|null} [id] RevokeRequest id
+         * @property {string|null} [reason] RevokeRequest reason
+         */
+
+        /**
+         * Constructs a new RevokeRequest.
+         * @memberof rbac
+         * @classdesc Represents a RevokeRequest.
+         * @implements IRevokeRequest
+         * @constructor
+         * @param {rbac.IRevokeRequest=} [properties] Properties to set
+         */
+        function RevokeRequest(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * RevokeRequest id.
+         * @member {number} id
+         * @memberof rbac.RevokeRequest
+         * @instance
+         */
+        RevokeRequest.prototype.id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * RevokeRequest reason.
+         * @member {string} reason
+         * @memberof rbac.RevokeRequest
+         * @instance
+         */
+        RevokeRequest.prototype.reason = "";
+
+        /**
+         * Encodes the specified RevokeRequest message. Does not implicitly {@link rbac.RevokeRequest.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.RevokeRequest
+         * @static
+         * @param {rbac.RevokeRequest} message RevokeRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RevokeRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.id != null && Object.hasOwnProperty.call(message, "id"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.id);
+            if (message.reason != null && Object.hasOwnProperty.call(message, "reason"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.reason);
+            return writer;
+        };
+
+        /**
+         * Decodes a RevokeRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.RevokeRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.RevokeRequest} RevokeRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RevokeRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.RevokeRequest();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.id = reader.int64();
+                    break;
+                case 2:
+                    message.reason = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return RevokeRequest;
+    })();
+
+    rbac.RevokeResponse = (function() {
+
+        /**
+         * Properties of a RevokeResponse.
+         * @memberof rbac
+         * @interface IRevokeResponse
+         * @property {rbac.UserPermission|null} [permission] RevokeResponse permission
+         */
+
+        /**
+         * Constructs a new RevokeResponse.
+         * @memberof rbac
+         * @classdesc Represents a RevokeResponse.
+         * @implements IRevokeResponse
+         * @constructor
+         * @param {rbac.IRevokeResponse=} [properties] Properties to set
+         */
+        function RevokeResponse(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * RevokeResponse permission.
+         * @member {rbac.UserPermission|null|undefined} permission
+         * @memberof rbac.RevokeResponse
+         * @instance
+         */
+        RevokeResponse.prototype.permission = null;
+
+        /**
+         * Encodes the specified RevokeResponse message. Does not implicitly {@link rbac.RevokeResponse.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.RevokeResponse
+         * @static
+         * @param {rbac.RevokeResponse} message RevokeResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        RevokeResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.permission != null && Object.hasOwnProperty.call(message, "permission"))
+                $root.rbac.UserPermission.encode(message.permission, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+            return writer;
+        };
+
+        /**
+         * Decodes a RevokeResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.RevokeResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.RevokeResponse} RevokeResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        RevokeResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.RevokeResponse();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.permission = $root.rbac.UserPermission.decode(reader, reader.uint32());
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return RevokeResponse;
+    })();
+
+    rbac.RBAC = (function() {
+
+        /**
+         * Constructs a new RBAC service.
+         * @memberof rbac
+         * @classdesc Represents a RBAC
+         * @extends $protobuf.rpc.Service
+         * @constructor
+         * @param {$protobuf.RPCImpl} rpcImpl RPC implementation
+         * @param {boolean} [requestDelimited=false] Whether requests are length-delimited
+         * @param {boolean} [responseDelimited=false] Whether responses are length-delimited
+         */
+        function RBAC(rpcImpl, requestDelimited, responseDelimited) {
+            $protobuf.rpc.Service.call(this, rpcImpl, requestDelimited, responseDelimited);
+        }
+
+        (RBAC.prototype = Object.create($protobuf.rpc.Service.prototype)).constructor = RBAC;
+
+        /**
+         * Callback as used by {@link rbac.RBAC#list}.
+         * @memberof rbac.RBAC
+         * @typedef ListCallback
+         * @type {function}
+         * @param {Error|null} error Error, if any
+         * @param {rbac.ListResponse} [response] ListResponse
+         */
+
+        /**
+         * Calls List.
+         * @function list
+         * @memberof rbac.RBAC
+         * @instance
+         * @param {rbac.ListRequest} request ListRequest message or plain object
+         * @param {rbac.RBAC.ListCallback} callback Node-style callback called with the error, if any, and ListResponse
+         * @returns {undefined}
+         * @variation 1
+         */
+        Object.defineProperty(RBAC.prototype.list = function list(request, callback) {
+            return this.rpcCall(list, $root.rbac.ListRequest, $root.rbac.ListResponse, request, callback);
+        }, "name", { value: "List" });
+
+        /**
+         * Calls List.
+         * @function list
+         * @memberof rbac.RBAC
+         * @instance
+         * @param {rbac.ListRequest} request ListRequest message or plain object
+         * @returns {Promise<rbac.ListResponse>} Promise
+         * @variation 2
+         */
+
+        /**
+         * Callback as used by {@link rbac.RBAC#applyFor}.
+         * @memberof rbac.RBAC
+         * @typedef ApplyForCallback
+         * @type {function}
+         * @param {Error|null} error Error, if any
+         * @param {rbac.ApplyForResponse} [response] ApplyForResponse
+         */
+
+        /**
+         * Calls ApplyFor.
+         * @function applyFor
+         * @memberof rbac.RBAC
+         * @instance
+         * @param {rbac.ApplyForRequest} request ApplyForRequest message or plain object
+         * @param {rbac.RBAC.ApplyForCallback} callback Node-style callback called with the error, if any, and ApplyForResponse
+         * @returns {undefined}
+         * @variation 1
+         */
+        Object.defineProperty(RBAC.prototype.applyFor = function applyFor(request, callback) {
+            return this.rpcCall(applyFor, $root.rbac.ApplyForRequest, $root.rbac.ApplyForResponse, request, callback);
+        }, "name", { value: "ApplyFor" });
+
+        /**
+         * Calls ApplyFor.
+         * @function applyFor
+         * @memberof rbac.RBAC
+         * @instance
+         * @param {rbac.ApplyForRequest} request ApplyForRequest message or plain object
+         * @returns {Promise<rbac.ApplyForResponse>} Promise
+         * @variation 2
+         */
+
+        /**
+         * Callback as used by {@link rbac.RBAC#approve}.
+         * @memberof rbac.RBAC
+         * @typedef ApproveCallback
+         * @type {function}
+         * @param {Error|null} error Error, if any
+         * @param {rbac.ApproveResponse} [response] ApproveResponse
+         */
+
+        /**
+         * Calls Approve.
+         * @function approve
+         * @memberof rbac.RBAC
+         * @instance
+         * @param {rbac.ApproveRequest} request ApproveRequest message or plain object
+         * @param {rbac.RBAC.ApproveCallback} callback Node-style callback called with the error, if any, and ApproveResponse
+         * @returns {undefined}
+         * @variation 1
+         */
+        Object.defineProperty(RBAC.prototype.approve = function approve(request, callback) {
+            return this.rpcCall(approve, $root.rbac.ApproveRequest, $root.rbac.ApproveResponse, request, callback);
+        }, "name", { value: "Approve" });
+
+        /**
+         * Calls Approve.
+         * @function approve
+         * @memberof rbac.RBAC
+         * @instance
+         * @param {rbac.ApproveRequest} request ApproveRequest message or plain object
+         * @returns {Promise<rbac.ApproveResponse>} Promise
+         * @variation 2
+         */
+
+        /**
+         * Callback as used by {@link rbac.RBAC#reject}.
+         * @memberof rbac.RBAC
+         * @typedef RejectCallback
+         * @type {function}
+         * @param {Error|null} error Error, if any
+         * @param {rbac.RejectResponse} [response] RejectResponse
+         */
+
+        /**
+         * Calls Reject.
+         * @function reject
+         * @memberof rbac.RBAC
+         * @instance
+         * @param {rbac.RejectRequest} request RejectRequest message or plain object
+         * @param {rbac.RBAC.RejectCallback} callback Node-style callback called with the error, if any, and RejectResponse
+         * @returns {undefined}
+         * @variation 1
+         */
+        Object.defineProperty(RBAC.prototype.reject = function reject(request, callback) {
+            return this.rpcCall(reject, $root.rbac.RejectRequest, $root.rbac.RejectResponse, request, callback);
+        }, "name", { value: "Reject" });
+
+        /**
+         * Calls Reject.
+         * @function reject
+         * @memberof rbac.RBAC
+         * @instance
+         * @param {rbac.RejectRequest} request RejectRequest message or plain object
+         * @returns {Promise<rbac.RejectResponse>} Promise
+         * @variation 2
+         */
+
+        /**
+         * Callback as used by {@link rbac.RBAC#revoke}.
+         * @memberof rbac.RBAC
+         * @typedef RevokeCallback
+         * @type {function}
+         * @param {Error|null} error Error, if any
+         * @param {rbac.RevokeResponse} [response] RevokeResponse
+         */
+
+        /**
+         * Calls Revoke.
+         * @function revoke
+         * @memberof rbac.RBAC
+         * @instance
+         * @param {rbac.RevokeRequest} request RevokeRequest message or plain object
+         * @param {rbac.RBAC.RevokeCallback} callback Node-style callback called with the error, if any, and RevokeResponse
+         * @returns {undefined}
+         * @variation 1
+         */
+        Object.defineProperty(RBAC.prototype.revoke = function revoke(request, callback) {
+            return this.rpcCall(revoke, $root.rbac.RevokeRequest, $root.rbac.RevokeResponse, request, callback);
+        }, "name", { value: "Revoke" });
+
+        /**
+         * Calls Revoke.
+         * @function revoke
+         * @memberof rbac.RBAC
+         * @instance
+         * @param {rbac.RevokeRequest} request RevokeRequest message or plain object
+         * @returns {Promise<rbac.RevokeResponse>} Promise
+         * @variation 2
+         */
+
+        return RBAC;
+    })();
+
+    return rbac;
 })();
 
 export const version = $root.version = (() => {
@@ -12963,6 +14543,7 @@ export const websocket = $root.websocket = (() => {
      * @property {number} HandleCloseShell=52 HandleCloseShell value
      * @property {number} HandleAuthorize=53 HandleAuthorize value
      * @property {number} HandleSyncCard=54 HandleSyncCard value
+     * @property {number} HandleSetLang=55 HandleSetLang value
      */
     websocket.Type = (function() {
         const valuesById = {}, values = Object.create(valuesById);
@@ -12974,6 +14555,7 @@ export const websocket = $root.websocket = (() => {
         values[valuesById[52] = "HandleCloseShell"] = 52;
         values[valuesById[53] = "HandleAuthorize"] = 53;
         values[valuesById[54] = "HandleSyncCard"] = 54;
+        values[valuesById[55] = "HandleSetLang"] = 55;
         return values;
     })();
 
@@ -13428,6 +15010,7 @@ export const websocket = $root.websocket = (() => {
          * @property {string|null} [namespace] WsHandleExecShellInput namespace
          * @property {string|null} [pod] WsHandleExecShellInput pod
          * @property {string|null} [container] WsHandleExecShellInput container
+         * @property {number|null} [card_id] WsHandleExecShellInput card_id
          */
 
         /**
@@ -13486,6 +15069,14 @@ export const websocket = $root.websocket = (() => {
         WsHandleExecShellInput.prototype.container = "";
 
         /**
+         * WsHandleExecShellInput card_id.
+         * @member {number} card_id
+         * @memberof websocket.WsHandleExecShellInput
+         * @instance
+         */
+        WsHandleExecShellInput.prototype.card_id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
          * Encodes the specified WsHandleExecShellInput message. Does not implicitly {@link websocket.WsHandleExecShellInput.verify|verify} messages.
          * @function encode
          * @memberof websocket.WsHandleExecShellInput
@@ -13507,6 +15098,8 @@ export const websocket = $root.websocket = (() => {
                 writer.uint32(/* id 4, wireType 2 =*/34).string(message.pod);
             if (message.container != null && Object.hasOwnProperty.call(message, "container"))
                 writer.uint32(/* id 5, wireType 2 =*/42).string(message.container);
+            if (message.card_id != null && Object.hasOwnProperty.call(message, "card_id"))
+                writer.uint32(/* id 6, wireType 0 =*/48).int64(message.card_id);
             return writer;
         };
 
@@ -13543,6 +15136,9 @@ export const websocket = $root.websocket = (() => {
                 case 5:
                     message.container = reader.string();
                     break;
+                case 6:
+                    message.card_id = reader.int64();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
@@ -13552,6 +15148,101 @@ export const websocket = $root.websocket = (() => {
         };
 
         return WsHandleExecShellInput;
+    })();
+
+    websocket.WsHandleSetLangInput = (function() {
+
+        /**
+         * Properties of a WsHandleSetLangInput.
+         * @memberof websocket
+         * @interface IWsHandleSetLangInput
+         * @property {websocket.Type|null} [type] WsHandleSetLangInput type
+         * @property {string|null} [lang] WsHandleSetLangInput lang
+         */
+
+        /**
+         * Constructs a new WsHandleSetLangInput.
+         * @memberof websocket
+         * @classdesc Represents a WsHandleSetLangInput.
+         * @implements IWsHandleSetLangInput
+         * @constructor
+         * @param {websocket.IWsHandleSetLangInput=} [properties] Properties to set
+         */
+        function WsHandleSetLangInput(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * WsHandleSetLangInput type.
+         * @member {websocket.Type} type
+         * @memberof websocket.WsHandleSetLangInput
+         * @instance
+         */
+        WsHandleSetLangInput.prototype.type = 0;
+
+        /**
+         * WsHandleSetLangInput lang.
+         * @member {string} lang
+         * @memberof websocket.WsHandleSetLangInput
+         * @instance
+         */
+        WsHandleSetLangInput.prototype.lang = "";
+
+        /**
+         * Encodes the specified WsHandleSetLangInput message. Does not implicitly {@link websocket.WsHandleSetLangInput.verify|verify} messages.
+         * @function encode
+         * @memberof websocket.WsHandleSetLangInput
+         * @static
+         * @param {websocket.WsHandleSetLangInput} message WsHandleSetLangInput message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        WsHandleSetLangInput.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.type != null && Object.hasOwnProperty.call(message, "type"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.type);
+            if (message.lang != null && Object.hasOwnProperty.call(message, "lang"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.lang);
+            return writer;
+        };
+
+        /**
+         * Decodes a WsHandleSetLangInput message from the specified reader or buffer.
+         * @function decode
+         * @memberof websocket.WsHandleSetLangInput
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {websocket.WsHandleSetLangInput} WsHandleSetLangInput
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        WsHandleSetLangInput.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.websocket.WsHandleSetLangInput();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.type = reader.int32();
+                    break;
+                case 2:
+                    message.lang = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return WsHandleSetLangInput;
     })();
 
     websocket.Metadata = (function() {

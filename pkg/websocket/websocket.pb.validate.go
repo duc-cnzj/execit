@@ -520,6 +520,8 @@ func (m *WsHandleExecShellInput) validate(all bool) error {
 
 	// no validation rules for Container
 
+	// no validation rules for CardId
+
 	if len(errors) > 0 {
 		return WsHandleExecShellInputMultiError(errors)
 	}
@@ -599,6 +601,112 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = WsHandleExecShellInputValidationError{}
+
+// Validate checks the field values on WsHandleSetLangInput with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *WsHandleSetLangInput) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on WsHandleSetLangInput with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// WsHandleSetLangInputMultiError, or nil if none found.
+func (m *WsHandleSetLangInput) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *WsHandleSetLangInput) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Type
+
+	// no validation rules for Lang
+
+	if len(errors) > 0 {
+		return WsHandleSetLangInputMultiError(errors)
+	}
+
+	return nil
+}
+
+// WsHandleSetLangInputMultiError is an error wrapping multiple validation
+// errors returned by WsHandleSetLangInput.ValidateAll() if the designated
+// constraints aren't met.
+type WsHandleSetLangInputMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m WsHandleSetLangInputMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m WsHandleSetLangInputMultiError) AllErrors() []error { return m }
+
+// WsHandleSetLangInputValidationError is the validation error returned by
+// WsHandleSetLangInput.Validate if the designated constraints aren't met.
+type WsHandleSetLangInputValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e WsHandleSetLangInputValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e WsHandleSetLangInputValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e WsHandleSetLangInputValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e WsHandleSetLangInputValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e WsHandleSetLangInputValidationError) ErrorName() string {
+	return "WsHandleSetLangInputValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e WsHandleSetLangInputValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sWsHandleSetLangInput.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = WsHandleSetLangInputValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = WsHandleSetLangInputValidationError{}
 
 // Validate checks the field values on Metadata with the rules defined in the
 // proto definition for this message. If any rules are violated, the first

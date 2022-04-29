@@ -1,0 +1,399 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "rbac/rbac.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "RBAC"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/rbac/permissions": {
+      "get": {
+        "operationId": "RBAC_List",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacListResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "_",
+              "Request",
+              "Approved",
+              "Rejected",
+              "Revoked"
+            ],
+            "default": "_"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "RBAC"
+        ]
+      },
+      "post": {
+        "operationId": "RBAC_ApplyFor",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacApplyForResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/rbacApplyForRequest"
+            }
+          }
+        ],
+        "tags": [
+          "RBAC"
+        ]
+      }
+    },
+    "/api/rbac/permissions/approve": {
+      "post": {
+        "operationId": "RBAC_Approve",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacApproveResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/rbacApproveRequest"
+            }
+          }
+        ],
+        "tags": [
+          "RBAC"
+        ]
+      }
+    },
+    "/api/rbac/permissions/reject": {
+      "post": {
+        "operationId": "RBAC_Reject",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacRejectResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/rbacRejectRequest"
+            }
+          }
+        ],
+        "tags": [
+          "RBAC"
+        ]
+      }
+    },
+    "/api/rbac/permissions/revoke": {
+      "post": {
+        "operationId": "RBAC_Revoke",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacRevokeResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/rbacRevokeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "RBAC"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rbacApplyForRequest": {
+      "type": "object",
+      "properties": {
+        "subject_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "permission": {
+          "$ref": "#/definitions/rbacPermission"
+        }
+      }
+    },
+    "rbacApplyForResponse": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacUserPermission"
+        }
+      }
+    },
+    "rbacApproveRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "rbacApproveResponse": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacUserPermission"
+        }
+      }
+    },
+    "rbacListResponse": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "string",
+          "format": "int64"
+        },
+        "page_size": {
+          "type": "string",
+          "format": "int64"
+        },
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/rbacUserPermission"
+          }
+        },
+        "count": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "rbacPermission": {
+      "type": "string",
+      "enum": [
+        "None",
+        "Card",
+        "ClusterAdd",
+        "ClusterDelete",
+        "ClusterView",
+        "FileUpload",
+        "FileDelete",
+        "FileDownload",
+        "EventView"
+      ],
+      "default": "None"
+    },
+    "rbacRejectRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "rbacRejectResponse": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacUserPermission"
+        }
+      }
+    },
+    "rbacRevokeRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "rbacRevokeResponse": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacUserPermission"
+        }
+      }
+    },
+    "rbacState": {
+      "type": "string",
+      "enum": [
+        "_",
+        "Request",
+        "Approved",
+        "Rejected",
+        "Revoked"
+      ],
+      "default": "_"
+    },
+    "rbacUserPermission": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "username": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "permission": {
+          "$ref": "#/definitions/rbacPermission"
+        },
+        "state": {
+          "$ref": "#/definitions/rbacState"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "description": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "deleted_at": {
+          "type": "string"
+        }
+      }
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    }
+  }
+}

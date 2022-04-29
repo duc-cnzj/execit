@@ -15,12 +15,16 @@ type i18nKey struct{}
 
 func I18n(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if lang := r.Header.Get("Accept-Language"); lang != "" {
-			tag, _ := language.MatchStrings(trans.Matcher, lang)
-			base, _ := tag.Base()
-			r = r.WithContext(context.WithValue(r.Context(), i18nKey{}, base.String()))
+		if get := r.URL.Query().Get("lang"); get != "" {
+			r = r.WithContext(context.WithValue(r.Context(), i18nKey{}, get))
 		} else {
-			r = r.WithContext(context.WithValue(r.Context(), i18nKey{}, "en"))
+			if lang := r.Header.Get("Accept-Language"); lang != "" {
+				tag, _ := language.MatchStrings(trans.Matcher, lang)
+				base, _ := tag.Base()
+				r = r.WithContext(context.WithValue(r.Context(), i18nKey{}, base.String()))
+			} else {
+				r = r.WithContext(context.WithValue(r.Context(), i18nKey{}, "en"))
+			}
 		}
 
 		h.ServeHTTP(w, r)
