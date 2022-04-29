@@ -72,7 +72,7 @@ const NamespaceCardItem: React.FC<{
 
   return (
     <div className="project-detail">
-      {hasCardPermission(item.id) ? (
+      {!hasCardPermission(item.id) ? (
         <Popover
           placement="top"
           overlayInnerStyle={{ maxWidth: 200, whiteSpace: "pre" }}
