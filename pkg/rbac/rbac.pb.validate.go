@@ -903,6 +903,225 @@ var _ interface {
 	ErrorName() string
 } = ApproveResponseValidationError{}
 
+// Validate checks the field values on NotApprovedReasonRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *NotApprovedReasonRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on NotApprovedReasonRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// NotApprovedReasonRequestMultiError, or nil if none found.
+func (m *NotApprovedReasonRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *NotApprovedReasonRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetSubjectId() < 0 {
+		err := NotApprovedReasonRequestValidationError{
+			field:  "SubjectId",
+			reason: "value must be greater than or equal to 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for Permission
+
+	if len(errors) > 0 {
+		return NotApprovedReasonRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// NotApprovedReasonRequestMultiError is an error wrapping multiple validation
+// errors returned by NotApprovedReasonRequest.ValidateAll() if the designated
+// constraints aren't met.
+type NotApprovedReasonRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m NotApprovedReasonRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m NotApprovedReasonRequestMultiError) AllErrors() []error { return m }
+
+// NotApprovedReasonRequestValidationError is the validation error returned by
+// NotApprovedReasonRequest.Validate if the designated constraints aren't met.
+type NotApprovedReasonRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e NotApprovedReasonRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e NotApprovedReasonRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e NotApprovedReasonRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e NotApprovedReasonRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e NotApprovedReasonRequestValidationError) ErrorName() string {
+	return "NotApprovedReasonRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e NotApprovedReasonRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sNotApprovedReasonRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = NotApprovedReasonRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = NotApprovedReasonRequestValidationError{}
+
+// Validate checks the field values on NotApprovedReasonResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *NotApprovedReasonResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on NotApprovedReasonResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// NotApprovedReasonResponseMultiError, or nil if none found.
+func (m *NotApprovedReasonResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *NotApprovedReasonResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Reason
+
+	if len(errors) > 0 {
+		return NotApprovedReasonResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// NotApprovedReasonResponseMultiError is an error wrapping multiple validation
+// errors returned by NotApprovedReasonResponse.ValidateAll() if the
+// designated constraints aren't met.
+type NotApprovedReasonResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m NotApprovedReasonResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m NotApprovedReasonResponseMultiError) AllErrors() []error { return m }
+
+// NotApprovedReasonResponseValidationError is the validation error returned by
+// NotApprovedReasonResponse.Validate if the designated constraints aren't met.
+type NotApprovedReasonResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e NotApprovedReasonResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e NotApprovedReasonResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e NotApprovedReasonResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e NotApprovedReasonResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e NotApprovedReasonResponseValidationError) ErrorName() string {
+	return "NotApprovedReasonResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e NotApprovedReasonResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sNotApprovedReasonResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = NotApprovedReasonResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = NotApprovedReasonResponseValidationError{}
+
 // Validate checks the field values on RejectRequest with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.

@@ -171,6 +171,10 @@ const languages: Lang = {
     en: "email",
     zh: "邮箱",
   },
+  "apply for": {
+    en: "apply for",
+    zh: "点击申请",
+  },
   "all": {
     en: "all",
     zh: "全部",

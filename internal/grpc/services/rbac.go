@@ -64,10 +64,19 @@ func (r *rbacsvc) List(ctx context.Context, request *rbac.ListRequest) (*rbac.Li
 	}, nil
 }
 
+func (r *rbacsvc) NotApprovedReason(ctx context.Context, request *rbac.NotApprovedReasonRequest) (*rbac.NotApprovedReasonResponse, error) {
+	user := MustGetUser(ctx)
+	var p models.UserPermission
+	if app.DB().Where("`email` = ? and `subject_id` = ? and `permission` = ? and `state` in ?", user.Email, request.SubjectId, request.Permission, []rbac.State{rbac.State_Revoked, rbac.State_Rejected}).Last(&p).Error == nil {
+		return &rbac.NotApprovedReasonResponse{Reason: p.Reason}, nil
+	}
+	return &rbac.NotApprovedReasonResponse{Reason: ""}, nil
+}
+
 func (r *rbacsvc) ApplyFor(ctx context.Context, request *rbac.ApplyForRequest) (*rbac.ApplyForResponse, error) {
 	var p models.UserPermission
 	user := MustGetUser(ctx)
-	if app.DB().Where("`email` = ? and `card_id` = ? and `state` = ? and `permission` = ?", user.Email, request.SubjectId, rbac.State_Request, request.Permission).First(&p) == nil {
+	if app.DB().Where("`email` = ? and `card_id` = ? and `state` = ? and `permission` = ?", user.Email, request.SubjectId, rbac.State_Request, request.Permission).First(&p).Error == nil {
 		return &rbac.ApplyForResponse{Permission: p.ProtoTransform()}, nil
 	}
 	var desc string
@@ -93,7 +102,6 @@ func (r *rbacsvc) ApplyFor(ctx context.Context, request *rbac.ApplyForRequest) (
 	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("ApplyFor permission '%d' desc: '%s'", m.ID, p.Description))
 	return &rbac.ApplyForResponse{Permission: m.ProtoTransform()}, nil
 }
-
 func (r *rbacsvc) Approve(ctx context.Context, request *rbac.ApproveRequest) (*rbac.ApproveResponse, error) {
 	var p models.UserPermission
 	if err := app.DB().Where("`id` = ?", request.Id).First(&p).Error; err != nil {

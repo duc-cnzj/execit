@@ -22,3 +22,7 @@ export function rbacReject(obj: pb.rbac.RejectRequest) {
 export function rbacRevoke(obj: pb.rbac.RevokeRequest) {
   return ajax.post<pb.rbac.RevokeResponse>(`/api/rbac/permissions/revoke`, obj);
 }
+
+export function rbacNotApprovedReason(obj: pb.rbac.NotApprovedReasonRequest) {
+  return ajax.post<pb.rbac.NotApprovedReasonResponse>(`/api/rbac/permissions/not_approved_reason`, obj);
+}

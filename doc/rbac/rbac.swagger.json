@@ -136,6 +136,38 @@
         ]
       }
     },
+    "/api/rbac/permissions/not_approved_reason": {
+      "post": {
+        "operationId": "RBAC_NotApprovedReason",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacNotApprovedReasonResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/rbacNotApprovedReasonRequest"
+            }
+          }
+        ],
+        "tags": [
+          "RBAC"
+        ]
+      }
+    },
     "/api/rbac/permissions/reject": {
       "post": {
         "operationId": "RBAC_Reject",
@@ -268,6 +300,26 @@
         "count": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "rbacNotApprovedReasonRequest": {
+      "type": "object",
+      "properties": {
+        "subject_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "permission": {
+          "$ref": "#/definitions/rbacPermission"
+        }
+      }
+    },
+    "rbacNotApprovedReasonResponse": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
         }
       }
     },

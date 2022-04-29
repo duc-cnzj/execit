@@ -1,10 +1,17 @@
-import React, { useState, useCallback, memo, lazy, Suspense } from "react";
+import React, {
+  useState,
+  useCallback,
+  memo,
+  lazy,
+  Suspense,
+  useMemo,
+} from "react";
 import { DraggableModal } from "../pkg/DraggableModal";
-import { Button, Tabs, Skeleton, Badge, Tooltip, message } from "antd";
+import { Button, Tabs, Skeleton, Badge, Popover, message } from "antd";
 import ErrorBoundary from "./ErrorBoundary";
 import pb from "../api/compiled";
-import { rbacApplyFor } from "../api/rbac";
-
+import { rbacApplyFor, rbacNotApprovedReason } from "../api/rbac";
+import { throttle } from "lodash";
 import TabLog from "./TabLog";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/auth";
@@ -18,6 +25,19 @@ const NamespaceCardItem: React.FC<{
   const [visible, setVisible] = useState(false);
   const onOk = useCallback(() => setVisible(true), []);
   const [resizeAt, setResizeAt] = useState<number>(0);
+  const [reason, setReason] = useState("");
+  const fetchReason = useMemo(
+    () =>
+      throttle((id) => {
+        rbacNotApprovedReason({
+          subject_id: id,
+          permission: pb.rbac.Permission.Card,
+        }).then(({ data }) => {
+          setReason(data.reason);
+        });
+      }, 10000),
+    []
+  );
 
   const onCancel = useCallback(() => {
     setVisible(false);
@@ -52,29 +72,52 @@ const NamespaceCardItem: React.FC<{
 
   return (
     <div className="project-detail">
-      {!hasCardPermission(item.id) ? (
-        <Tooltip
+      {hasCardPermission(item.id) ? (
+        <Popover
           placement="top"
-          title={
-            <Button
-              type="link"
-              size="small"
-              style={{ fontSize: 12 }}
-              onClick={() => {
-                rbacApplyFor({
-                  subject_id: item.id,
-                  permission: pb.rbac.Permission.Card,
-                }).then(() => {
-                  message.success(t("request sent"));
-                });
+          overlayInnerStyle={{ maxWidth: 200, whiteSpace: "pre" }}
+          content={
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "start",
               }}
             >
-              {t("apply for permission")}
-            </Button>
+              <Button
+                type="link"
+                size="small"
+                className="project-detail__tooltip-button"
+                onClick={() => {
+                  rbacApplyFor({
+                    subject_id: item.id,
+                    permission: pb.rbac.Permission.Card,
+                  }).then(() => {
+                    message.success(t("request sent"));
+                  });
+                }}
+              >
+                {t("apply for")}
+              </Button>
+              <div style={{wordBreak: "break-all", whiteSpace: "normal" }}>
+                {reason && (
+                  <p style={{ fontSize: 10}}>
+                    {t("reject reason")}: {reason}
+                  </p>
+                )}
+              </div>
+            </div>
           }
+          title={t("apply for permission")}
         >
-          {MyButton}
-        </Tooltip>
+          <div
+            onMouseEnter={() => {
+              fetchReason(item.id);
+            }}
+          >
+            {MyButton}
+          </div>
+        </Popover>
       ) : (
         <>{MyButton}</>
       )}

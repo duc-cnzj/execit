@@ -13555,6 +13555,182 @@ export const rbac = $root.rbac = (() => {
         return ApproveResponse;
     })();
 
+    rbac.NotApprovedReasonRequest = (function() {
+
+        /**
+         * Properties of a NotApprovedReasonRequest.
+         * @memberof rbac
+         * @interface INotApprovedReasonRequest
+         * @property {number|null} [subject_id] NotApprovedReasonRequest subject_id
+         * @property {rbac.Permission|null} [permission] NotApprovedReasonRequest permission
+         */
+
+        /**
+         * Constructs a new NotApprovedReasonRequest.
+         * @memberof rbac
+         * @classdesc Represents a NotApprovedReasonRequest.
+         * @implements INotApprovedReasonRequest
+         * @constructor
+         * @param {rbac.INotApprovedReasonRequest=} [properties] Properties to set
+         */
+        function NotApprovedReasonRequest(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * NotApprovedReasonRequest subject_id.
+         * @member {number} subject_id
+         * @memberof rbac.NotApprovedReasonRequest
+         * @instance
+         */
+        NotApprovedReasonRequest.prototype.subject_id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * NotApprovedReasonRequest permission.
+         * @member {rbac.Permission} permission
+         * @memberof rbac.NotApprovedReasonRequest
+         * @instance
+         */
+        NotApprovedReasonRequest.prototype.permission = 0;
+
+        /**
+         * Encodes the specified NotApprovedReasonRequest message. Does not implicitly {@link rbac.NotApprovedReasonRequest.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.NotApprovedReasonRequest
+         * @static
+         * @param {rbac.NotApprovedReasonRequest} message NotApprovedReasonRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        NotApprovedReasonRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.subject_id != null && Object.hasOwnProperty.call(message, "subject_id"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.subject_id);
+            if (message.permission != null && Object.hasOwnProperty.call(message, "permission"))
+                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.permission);
+            return writer;
+        };
+
+        /**
+         * Decodes a NotApprovedReasonRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.NotApprovedReasonRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.NotApprovedReasonRequest} NotApprovedReasonRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        NotApprovedReasonRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.NotApprovedReasonRequest();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.subject_id = reader.int64();
+                    break;
+                case 2:
+                    message.permission = reader.int32();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return NotApprovedReasonRequest;
+    })();
+
+    rbac.NotApprovedReasonResponse = (function() {
+
+        /**
+         * Properties of a NotApprovedReasonResponse.
+         * @memberof rbac
+         * @interface INotApprovedReasonResponse
+         * @property {string|null} [reason] NotApprovedReasonResponse reason
+         */
+
+        /**
+         * Constructs a new NotApprovedReasonResponse.
+         * @memberof rbac
+         * @classdesc Represents a NotApprovedReasonResponse.
+         * @implements INotApprovedReasonResponse
+         * @constructor
+         * @param {rbac.INotApprovedReasonResponse=} [properties] Properties to set
+         */
+        function NotApprovedReasonResponse(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * NotApprovedReasonResponse reason.
+         * @member {string} reason
+         * @memberof rbac.NotApprovedReasonResponse
+         * @instance
+         */
+        NotApprovedReasonResponse.prototype.reason = "";
+
+        /**
+         * Encodes the specified NotApprovedReasonResponse message. Does not implicitly {@link rbac.NotApprovedReasonResponse.verify|verify} messages.
+         * @function encode
+         * @memberof rbac.NotApprovedReasonResponse
+         * @static
+         * @param {rbac.NotApprovedReasonResponse} message NotApprovedReasonResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        NotApprovedReasonResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.reason != null && Object.hasOwnProperty.call(message, "reason"))
+                writer.uint32(/* id 1, wireType 2 =*/10).string(message.reason);
+            return writer;
+        };
+
+        /**
+         * Decodes a NotApprovedReasonResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof rbac.NotApprovedReasonResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {rbac.NotApprovedReasonResponse} NotApprovedReasonResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        NotApprovedReasonResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.rbac.NotApprovedReasonResponse();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1:
+                    message.reason = reader.string();
+                    break;
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        return NotApprovedReasonResponse;
+    })();
+
     rbac.RejectRequest = (function() {
 
         /**
@@ -14087,6 +14263,39 @@ export const rbac = $root.rbac = (() => {
          * @instance
          * @param {rbac.RevokeRequest} request RevokeRequest message or plain object
          * @returns {Promise<rbac.RevokeResponse>} Promise
+         * @variation 2
+         */
+
+        /**
+         * Callback as used by {@link rbac.RBAC#notApprovedReason}.
+         * @memberof rbac.RBAC
+         * @typedef NotApprovedReasonCallback
+         * @type {function}
+         * @param {Error|null} error Error, if any
+         * @param {rbac.NotApprovedReasonResponse} [response] NotApprovedReasonResponse
+         */
+
+        /**
+         * Calls NotApprovedReason.
+         * @function notApprovedReason
+         * @memberof rbac.RBAC
+         * @instance
+         * @param {rbac.NotApprovedReasonRequest} request NotApprovedReasonRequest message or plain object
+         * @param {rbac.RBAC.NotApprovedReasonCallback} callback Node-style callback called with the error, if any, and NotApprovedReasonResponse
+         * @returns {undefined}
+         * @variation 1
+         */
+        Object.defineProperty(RBAC.prototype.notApprovedReason = function notApprovedReason(request, callback) {
+            return this.rpcCall(notApprovedReason, $root.rbac.NotApprovedReasonRequest, $root.rbac.NotApprovedReasonResponse, request, callback);
+        }, "name", { value: "NotApprovedReason" });
+
+        /**
+         * Calls NotApprovedReason.
+         * @function notApprovedReason
+         * @memberof rbac.RBAC
+         * @instance
+         * @param {rbac.NotApprovedReasonRequest} request NotApprovedReasonRequest message or plain object
+         * @returns {Promise<rbac.NotApprovedReasonResponse>} Promise
          * @variation 2
          */
 

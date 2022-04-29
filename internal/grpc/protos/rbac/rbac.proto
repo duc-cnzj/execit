@@ -75,6 +75,15 @@ message ApproveResponse {
   UserPermission permission = 1;
 }
 
+message NotApprovedReasonRequest {
+  int64 subject_id = 1 [(validate.rules).int64.gte = 0];
+  Permission permission = 2;
+}
+
+message NotApprovedReasonResponse {
+  string reason = 1;
+}
+
 message RejectRequest {
   int64 id = 1 [(validate.rules).int64.gte = 0];
   string reason = 2;
@@ -122,6 +131,13 @@ service RBAC {
   rpc Revoke(RevokeRequest) returns (RevokeResponse) {
     option (google.api.http) = {
       post: "/api/rbac/permissions/revoke",
+      body: "*"
+    };
+  }
+
+  rpc NotApprovedReason(NotApprovedReasonRequest) returns (NotApprovedReasonResponse) {
+    option (google.api.http) = {
+      post: "/api/rbac/permissions/not_approved_reason",
       body: "*"
     };
   }

@@ -28,6 +28,7 @@ type RBACClient interface {
 	Approve(ctx context.Context, in *ApproveRequest, opts ...grpc.CallOption) (*ApproveResponse, error)
 	Reject(ctx context.Context, in *RejectRequest, opts ...grpc.CallOption) (*RejectResponse, error)
 	Revoke(ctx context.Context, in *RevokeRequest, opts ...grpc.CallOption) (*RevokeResponse, error)
+	NotApprovedReason(ctx context.Context, in *NotApprovedReasonRequest, opts ...grpc.CallOption) (*NotApprovedReasonResponse, error)
 }
 
 type rBACClient struct {
@@ -83,6 +84,15 @@ func (c *rBACClient) Revoke(ctx context.Context, in *RevokeRequest, opts ...grpc
 	return out, nil
 }
 
+func (c *rBACClient) NotApprovedReason(ctx context.Context, in *NotApprovedReasonRequest, opts ...grpc.CallOption) (*NotApprovedReasonResponse, error) {
+	out := new(NotApprovedReasonResponse)
+	err := c.cc.Invoke(ctx, "/rbac.RBAC/NotApprovedReason", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // RBACServer is the server API for RBAC service.
 // All implementations must embed UnimplementedRBACServer
 // for forward compatibility
@@ -92,6 +102,7 @@ type RBACServer interface {
 	Approve(context.Context, *ApproveRequest) (*ApproveResponse, error)
 	Reject(context.Context, *RejectRequest) (*RejectResponse, error)
 	Revoke(context.Context, *RevokeRequest) (*RevokeResponse, error)
+	NotApprovedReason(context.Context, *NotApprovedReasonRequest) (*NotApprovedReasonResponse, error)
 	mustEmbedUnimplementedRBACServer()
 }
 
@@ -113,6 +124,9 @@ func (UnimplementedRBACServer) Reject(context.Context, *RejectRequest) (*RejectR
 }
 func (UnimplementedRBACServer) Revoke(context.Context, *RevokeRequest) (*RevokeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Revoke not implemented")
+}
+func (UnimplementedRBACServer) NotApprovedReason(context.Context, *NotApprovedReasonRequest) (*NotApprovedReasonResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method NotApprovedReason not implemented")
 }
 func (UnimplementedRBACServer) mustEmbedUnimplementedRBACServer() {}
 
@@ -217,6 +231,24 @@ func _RBAC_Revoke_Handler(srv interface{}, ctx context.Context, dec func(interfa
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RBAC_NotApprovedReason_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(NotApprovedReasonRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RBACServer).NotApprovedReason(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/rbac.RBAC/NotApprovedReason",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RBACServer).NotApprovedReason(ctx, req.(*NotApprovedReasonRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // RBAC_ServiceDesc is the grpc.ServiceDesc for RBAC service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -243,6 +275,10 @@ var RBAC_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Revoke",
 			Handler:    _RBAC_Revoke_Handler,
+		},
+		{
+			MethodName: "NotApprovedReason",
+			Handler:    _RBAC_NotApprovedReason_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

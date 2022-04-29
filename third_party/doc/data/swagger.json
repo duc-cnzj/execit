@@ -1018,6 +1018,38 @@
         }
       }
     },
+    "/api/rbac/permissions/not_approved_reason": {
+      "post": {
+        "tags": [
+          "RBAC"
+        ],
+        "operationId": "RBAC_NotApprovedReason",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/rbacNotApprovedReasonRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/rbacNotApprovedReasonResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        }
+      }
+    },
     "/api/rbac/permissions/reject": {
       "post": {
         "tags": [
@@ -1991,6 +2023,26 @@
         "page_size": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "rbacNotApprovedReasonRequest": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/rbacPermission"
+        },
+        "subject_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "rbacNotApprovedReasonResponse": {
+      "type": "object",
+      "properties": {
+        "reason": {
+          "type": "string"
         }
       }
     },

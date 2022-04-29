@@ -6281,6 +6281,88 @@ export namespace rbac {
         public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.ApproveResponse;
     }
 
+    /** Properties of a NotApprovedReasonRequest. */
+    interface INotApprovedReasonRequest {
+
+        /** NotApprovedReasonRequest subject_id */
+        subject_id?: (number|null);
+
+        /** NotApprovedReasonRequest permission */
+        permission?: (rbac.Permission|null);
+    }
+
+    /** Represents a NotApprovedReasonRequest. */
+    class NotApprovedReasonRequest implements INotApprovedReasonRequest {
+
+        /**
+         * Constructs a new NotApprovedReasonRequest.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.INotApprovedReasonRequest);
+
+        /** NotApprovedReasonRequest subject_id. */
+        public subject_id: number;
+
+        /** NotApprovedReasonRequest permission. */
+        public permission: rbac.Permission;
+
+        /**
+         * Encodes the specified NotApprovedReasonRequest message. Does not implicitly {@link rbac.NotApprovedReasonRequest.verify|verify} messages.
+         * @param message NotApprovedReasonRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.NotApprovedReasonRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a NotApprovedReasonRequest message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns NotApprovedReasonRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.NotApprovedReasonRequest;
+    }
+
+    /** Properties of a NotApprovedReasonResponse. */
+    interface INotApprovedReasonResponse {
+
+        /** NotApprovedReasonResponse reason */
+        reason?: (string|null);
+    }
+
+    /** Represents a NotApprovedReasonResponse. */
+    class NotApprovedReasonResponse implements INotApprovedReasonResponse {
+
+        /**
+         * Constructs a new NotApprovedReasonResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: rbac.INotApprovedReasonResponse);
+
+        /** NotApprovedReasonResponse reason. */
+        public reason: string;
+
+        /**
+         * Encodes the specified NotApprovedReasonResponse message. Does not implicitly {@link rbac.NotApprovedReasonResponse.verify|verify} messages.
+         * @param message NotApprovedReasonResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: rbac.NotApprovedReasonResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a NotApprovedReasonResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns NotApprovedReasonResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): rbac.NotApprovedReasonResponse;
+    }
+
     /** Properties of a RejectRequest. */
     interface IRejectRequest {
 
@@ -6525,6 +6607,20 @@ export namespace rbac {
          * @returns Promise
          */
         public revoke(request: rbac.RevokeRequest): Promise<rbac.RevokeResponse>;
+
+        /**
+         * Calls NotApprovedReason.
+         * @param request NotApprovedReasonRequest message or plain object
+         * @param callback Node-style callback called with the error, if any, and NotApprovedReasonResponse
+         */
+        public notApprovedReason(request: rbac.NotApprovedReasonRequest, callback: rbac.RBAC.NotApprovedReasonCallback): void;
+
+        /**
+         * Calls NotApprovedReason.
+         * @param request NotApprovedReasonRequest message or plain object
+         * @returns Promise
+         */
+        public notApprovedReason(request: rbac.NotApprovedReasonRequest): Promise<rbac.NotApprovedReasonResponse>;
     }
 
     namespace RBAC {
@@ -6563,6 +6659,13 @@ export namespace rbac {
          * @param [response] RevokeResponse
          */
         type RevokeCallback = (error: (Error|null), response?: rbac.RevokeResponse) => void;
+
+        /**
+         * Callback as used by {@link rbac.RBAC#notApprovedReason}.
+         * @param error Error, if any
+         * @param [response] NotApprovedReasonResponse
+         */
+        type NotApprovedReasonCallback = (error: (Error|null), response?: rbac.NotApprovedReasonResponse) => void;
     }
 }
 
