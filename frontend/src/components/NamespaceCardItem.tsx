@@ -25,6 +25,30 @@ const NamespaceCardItem: React.FC<{
   const { t } = useTranslation();
 
   const { hasCardPermission } = useAuth();
+  const MyButton: React.ReactNode = (
+    <Button
+      style={{ width: "100%" }}
+      disabled={!hasCardPermission(item.id)}
+      onClick={() => {
+        onOk();
+      }}
+      title={item.type}
+      className="project-detail__show-button"
+      type="dashed"
+    >
+      <span
+        title={item.name}
+        style={{
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          marginRight: 5,
+        }}
+      >
+        {item.name}
+      </span>
+    </Button>
+  );
 
   return (
     <div className="project-detail">
@@ -49,52 +73,10 @@ const NamespaceCardItem: React.FC<{
             </Button>
           }
         >
-          <Button
-            style={{ width: "100%" }}
-            disabled={!hasCardPermission(item.id)}
-            onClick={() => {
-              onOk();
-            }}
-            title={item.type}
-            className="project-detail__show-button"
-            type="dashed"
-          >
-            <span
-              title={item.name}
-              style={{
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                marginRight: 5,
-              }}
-            >
-              {item.name}
-            </span>
-          </Button>
+          {MyButton}
         </Tooltip>
       ) : (
-        <Button
-          style={{ width: "100%" }}
-          disabled={!hasCardPermission(item.id)}
-          onClick={() => {
-            onOk();
-          }}
-          title={item.type}
-          className="project-detail__show-button"
-          type="dashed"
-        >
-          <span
-            title={item.name}
-            style={{
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              marginRight: 5,
-            }}
-          >
-            {item.name}
-          </span>
-        </Button>
+        <>{MyButton}</>
       )}
 
       <DraggableModal
