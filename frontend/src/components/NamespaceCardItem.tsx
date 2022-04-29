@@ -28,28 +28,54 @@ const NamespaceCardItem: React.FC<{
 
   return (
     <div className="project-detail">
-      <Tooltip
-        placement="top"
-        title={
+      {!hasCardPermission(item.id) ? (
+        <Tooltip
+          placement="top"
+          title={
+            <Button
+              type="link"
+              size="small"
+              style={{ fontSize: 12 }}
+              onClick={() => {
+                rbacApplyFor({
+                  subject_id: item.id,
+                  permission: pb.rbac.Permission.Card,
+                }).then(() => {
+                  message.success(t("request sent"));
+                });
+              }}
+            >
+              {t("apply for permission")}
+            </Button>
+          }
+        >
           <Button
-            type="link"
-            size="small"
+            style={{ width: "100%" }}
+            disabled={!hasCardPermission(item.id)}
             onClick={() => {
-              rbacApplyFor({
-                subject_id: item.id,
-                permission: pb.rbac.Permission.Card,
-              }).then(() => {
-                message.success(t("request sent"));
-              });
+              onOk();
             }}
+            title={item.type}
+            className="project-detail__show-button"
+            type="dashed"
           >
-            {t("apply for permission")}
+            <span
+              title={item.name}
+              style={{
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                marginRight: 5,
+              }}
+            >
+              {item.name}
+            </span>
           </Button>
-        }
-      >
+        </Tooltip>
+      ) : (
         <Button
           style={{ width: "100%" }}
-          // disabled={!hasCardPermission(item.id)}
+          disabled={!hasCardPermission(item.id)}
           onClick={() => {
             onOk();
           }}
@@ -69,7 +95,7 @@ const NamespaceCardItem: React.FC<{
             {item.name}
           </span>
         </Button>
-      </Tooltip>
+      )}
 
       <DraggableModal
         onResize={() => {
