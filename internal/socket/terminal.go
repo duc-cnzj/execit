@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -488,9 +487,6 @@ func HandleExecShell(input *websocket_pb.WsHandleExecShellInput, conn *WsConn) (
 		return "", trans.TToError("forbidden", conn.lang.Get())
 	}
 	k8sClient := utils.K8sClientByClusterID(input.ClusterId)
-	if running, reason := utils.IsPodRunning(k8sClient.Client(), input.Namespace, input.Pod); !running {
-		return "", errors.New(reason)
-	}
 
 	sessionID, err := GenMyPtyHandlerId()
 	if err != nil {

@@ -108,7 +108,10 @@ const TabShell: React.FC<{
 
       if (frame.op === "toast") {
         message.error(frame.data);
-        listContainer();
+        listContainer().then((res) => {
+          let first = res.data.items[0];
+          setValue(first.pod + "|" + first.container);
+        });
       }
     },
     [listContainer]
