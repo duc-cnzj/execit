@@ -1,4 +1,11 @@
-import React, { useState, useEffect, useCallback, memo, useMemo, useRef } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  memo,
+  useMemo,
+  useRef,
+} from "react";
 import {
   Card,
   Skeleton,
@@ -36,8 +43,8 @@ const RBAC: React.FC = () => {
   }>({ page: 0, page_size: defaultPageSize, count: 0 });
   const [data, setData] = useState<pb.rbac.UserPermission[]>([]);
 
-  const revokeInput = useRef<any>(null)
-  const rejectInput = useRef<any>(null)
+  const revokeInput = useRef<any>(null);
+  const rejectInput = useRef<any>(null);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
@@ -141,7 +148,11 @@ const RBAC: React.FC = () => {
         setLoading(false);
       });
   };
+  const scrollDiv = useRef<HTMLDivElement>(null);
   const fetch = useCallback((email, state) => {
+    if (scrollDiv.current) {
+      scrollDiv.current.scrollTo(0, 0);
+    }
     setLoading(true);
     rbacList({
       page: 1,
@@ -284,7 +295,11 @@ const RBAC: React.FC = () => {
         marginBottom: 30,
       }}
     >
-      <div id="scrollableDiv" style={{ height: "100%", overflowY: "auto" }}>
+      <div
+        id="scrollableDiv"
+        ref={scrollDiv}
+        style={{ height: "100%", overflowY: "auto" }}
+      >
         <InfiniteScroll
           dataLength={data.length}
           next={loadMoreData}
@@ -345,7 +360,7 @@ const RBAC: React.FC = () => {
                         setRejectID(item.id);
                         setIsRejectModalVisible(true);
                         setTimeout(() => {
-                          rejectInput.current && rejectInput.current.focus()
+                          rejectInput.current && rejectInput.current.focus();
                         }, 100);
                       }}
                     >
@@ -361,7 +376,7 @@ const RBAC: React.FC = () => {
                         setRevokeID(item.id);
                         setIsModalVisible(true);
                         setTimeout(() => {
-                          revokeInput.current && revokeInput.current.focus()
+                          revokeInput.current && revokeInput.current.focus();
                         }, 100);
                       }}
                       danger
