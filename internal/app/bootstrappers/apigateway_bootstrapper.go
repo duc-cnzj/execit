@@ -241,7 +241,7 @@ func download(w http.ResponseWriter, filename string, reader io.Reader) {
 
 func authenticated(r *http.Request) (*http.Request, bool) {
 	if verifyToken, b := app.Auth().VerifyToken(r.Header.Get("Authorization")); b {
-		return r.WithContext(context.WithValue(r.Context(), authCtx{}, &verifyToken.UserInfo)), true
+		return r.WithContext(context.WithValue(r.Context(), authCtx{}, verifyToken.UserInfo)), true
 	}
 
 	return nil, false
