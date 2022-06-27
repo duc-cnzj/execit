@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/duc-cnzj/execit-client/auth"
+	auth2 "github.com/duc-cnzj/execit/internal/auth"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/utils"
 	"github.com/duc-cnzj/execit/internal/xlog"
@@ -95,7 +96,7 @@ func (a *AuthSvc) Info(ctx context.Context, req *auth.InfoRequest) (*auth.InfoRe
 					Email:       c.Email,
 					LogoutUrl:   c.LogoutUrl,
 					IsAdmin:     c.IsAdmin(),
-					Permissions: c.Permissions,
+					Permissions: auth2.GetUserPermissions(c.Email),
 				}, nil
 			}
 		}
