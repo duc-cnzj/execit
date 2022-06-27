@@ -7,6 +7,9 @@ import AppHeader from "./components/AppHeader";
 import AppFooter from "./components/AppFooter";
 import { PrivateRoute } from "./contexts/auth";
 import RBAC from "./components/RBAC";
+import { GlobalScrollbar } from "mac-scrollbar";
+import "mac-scrollbar/dist/mac-scrollbar.css";
+
 const { Header, Content, Footer } = Layout;
 
 const ClusterManager = lazy(() => import("./components/ClusterManager"));
@@ -16,6 +19,7 @@ const Events = lazy(() => import("./components/Events"));
 const App: FC = () => {
   return (
     <ProvideWebsocket>
+      <GlobalScrollbar />
       <Layout className="app">
         <Header
           className="app__header"

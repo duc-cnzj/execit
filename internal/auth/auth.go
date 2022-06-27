@@ -8,6 +8,8 @@ import (
 
 	"github.com/duc-cnzj/execit-client/rbac"
 	"github.com/duc-cnzj/execit/internal/contracts"
+	"github.com/duc-cnzj/execit/internal/xlog"
+
 	"github.com/golang-jwt/jwt"
 )
 
@@ -57,6 +59,11 @@ func (a *Auth) Sign(info *contracts.UserInfo) (*contracts.SignData, error) {
 }
 
 func HasPermissionFor[T ~int | ~int64](user *contracts.UserInfo, permission rbac.Permission, id T) bool {
+	if user.Permissions == nil {
+		xlog.Warning("load rbac")
+		user.Permissions = GetUserPermissions(user.Email)
+	}
+
 	if user.IsAdmin() {
 		return true
 	}

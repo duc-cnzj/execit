@@ -3,6 +3,7 @@ package picture
 import (
 	"context"
 	"math/rand"
+	"net/http"
 	"time"
 
 	"github.com/duc-cnzj/execit/internal/plugins"
@@ -12,13 +13,9 @@ import (
 var (
 	nameCartoon          = "picture_cartoon"
 	urls        []string = []string{
-		"https://cloud.qqshabi.cn/api/images/api.php",
-		// 以下全部防盗链
-		//"http://api.btstu.cn/sjbz/?lx=suiji",
-		//"http://api.btstu.cn/sjbz/?lx=dongman",
-		//"https://acg.toubiec.cn/random.php",
-		//"http://www.dmoe.cc/random.php",
-		//"https://api.ixiaowai.cn/api/api.php",
+		"https://api.btstu.cn/sjbz/?lx=dongman",
+		"https://www.dmoe.cc/random.php",
+		"https://api.ixiaowai.cn/api/api.php",
 	}
 )
 
@@ -32,9 +29,23 @@ func init() {
 
 type Cartoon struct{}
 
+var client = http.Client{
+	CheckRedirect: func(req *http.Request, via []*http.Request) error {
+		return http.ErrUseLastResponse
+	},
+}
+
 func (c *Cartoon) Get(ctx context.Context, random bool) (*plugins.Picture, error) {
+	weburl := urls[rand.Intn(len(urls))]
+	response, err := client.Get(weburl)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+	xlog.Debugf("[Picture]: request %s", weburl)
+
 	return &plugins.Picture{
-		Url:       urls[rand.Intn(len(urls))],
+		Url:       response.Header.Get("Location"),
 		Copyright: "",
 	}, nil
 }

@@ -148,8 +148,7 @@ var checkList = []struct {
 
 func RunAccessCheck(cli kubernetes.Interface, namespace string) (bool, error) {
 	for _, o := range checkList {
-		var sar *authorizationv1.SelfSubjectAccessReview
-		sar = &authorizationv1.SelfSubjectAccessReview{
+		sar := &authorizationv1.SelfSubjectAccessReview{
 			Spec: authorizationv1.SelfSubjectAccessReviewSpec{
 				ResourceAttributes: &authorizationv1.ResourceAttributes{
 					Namespace:   namespace,

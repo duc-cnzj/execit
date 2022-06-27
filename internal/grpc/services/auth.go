@@ -4,8 +4,6 @@ import (
 	"context"
 	"sort"
 
-	auth2 "github.com/duc-cnzj/execit/internal/auth"
-
 	"github.com/coreos/go-oidc/v3/oidc"
 	"golang.org/x/oauth2"
 	"google.golang.org/grpc"
@@ -70,7 +68,7 @@ func (a *AuthSvc) Login(ctx context.Context, request *auth.LoginRequest) (*auth.
 				Email: "admin@execit.com",
 			},
 		}
-		info.Permissions = auth2.GetUserPermissions(info.Email)
+		//info.Permissions = auth2.GetUserPermissions(info.Email)
 		data, err := a.authsvc.Sign(info)
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, err.Error())
@@ -153,7 +151,7 @@ func (a *AuthSvc) Exchange(ctx context.Context, request *auth.ExchangeRequest) (
 	userinfo.Roles = []string{}
 
 	xlog.Debug(userinfo)
-	userinfo.Permissions = auth2.GetUserPermissions(userinfo.Email)
+	//userinfo.Permissions = auth2.GetUserPermissions(userinfo.Email)
 	data, err := a.authsvc.Sign(&userinfo)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
