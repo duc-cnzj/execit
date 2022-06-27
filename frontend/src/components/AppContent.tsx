@@ -43,7 +43,7 @@ const AppContent: React.FC = () => {
                 key={`${item.cluster_id}-${item.namespace}`}
               >
                 <Card
-                  style={{ width: "100%" }}
+                  style={{ width: "100%", height: "100%" }}
                   title={
                     <div
                       style={{
