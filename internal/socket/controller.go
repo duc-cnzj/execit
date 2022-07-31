@@ -226,7 +226,14 @@ func read(wsconn *WsConn) error {
 		}
 
 		go func(wsRequest *websocket_pb.WsRequestMetadata, message []byte) {
+			defer utils.HandlePanic(wsRequest.Type.String())
+
 			if handler, ok := handlers[wsRequest.Type]; ok {
+				// websocket.onopen 事件不一定是最早发出来的，所以要等 onopen 的认证结束后才能进行后面的操作
+				if wsconn.GetUser() != nil && wsRequest.Type != websocket_pb.Type_HandleAuthorize {
+					NewMessageSender(wsconn, "", WsAuthorize).SendMsg("认证中，请稍等~")
+					return
+				}
 				handler(wsconn, wsRequest.Type, message)
 			}
 		}(&wsRequest, message)
@@ -234,8 +241,6 @@ func read(wsconn *WsConn) error {
 }
 
 func HandleWsAuthorize(c *WsConn, t websocket_pb.Type, message []byte) {
-	defer utils.HandlePanic("HandleWsAuthorize")
-
 	var input websocket_pb.AuthorizeTokenInput
 	if err := proto.Unmarshal(message, &input); err != nil {
 		xlog.Error("[Websocket]: " + err.Error())
@@ -250,7 +255,6 @@ func HandleWsAuthorize(c *WsConn, t websocket_pb.Type, message []byte) {
 }
 
 func HandleWsHandleSetLang(c *WsConn, t websocket_pb.Type, message []byte) {
-	defer utils.HandlePanic("HandleWsHandleSetLang")
 	var input websocket_pb.WsHandleSetLangInput
 	if err := proto.Unmarshal(message, &input); err != nil {
 		xlog.Error("[Websocket]: " + err.Error())
@@ -261,8 +265,6 @@ func HandleWsHandleSetLang(c *WsConn, t websocket_pb.Type, message []byte) {
 }
 
 func HandleWsHandleCloseShell(c *WsConn, t websocket_pb.Type, message []byte) {
-	defer utils.HandlePanic("HandleWsHandleCloseShell")
-
 	var input websocket_pb.TerminalMessageInput
 	if err := proto.Unmarshal(message, &input); err != nil {
 		xlog.Error(err.Error())
@@ -275,8 +277,6 @@ func HandleWsHandleCloseShell(c *WsConn, t websocket_pb.Type, message []byte) {
 }
 
 func HandleWsHandleExecShellMsg(c *WsConn, t websocket_pb.Type, message []byte) {
-	defer utils.HandlePanic("HandleWsHandleExecShellMsg")
-
 	var input websocket_pb.TerminalMessageInput
 	if err := proto.Unmarshal(message, &input); err != nil {
 		NewMessageSender(c, "", t).SendEndError(err)
