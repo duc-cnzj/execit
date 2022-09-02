@@ -43,7 +43,7 @@ ajax.interceptors.response.use(
     if (error.response.status === 401) {
       if (getToken()) {
         removeToken();
-        message.error(t("Login expired. Please log in again"));
+        message.error(t<string>("Login expired. Please log in again"));
       }
       setTimeout(() => {
         if (window.location.pathname !== "/login") {

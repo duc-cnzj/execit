@@ -366,11 +366,11 @@ const DetailItems: React.FC<{
                   danger
                   onClick={() => onDelete(item.card_id)}
                 >
-                  {t("remove")}
+                  <div>{t<string>("remove")}</div>
                 </Button>
               ) : (
                 <Button type="dashed" onClick={() => onAdd(item)}>
-                  {t("add")}
+                  {t<string>("add")}
                 </Button>
               ),
             ]}

@@ -52,6 +52,8 @@ const useProvideLang = () => {
   };
 };
 
-export const ProvideI18n: React.FC = ({ children }) => {
+export const ProvideI18n: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return <Lang.Provider value={useProvideLang()}>{children}</Lang.Provider>;
 };

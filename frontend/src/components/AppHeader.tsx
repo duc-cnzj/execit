@@ -36,10 +36,10 @@ const AppHeader: React.FC = () => {
         className="app-title"
         style={{
           color: useWsReady() ? "white" : "red",
-          textTransform: "uppercase",
+          textTransform: "lowercase",
         }}
       >
-        ExecIt
+        exec-it
       </Link>
       <div style={{ display: "flex", alignItems: "center" }}>
         <svg

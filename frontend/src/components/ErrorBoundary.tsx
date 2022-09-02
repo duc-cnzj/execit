@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 
-export default class ErrorBoundary extends Component {
+export default class ErrorBoundary extends Component<{
+  children: React.ReactNode;
+}> {
   state: { error: Error | null; errorInfo: any } = {
     error: null,
     errorInfo: null,
@@ -22,7 +24,7 @@ export default class ErrorBoundary extends Component {
         <div>
           <h2>Something went wrong.</h2>
           <details style={{ whiteSpace: "pre-wrap" }}>
-            {this.state.error && this.state.error.toString()}
+            {this.state.error && this.state.error}
             <br />
             {this.state.errorInfo.componentStack}
           </details>

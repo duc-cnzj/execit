@@ -63,11 +63,11 @@ function useProvideAuth() {
       .then((res) => {
         setUser(res.data);
         cb();
-        message.success(t("Login successfully"));
+        message.success(t<string>("Login successfully"));
       })
       .catch((e) => {
         console.log(e);
-        message.error(t("wrong username or password"));
+        message.error(t<string>("wrong username or password"));
       });
   };
 
@@ -75,7 +75,7 @@ function useProvideAuth() {
     realAuth.signout().then(() => {
       setUser(undefined);
       cb();
-      message.success(t("Login successfully"));
+      message.success(t<string>("Login successfully"));
     });
   };
 
@@ -94,7 +94,7 @@ function useProvideAuth() {
         if (element.permission === pb.rbac.Permission.Card) {
           for (let index = 0; index < element.items.length; index++) {
             if (Number(element.items[index]) === Number(cardID)) {
-              return true
+              return true;
             }
           }
           break;

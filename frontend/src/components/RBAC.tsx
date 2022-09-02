@@ -149,7 +149,7 @@ const RBAC: React.FC = () => {
       });
   };
   const scrollDiv = useRef<HTMLDivElement>(null);
-  const fetch = useCallback((email, state) => {
+  const fetch = useCallback((email: string, state: pb.rbac.State) => {
     if (scrollDiv.current) {
       scrollDiv.current.scrollTo(0, 0);
     }

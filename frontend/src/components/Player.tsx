@@ -107,7 +107,7 @@ const AsciinemaPlayer: React.FC<AsciinemaPlayerProps> = ({
           }
         }}
       >
-        <span style={{ marginRight: 10 }}>{t("speed")}:</span>
+        <span style={{ marginRight: 10 }}>{t<string>("speed")}:</span>
         <Radio.Group
           onChange={(e) => {
             setSpeed(e.target.value);

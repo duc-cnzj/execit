@@ -1,4 +1,4 @@
-<h1 align="center">execit</h1>
+<h1 align="center">exec-it</h1>
 <p align="center">exec any pod in one web page.</p>
 <br><br>
 
@@ -47,5 +47,5 @@ open http://localhost:31996
 
 - [x] Multi-cluster management
 - [x] base on deployment, statefulset
-- [ ] RBAC
-- [ ] base permission for execit
+- [x] RBAC
+- [x] base permission for execit

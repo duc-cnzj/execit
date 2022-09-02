@@ -33,7 +33,9 @@ export function useWsReady(): boolean {
   return false;
 }
 
-export const ProvideWebsocket: React.FC = ({ children }) => {
+export const ProvideWebsocket: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const dispatch = useDispatch();
   const [ws, setWs] = useState<any>();
   const { t } = useTranslation();
@@ -73,9 +75,8 @@ export const ProvideWebsocket: React.FC = ({ children }) => {
       console.log("ws closed");
     };
     conn.onmessage = function (evt) {
-      let data: pb.websocket.WsMetadataResponse = pb.websocket.WsMetadataResponse.decode(
-        new Uint8Array(evt.data)
-      );
+      let data: pb.websocket.WsMetadataResponse =
+        pb.websocket.WsMetadataResponse.decode(new Uint8Array(evt.data));
       data.metadata &&
         dispatch(
           handleEvents(
