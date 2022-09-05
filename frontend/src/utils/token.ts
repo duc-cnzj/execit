@@ -46,3 +46,15 @@ export const setLang = (lang: string) => {
 export const getLang = (): string => {
   return window.localStorage.getItem("lang") || "en";
 };
+
+export const setOwned = (owned: boolean) => {
+  let s: string = "false";
+  if (owned) {
+    s = "true";
+  }
+  window.localStorage.setItem("owned", s);
+};
+
+export const isOwned = (): boolean => {
+  return (window.localStorage.getItem("owned") || "false") === "true";
+};

@@ -17,6 +17,13 @@
           "CardSvc"
         ],
         "operationId": "CardSvc_All",
+        "parameters": [
+          {
+            "type": "boolean",
+            "name": "owned",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
             "description": "A successful response.",

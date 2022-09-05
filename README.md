@@ -1,15 +1,15 @@
 <h1 align="center">exec-it</h1>
-<p align="center">exec any pod in one web page.</p>
+<p align="center">exec pods in one web page.</p>
 <br><br>
 
 ## 💡 Intro
 
-Super simple terminal management in k8s.
+Super simple terminal management tool in k8s.
 
 ## ✨  Features
 
 * multi cluster
-* like kubernetes dashboard, but more simple and powerful.
+* like kubernetes dashboard, but more simple and friendly.
 * audit log.
 * i18n.
 

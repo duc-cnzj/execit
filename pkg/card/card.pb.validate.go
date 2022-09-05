@@ -57,6 +57,8 @@ func (m *AllRequest) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Owned
+
 	if len(errors) > 0 {
 		return AllRequestMultiError(errors)
 	}

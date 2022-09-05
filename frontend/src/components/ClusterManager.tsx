@@ -203,12 +203,7 @@ const ClusterManager: React.FC = () => {
                 rules={[{ required: true }]}
                 style={{ maxHeight: 550, overflowY: "auto" }}
               >
-                <MyCodeMirror
-                  options={{
-                    mode: "yaml",
-                    theme: "dracula",
-                  }}
-                />
+                <MyCodeMirror/>
               </Form.Item>
 
               <Form.Item wrapperCol={{ offset: 8, span: 16 }}>

@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/duc-cnzj/execit/internal/utils/date"
-
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,11 +14,14 @@ import (
 
 	"github.com/duc-cnzj/execit-client/card"
 	"github.com/duc-cnzj/execit-client/event"
+	"github.com/duc-cnzj/execit-client/rbac"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
+	"github.com/duc-cnzj/execit/internal/auth"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/event/events"
 	"github.com/duc-cnzj/execit/internal/models"
 	"github.com/duc-cnzj/execit/internal/scopes"
+	"github.com/duc-cnzj/execit/internal/utils/date"
 )
 
 func init() {
@@ -54,7 +55,26 @@ func (c *CardSvc) All(ctx context.Context, request *card.AllRequest) (*card.AllR
 			namespace:   ns,
 		}
 	}
+	var user = MustGetUser(ctx)
+	var cardIDMap = make(map[string]struct{})
+	if request.Owned {
+		permissions := auth.GetUserPermissions(user.Email)
+		for _, permission := range permissions {
+			if permission.Permission == rbac.Permission_Card {
+				for _, s := range permission.Items {
+					cardIDMap[s] = struct{}{}
+				}
+				break
+			}
+		}
+	}
 	for _, m := range cards {
+		if request.Owned && !user.IsAdmin() {
+			_, ok := cardIDMap[fmt.Sprintf("%d", m.ID)]
+			if !ok {
+				continue
+			}
+		}
 		k := fn(m.ClusterID, m.Cluster.Name, m.Namespace)
 		if cardItems, ok := groups[k]; ok {
 			groups[k] = append(cardItems, &card.Items{

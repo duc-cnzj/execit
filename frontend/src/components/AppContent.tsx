@@ -2,7 +2,7 @@ import React, { useEffect, useState, memo } from "react";
 import { DraggableModalProvider } from "../pkg/DraggableModal/DraggableModalProvider";
 import "../pkg/DraggableModal/index.css";
 import pb from "../api/compiled";
-import { Card, Row, Col, Empty, Button, Tag } from "antd";
+import { Card, Row, Col, Empty, Button, Tag, Switch } from "antd";
 import { cardAll } from "../api/card";
 import NamespaceCardItem from "./NamespaceCardItem";
 import { useHistory } from "react-router-dom";
@@ -11,27 +11,40 @@ import { useSelector } from "react-redux";
 import { selectSyncAt } from "../store/reducers/card";
 import { sortBy } from "lodash";
 import { useAuth } from "../contexts/auth";
+import {isOwned, setOwned as setLocalOwned} from '../utils/token'
 
 const AppContent: React.FC = () => {
   const { t } = useTranslation();
   const [data, setData] = useState<pb.card.ItemsList[]>([]);
+  const [owned, setOwned] = useState(isOwned());
   const h = useHistory();
   useEffect(() => {
-    cardAll().then((res) => {
+    cardAll(isOwned()).then((res) => {
       setData(res.data.items);
     });
   }, []);
   const s = useSelector(selectSyncAt);
   useEffect(() => {
-    cardAll().then((res) => {
+    cardAll(owned).then((res) => {
       setData(res.data.items);
     });
-  }, [s]);
-  const { hasCardPermission } = useAuth();
+  }, [s, owned]);
+  const { hasCardPermission, isAdmin } = useAuth();
 
   return (
     <DraggableModalProvider>
       <div className="content" style={{ marginBottom: 30 }}>
+        {!isAdmin() && <Switch
+          style={{marginBottom: 5}}
+          checked={owned}
+          size="small"
+          onClick={() => {
+            setOwned((owned) => {
+              setLocalOwned(!owned)
+              return !owned
+            });
+          }}
+        />}
         <Row gutter={[16, 16]}>
           {data.length > 0 ? (
             data.map((item) => (

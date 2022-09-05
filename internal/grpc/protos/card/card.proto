@@ -8,7 +8,9 @@ import "container/container.proto";
 
 option go_package = "github.com/duc-cnzj/execit-client/card;card";
 
-message AllRequest {}
+message AllRequest {
+  bool owned = 1;
+}
 message AllResponse {
   repeated ItemsList items = 1;
 }

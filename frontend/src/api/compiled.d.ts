@@ -2285,6 +2285,9 @@ export namespace card {
 
     /** Properties of an AllRequest. */
     interface IAllRequest {
+
+        /** AllRequest owned */
+        owned?: (boolean|null);
     }
 
     /** Represents an AllRequest. */
@@ -2295,6 +2298,9 @@ export namespace card {
          * @param [properties] Properties to set
          */
         constructor(properties?: card.IAllRequest);
+
+        /** AllRequest owned. */
+        public owned: boolean;
 
         /**
          * Encodes the specified AllRequest message. Does not implicitly {@link card.AllRequest.verify|verify} messages.

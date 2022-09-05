@@ -1,8 +1,8 @@
 import ajax from "./ajax";
 import pb from "./compiled"
 
-export function cardAll() {
-  return ajax.get<pb.card.AllResponse>(`/api/all_cards`);
+export function cardAll(owned: boolean) {
+  return ajax.get<pb.card.AllResponse>(`/api/all_cards?owned=${owned}`);
 }
 
 export function cardList({page, page_size}: pb.card.ListRequest) {

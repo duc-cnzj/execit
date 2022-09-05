@@ -5125,6 +5125,7 @@ export const card = $root.card = (() => {
          * Properties of an AllRequest.
          * @memberof card
          * @interface IAllRequest
+         * @property {boolean|null} [owned] AllRequest owned
          */
 
         /**
@@ -5143,6 +5144,14 @@ export const card = $root.card = (() => {
         }
 
         /**
+         * AllRequest owned.
+         * @member {boolean} owned
+         * @memberof card.AllRequest
+         * @instance
+         */
+        AllRequest.prototype.owned = false;
+
+        /**
          * Encodes the specified AllRequest message. Does not implicitly {@link card.AllRequest.verify|verify} messages.
          * @function encode
          * @memberof card.AllRequest
@@ -5154,6 +5163,8 @@ export const card = $root.card = (() => {
         AllRequest.encode = function encode(message, writer) {
             if (!writer)
                 writer = $Writer.create();
+            if (message.owned != null && Object.hasOwnProperty.call(message, "owned"))
+                writer.uint32(/* id 1, wireType 0 =*/8).bool(message.owned);
             return writer;
         };
 
@@ -5175,6 +5186,9 @@ export const card = $root.card = (() => {
             while (reader.pos < end) {
                 let tag = reader.uint32();
                 switch (tag >>> 3) {
+                case 1:
+                    message.owned = reader.bool();
+                    break;
                 default:
                     reader.skipType(tag & 7);
                     break;
