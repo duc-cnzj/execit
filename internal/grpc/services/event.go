@@ -35,12 +35,25 @@ func (e *EventSvc) List(ctx context.Context, request *event.ListRequest) (*event
 		count    int64
 	)
 
+	queryScope := func(db *gorm.DB) *gorm.DB {
+		if request.ActionType != event.ActionType_Unknown {
+			db = db.Where("`action` = ?", request.GetActionType())
+		}
+
+		// 全表扫了，很慢
+		if request.Search != "" {
+			db = db.Where("`message` LIKE ? or `username` LIKE ?", "%"+request.Search+"%", request.Search+"%")
+		}
+
+		return db
+	}
+
 	if err := app.DB().Preload("File", func(db *gorm.DB) *gorm.DB {
 		return db.Select("ID")
-	}).Scopes(scopes.Paginate(&page, &pageSize)).Order("`id` DESC").Find(&events).Error; err != nil {
+	}).Scopes(queryScope, scopes.Paginate(&page, &pageSize)).Order("`id` DESC").Find(&events).Error; err != nil {
 		return nil, err
 	}
-	app.DB().Model(&models.Event{}).Count(&count)
+	app.DB().Model(&models.Event{}).Scopes(queryScope).Count(&count)
 	res := make([]*event.ListItem, 0, len(events))
 	for _, m := range events {
 		var fid int64

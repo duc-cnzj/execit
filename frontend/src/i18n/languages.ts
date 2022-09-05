@@ -87,6 +87,14 @@ const languages: Lang = {
     en: "add",
     zh: "添加",
   },
+  all: {
+    en: "all",
+    zh: "全部",
+  },
+  search: {
+    en: "search",
+    zh: "搜索",
+  },
   remove: {
     en: "remove",
     zh: "删除",
@@ -174,10 +182,6 @@ const languages: Lang = {
   "apply for": {
     en: "apply for",
     zh: "点击申请",
-  },
-  "all": {
-    en: "all",
-    zh: "全部",
   },
   "apply for permission": {
     en: "apply for permission",

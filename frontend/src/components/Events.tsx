@@ -1,11 +1,14 @@
-import React, { useState, useEffect, useCallback, memo } from "react";
+import React, { useState, useEffect, useCallback, memo, useMemo, useRef } from "react";
 import { getHighlightSyntax } from "../utils/highlight";
 import ReactDiffViewer from "react-diff-viewer";
+import { debounce } from "lodash";
 import {
   Card,
   Skeleton,
   Divider,
+  Input,
   List,
+  Select,
   Tag,
   Button,
   Modal,
@@ -27,6 +30,8 @@ import AsciinemaPlayer from "./Player";
 import { getToken } from "../utils/token";
 
 const defaultPageSize = 15;
+const { Option } = Select;
+const initQuery = { action_type: pb.event.ActionType.Unknown, search: "" };
 
 const EventList: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -38,6 +43,10 @@ const EventList: React.FC = () => {
     count: number;
   }>({ page: 0, page_size: defaultPageSize, count: 0 });
   const [data, setData] = useState<pb.event.ListItem[]>([]);
+  const [queries, setQueries] = useState<{
+    action_type: pb.event.ActionType;
+    search: string;
+  }>(initQuery);
 
   useEffect(() => {
     diskInfoApi().then(({ data }) => setDiskInfo(data));
@@ -48,36 +57,63 @@ const EventList: React.FC = () => {
       return;
     }
     setLoading(true);
-    events({ page: paginate.page + 1, page_size: paginate.page_size })
-      .then(({ data: res }) => {
-        setData((data) => [...data, ...res.items]);
-        setPaginate({
-          page: Number(res.page),
-          page_size: Number(res.page_size),
-          count: Number(res.count),
+    events({
+      page: paginate.page + 1,
+      page_size: paginate.page_size,
+      action_type: queries.action_type,
+      search: queries.search,
+    })
+        .then(({ data: res }) => {
+          setData((data) => [...data, ...res.items]);
+          setPaginate({
+            page: Number(res.page),
+            page_size: Number(res.page_size),
+            count: Number(res.count),
+          });
+          setLoading(false);
+        })
+        .catch((e) => {
+          message.error(e.response.data.message);
+          setLoading(false);
         });
-        setLoading(false);
-      })
-      .catch((e) => {
-        message.error(e.response.data.message);
-        setLoading(false);
-      });
   };
 
-  useEffect(() => {
-    events({ page: 1, page_size: defaultPageSize })
-      .then(({ data: res }) => {
-        setData((data) => [...data, ...res.items]);
-        setPaginate({
-          page: Number(res.page),
-          page_size: Number(res.page_size),
-          count: Number(res.count),
+
+  const scrollDiv = useRef<HTMLDivElement>(null);
+  const fetch = useCallback((action_type: any, search: any) => {
+    if (scrollDiv.current) {
+      scrollDiv.current.scrollTo(0, 0);
+    }
+    events({
+      page: 1,
+      page_size: defaultPageSize,
+      action_type: action_type,
+      search: search,
+    })
+        .then(({ data: res }) => {
+          setData(res.items);
+          setPaginate({
+            page: Number(res.page),
+            page_size: Number(res.page_size),
+            count: Number(res.count),
+          });
+        })
+        .catch((e) => {
+          message.error(e.response.data.message);
         });
-      })
-      .catch((e) => {
-        message.error(e.response.data.message);
-      });
   }, []);
+
+  const debounceFetch = useMemo(
+      () =>
+          debounce((action_type, search) => {
+            fetch(action_type, search);
+          }, 500),
+      [fetch]
+  );
+
+  useEffect(() => {
+    fetch(initQuery.action_type, initQuery.search);
+  }, [fetch]);
 
   const [config, setConfig] = useState({ old: "", new: "", title: "" });
 
@@ -191,8 +227,37 @@ const EventList: React.FC = () => {
             alignItems: "center",
           }}
         >
-          <div>
-            {t("events")}: {paginate.count} {t("total")}
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div>{t("events")}: {paginate.count} {t("total")}</div>
+            <Select
+                defaultValue={pb.event.ActionType.Unknown}
+                size="small"
+                style={{ width: 200, marginLeft: 10 }}
+                onChange={(v) => {
+                  setQueries((q) => ({ ...q, action_type: v }));
+                  fetch(v, queries.search);
+                }}
+            >
+              <Option value={pb.event.ActionType.Unknown}>{t("all")}</Option>
+              <Option value={pb.event.ActionType.Create}>{t("Create")}</Option>
+              <Option value={pb.event.ActionType.Delete}>{t("Delete")}</Option>
+              <Option value={pb.event.ActionType.Download}>
+                {t("Download")}
+              </Option>
+              <Option value={pb.event.ActionType.Shell}>{t("Exec Shell")}</Option>
+              <Option value={pb.event.ActionType.Update}>{t("Update")}</Option>
+              <Option value={pb.event.ActionType.Upload}>{t("Upload")}</Option>
+            </Select>
+            <Input
+                size="small"
+                placeholder={t("search")}
+                style={{ marginLeft: 10, zIndex: 0 }}
+                allowClear
+                onChange={(v) => {
+                  setQueries((q) => ({ ...q, search: v.target.value }));
+                  debounceFetch(queries.action_type, v.target.value);
+                }}
+            />
           </div>
           <div
             style={{
@@ -224,7 +289,7 @@ const EventList: React.FC = () => {
         marginBottom: 30,
       }}
     >
-      <div id="scrollableDiv" style={{ height: "100%", overflowY: "auto" }}>
+      <div id="scrollableDiv" style={{ height: "100%", overflowY: "auto" }} ref={scrollDiv}>
         <InfiniteScroll
           dataLength={data.length}
           next={loadMoreData}
@@ -390,7 +455,7 @@ const EventList: React.FC = () => {
                 },
               }}
               cols={106}
-              rows={24}
+              rows={25}
               idleTimeLimit={3}
               fit={"width"}
               terminalLineHeight={1.5}

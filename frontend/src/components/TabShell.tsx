@@ -167,7 +167,6 @@ const TabShell: React.FC<{
         fontFamily: '"Fira code", "Fira Mono", monospace',
         bellStyle: "sound",
         cursorBlink: true,
-        cols: 106,
         rows: 26,
       });
       myterm.loadAddon(fitAddon);
