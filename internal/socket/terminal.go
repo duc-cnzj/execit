@@ -1,6 +1,7 @@
 package socket
 
 import (
+	"bufio"
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
@@ -66,6 +67,7 @@ type Recorder struct {
 	shell     string
 	startTime time.Time
 	user      *contracts.UserInfo
+	buffer    *bufio.Writer
 
 	t    *MyPtyHandler
 	once sync.Once
@@ -89,12 +91,13 @@ func (r *Recorder) Write(data string) (err error) {
 			return
 		}
 		r.f = file
+		r.buffer = bufio.NewWriterSize(r.f, 1024*20)
 		r.filepath = file.Name()
 		r.startTime = time.Now()
-		r.f.Write([]byte(fmt.Sprintf(startLine, r.startTime.Unix(), r.shell)))
+		r.buffer.Write([]byte(fmt.Sprintf(startLine, r.startTime.Unix(), r.shell)))
 	})
 	marshal, _ := json.Marshal(data)
-	_, err = r.f.WriteString(fmt.Sprintf(writeLine, float64(time.Since(r.startTime).Microseconds())/1000000, string(marshal)))
+	_, err = r.buffer.WriteString(fmt.Sprintf(writeLine, float64(time.Since(r.startTime).Microseconds())/1000000, string(marshal)))
 	return err
 }
 
@@ -102,9 +105,10 @@ func (r *Recorder) Close() error {
 	r.RLock()
 	defer r.RUnlock()
 	var err error
-	if r.f == nil || r.startTime.IsZero() {
+	if r.buffer == nil || r.startTime.IsZero() {
 		return nil
 	}
+	r.buffer.Flush()
 	stat, _ := r.f.Stat()
 	var emptyFile bool = true
 	if stat.Size() > 0 {
