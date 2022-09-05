@@ -112,14 +112,14 @@ const AppContent: React.FC = () => {
                   <span>{t("Don't have any project cards yet")}</span>
                 }
               >
-                <Button
+                {isAdmin() && <Button
                   type="primary"
                   onClick={() => {
                     h.push("/cluster-manager");
                   }}
                 >
                   {t("Create Now")}
-                </Button>
+                </Button>}
               </Empty>
             </Col>
           )}

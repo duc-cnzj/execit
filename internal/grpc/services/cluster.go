@@ -388,3 +388,11 @@ func (c *ClusterSvc) Delete(ctx context.Context, request *cluster.DeleteRequest)
 
 	return &cluster.DeleteResponse{}, nil
 }
+
+func (c *ClusterSvc) Authorize(ctx context.Context, fullMethodName string) (context.Context, error) {
+	if !MustGetUser(ctx).IsAdmin() {
+		return nil, status.Error(codes.PermissionDenied, ErrorPermissionDenied.Error())
+	}
+
+	return ctx, nil
+}
