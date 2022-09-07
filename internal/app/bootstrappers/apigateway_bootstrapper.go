@@ -153,32 +153,6 @@ func handFile(gmux *runtime.ServeMux) {
 		}
 		http.Error(w, "Unauthenticated", http.StatusUnauthorized)
 	})
-	gmux.HandlePath("GET", "/api/raw_file/{id}", func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-		idstr, ok := pathParams["id"]
-		if !ok {
-			http.Error(w, "missing id", http.StatusBadRequest)
-			return
-		}
-		if _, ok := authenticated(r); ok {
-			var f models.File
-			if err := app.DB().First(&f, idstr).Error; err != nil {
-				if errors.Is(err, gorm.ErrRecordNotFound) {
-					http.Error(w, "not found", http.StatusNotFound)
-					return
-				}
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-			file, err := os.ReadFile(f.Path)
-			if err == nil {
-				w.Write(file)
-				return
-			}
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		http.Error(w, "Unauthenticated", http.StatusUnauthorized)
-	})
 	gmux.HandlePath("GET", "/api/download_file/{id}", func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 		idstr, ok := pathParams["id"]
 		if !ok {

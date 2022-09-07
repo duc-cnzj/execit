@@ -76,7 +76,7 @@ func (wc *WebsocketManager) initConn(r *http.Request, c *websocket.Conn) *WsConn
 		conn:   c,
 		lang:   &lang{l: middlewares.MustGetLang(r.Context())},
 	}
-	wsconn.terminalSessions = &SessionMap{Sessions: make(map[string]*MyPtyHandler), conn: wsconn}
+	wsconn.terminalSessions = &SessionMap{Sessions: make(map[string]PtyHandler), conn: wsconn}
 	app.Metrics().IncWebsocketConn()
 	Wait.Inc()
 
@@ -107,7 +107,7 @@ func (c *WsConn) GetUser() *contracts.UserInfo {
 
 func (c *WsConn) GetShellChannel(sessionID string) (chan *websocket_pb.TerminalMessage, error) {
 	if handler, ok := c.terminalSessions.Get(sessionID); ok {
-		return handler.shellCh, nil
+		return handler.TerminalMessageChan(), nil
 	}
 
 	return nil, fmt.Errorf("%v not found channel", sessionID)

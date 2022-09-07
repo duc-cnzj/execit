@@ -25,6 +25,8 @@ const _ = grpc.SupportPackageIsVersion7
 type FileSvcClient interface {
 	//  文件列表
 	List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
+	//  records 文件信息
+	ShowRecords(ctx context.Context, in *ShowRecordsRequest, opts ...grpc.CallOption) (*ShowRecordsResponse, error)
 	//  删除文件
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
 	//  DeleteUndocumentedFiles 删除未被记录的文件，model 表中没有，但是文件目录中有
@@ -44,6 +46,15 @@ func NewFileSvcClient(cc grpc.ClientConnInterface) FileSvcClient {
 func (c *fileSvcClient) List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error) {
 	out := new(ListResponse)
 	err := c.cc.Invoke(ctx, "/file.FileSvc/List", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fileSvcClient) ShowRecords(ctx context.Context, in *ShowRecordsRequest, opts ...grpc.CallOption) (*ShowRecordsResponse, error) {
+	out := new(ShowRecordsResponse)
+	err := c.cc.Invoke(ctx, "/file.FileSvc/ShowRecords", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -83,6 +94,8 @@ func (c *fileSvcClient) DiskInfo(ctx context.Context, in *DiskInfoRequest, opts 
 type FileSvcServer interface {
 	//  文件列表
 	List(context.Context, *ListRequest) (*ListResponse, error)
+	//  records 文件信息
+	ShowRecords(context.Context, *ShowRecordsRequest) (*ShowRecordsResponse, error)
 	//  删除文件
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
 	//  DeleteUndocumentedFiles 删除未被记录的文件，model 表中没有，但是文件目录中有
@@ -98,6 +111,9 @@ type UnimplementedFileSvcServer struct {
 
 func (UnimplementedFileSvcServer) List(context.Context, *ListRequest) (*ListResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedFileSvcServer) ShowRecords(context.Context, *ShowRecordsRequest) (*ShowRecordsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ShowRecords not implemented")
 }
 func (UnimplementedFileSvcServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
@@ -135,6 +151,24 @@ func _FileSvc_List_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FileSvcServer).List(ctx, req.(*ListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FileSvc_ShowRecords_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ShowRecordsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FileSvcServer).ShowRecords(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/file.FileSvc/ShowRecords",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FileSvcServer).ShowRecords(ctx, req.(*ShowRecordsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -203,6 +237,10 @@ var FileSvc_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "List",
 			Handler:    _FileSvc_List_Handler,
+		},
+		{
+			MethodName: "ShowRecords",
+			Handler:    _FileSvc_ShowRecords_Handler,
 		},
 		{
 			MethodName: "Delete",

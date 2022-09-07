@@ -49,11 +49,26 @@ message ListResponse{
   int64 count = 4;
 }
 
+message ShowRecordsRequest {
+  int64 id = 1 [(validate.rules).int64.gt = 0];
+}
+
+message ShowRecordsResponse {
+  repeated string items = 1;
+}
+
 service FileSvc {
   //  文件列表
   rpc List(ListRequest) returns (ListResponse) {
     option (google.api.http) = {
       get: "/api/files",
+    };
+  }
+
+  //  records 文件信息
+  rpc ShowRecords(ShowRecordsRequest) returns (ShowRecordsResponse) {
+    option (google.api.http) = {
+      get: "/api/record_files/{id}",
     };
   }
 

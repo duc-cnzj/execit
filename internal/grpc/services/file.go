@@ -1,9 +1,13 @@
 package services
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"os"
+	"strings"
 
 	"github.com/dustin/go-humanize"
 	"google.golang.org/grpc"
@@ -87,6 +91,49 @@ func (m *FileSvc) List(ctx context.Context, request *file.ListRequest) (*file.Li
 		Items:    res,
 		Count:    count,
 	}, nil
+}
+
+func (m *FileSvc) ShowRecords(ctx context.Context, request *file.ShowRecordsRequest) (*file.ShowRecordsResponse, error) {
+	var f models.File
+	if err := app.DB().First(&f, request.Id).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	open, err := os.Open(f.Path)
+	if err != nil {
+		return nil, err
+	}
+	defer open.Close()
+
+	return &file.ShowRecordsResponse{Items: transformToRecords(open)}, nil
+}
+
+func transformToRecords(rd io.Reader) []string {
+	var (
+		data   []string
+		lists  []string
+		reader = bufio.NewReader(rd)
+	)
+	for {
+		line, _, err := reader.ReadLine()
+		if err != nil {
+			if err == io.EOF {
+				lists = append(lists, strings.Join(data, "\n"))
+			}
+			break
+		}
+		if strings.HasPrefix(string(line), `{"version": 2,`) {
+			if len(data) > 0 {
+				lists = append(lists, strings.Join(data, "\n"))
+			}
+			data = []string{string(line)}
+		} else {
+			data = append(data, string(line))
+		}
+	}
+	return lists
 }
 
 func (m *FileSvc) DiskInfo(ctx context.Context, request *file.DiskInfoRequest) (*file.DiskInfoResponse, error) {

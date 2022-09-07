@@ -14,7 +14,11 @@ import {
   Modal,
   Popconfirm,
   message,
+  Radio,
+  RadioChangeEvent,
 } from "antd";
+import { showRecords } from "../api/file";
+import { ClockCircleOutlined, PlayCircleOutlined } from "@ant-design/icons";
 import pb from "../api/compiled";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { events } from "../api/event";
@@ -27,7 +31,6 @@ import {
 import ErrorBoundary from "../components/ErrorBoundary";
 import { useTranslation } from "react-i18next";
 import AsciinemaPlayer from "./Player";
-import { getToken } from "../utils/token";
 
 const defaultPageSize = 15;
 const { Option } = Select;
@@ -189,7 +192,6 @@ const EventList: React.FC = () => {
   }, []);
 
   const [shellModalVisible, setShellModalVisible] = useState(false);
-  const [fileID, setFileID] = useState(0);
 
   const [clearLoading, setClearLoading] = useState(false);
   const clearDisk = useCallback(() => {
@@ -216,6 +218,15 @@ const EventList: React.FC = () => {
     }
     return h;
   };
+
+  const [records, setRecords] = useState<string[]>([]);
+  const [key, setKey] = useState(0);
+
+  const fetchFileRaw = useCallback((id: number) => {
+    showRecords(id).then(({ data }) => {
+      setRecords(data.items);
+    });
+  }, []);
 
   return (
     <Card
@@ -330,7 +341,7 @@ const EventList: React.FC = () => {
                       style={{ marginRight: 5 }}
                       onClick={() => {
                         setShellModalVisible(true);
-                        setFileID(item.file_id);
+                        fetchFileRaw(item.file_id);
                       }}
                     >
                       {t("viewing Operation Records")}
@@ -440,29 +451,50 @@ const EventList: React.FC = () => {
         footer={null}
         onCancel={() => {
           setShellModalVisible(false);
-          setFileID(0);
+          setRecords([]);
+          setKey(0);
         }}
       >
         <div style={{ width: "100%" }}>
-          {fileID > 0 && (
-            <AsciinemaPlayer
-              speed={1.5}
-              src={{
-                url: `${process.env.REACT_APP_BASE_URL}/api/raw_file/${fileID}`,
-                fetchOpts: {
-                  method: "GET",
-                  headers: { Authorization: getToken() },
-                },
-              }}
-              cols={106}
-              rows={25}
-              idleTimeLimit={3}
-              fit={"width"}
-              terminalLineHeight={1.5}
-              preload
-              theme="tango"
-            />
+          {records.length > 1 && (
+              <>
+                <Radio.Group
+                    onChange={(e: RadioChangeEvent) => setKey(e.target.value)}
+                    value={key}
+                >
+                  {records.map((_, index) => (
+                      <Radio value={index} key={index}>
+                        <Tag
+                            color={key === index ? "success" : "default"}
+                            icon={
+                              key === index ? (
+                                  <PlayCircleOutlined />
+                              ) : (
+                                  <ClockCircleOutlined />
+                              )
+                            }
+                        >
+                          片段 {index + 1}
+                        </Tag>
+                      </Radio>
+                  ))}
+                </Radio.Group>
+                <Divider plain />
+              </>
           )}
+          {records.map((v, index) => (
+              <div key={index} style={{ display: index === key ? "block" : "none" }}>
+                <AsciinemaPlayer
+                    speed={1.5}
+                    src={{ data: records[key] }}
+                    idleTimeLimit={3}
+                    fit={false}
+                    terminalLineHeight={1.5}
+                    preload
+                    theme="tango"
+                />
+              </div>
+          ))}
         </div>
       </Modal>
     </Card>
