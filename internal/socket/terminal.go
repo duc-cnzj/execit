@@ -264,6 +264,16 @@ type MyPtyHandler struct {
 	closeable utils.Closeable
 }
 
+func (t *MyPtyHandler) ClosePreviousChannels() bool {
+	if !t.closeable.Close() {
+		return false
+	}
+	close(t.shellCh)
+	close(t.sizeChan)
+	close(t.doneChan)
+	return true
+}
+
 func (t *MyPtyHandler) Recorder() *Recorder {
 	return t.recorder
 }
@@ -331,21 +341,29 @@ func (t *MyPtyHandler) Close(reason string) {
 }
 
 func (t *MyPtyHandler) Read(p []byte) (n int, err error) {
+	var (
+		msg *websocket_pb.TerminalMessage
+		ok  bool
+	)
 	select {
 	case <-t.doneChan:
 		return copy(p, END_OF_TRANSMISSION), fmt.Errorf("[Websocket]: %v doneChan closed", t.id)
-	default:
+	case msg, ok = <-t.shellCh:
+		if !ok {
+			return copy(p, END_OF_TRANSMISSION), fmt.Errorf("[Websocket]: %v channel closed", t.id)
+		}
 	}
-	msg, ok := <-t.shellCh
-	if !ok {
-		return copy(p, END_OF_TRANSMISSION), fmt.Errorf("%v channel closed", t.id)
-	}
+
 	switch msg.Op {
 	case OpStdin:
 		return copy(p, msg.Data), nil
 	case OpResize:
 		xlog.Debugf("[Websocket]: resize cols: %v  rows: %v", msg.Cols, msg.Rows)
-		t.sizeChan <- remotecommand.TerminalSize{Width: uint16(msg.Cols), Height: uint16(msg.Rows)}
+		select {
+		case t.sizeChan <- remotecommand.TerminalSize{Width: uint16(msg.Cols), Height: uint16(msg.Rows)}:
+		default:
+			xlog.Debug("[Websocket]: drop resize event")
+		}
 		return 0, nil
 	default:
 		return copy(p, END_OF_TRANSMISSION), fmt.Errorf("unknown message type '%s'", msg.Op)
@@ -368,7 +386,11 @@ func (t *MyPtyHandler) Write(p []byte) (n int, err error) {
 		t.recorder.Write(string(p))
 		if t.sizeStore.TerminalRowColNeedReset() && t.sizeStore.Cols() != 0 {
 			t.sizeStore.ResetTerminalRowCol(false)
-			t.sizeChan <- remotecommand.TerminalSize{Width: t.sizeStore.Cols(), Height: t.sizeStore.Rows()}
+			select {
+			case t.sizeChan <- remotecommand.TerminalSize{Width: t.sizeStore.Cols(), Height: t.sizeStore.Rows()}:
+			default:
+				xlog.Debug("[Websocket]: drop resize event")
+			}
 		}
 		NewMessageSender(t.conn, t.id, WsHandleExecShellMsg).SendProtoMsg(&websocket_pb.WsHandleShellResponse{
 			Metadata: &websocket_pb.Metadata{
@@ -601,13 +623,14 @@ func WaitForTerminal(conn *WsConn, k8sClient kubernetes.Interface, cfg *rest.Con
 	} else {
 		// No shell given or it was not valid: try some shells until one succeeds or all fail
 		// FIXME: if the first shell fails then the first keyboard event is lost
-		for _, testShell := range validShells {
+		for idx, testShell := range validShells {
+			if session.IsClosed() {
+				xlog.Debugf("session 已关闭，不会继续尝试连接其他 shell: '%s'", strings.Join(validShells[idx:], ", "))
+				break
+			}
 			cmd := []string{testShell}
 			session.Recorder().shell = testShell
 			if err = startProcess(k8sClient, cfg, container, cmd, session); err == nil {
-				break
-			}
-			if session.IsClosed() {
 				break
 			}
 			// 当出现 bash 回退的时候，需要注意，resize 不会触发，导致，新的 'sh', cols, rows 和用户端不一致，所以需要重置，
@@ -649,19 +672,21 @@ func resetSession(session PtyHandler) PtyHandler {
 	}()
 
 	spty := session.(*MyPtyHandler)
-	session = &MyPtyHandler{
-		Container: spty.Container,
-		recorder:  spty.recorder,
-		id:        spty.id,
-		conn:      spty.conn,
-		doneChan:  spty.doneChan,
-		sizeChan:  make(chan remotecommand.TerminalSize, 1),
-		shellCh:   make(chan *websocket_pb.TerminalMessage, 100),
-		sizeStore: sizeStore{
-			cols:  cols,
-			rows:  rows,
-			reset: true,
-		},
+	if spty.ClosePreviousChannels() {
+		session = &MyPtyHandler{
+			Container: spty.Container,
+			recorder:  spty.recorder,
+			id:        spty.id,
+			conn:      spty.conn,
+			doneChan:  spty.doneChan,
+			sizeChan:  make(chan remotecommand.TerminalSize, 1),
+			shellCh:   make(chan *websocket_pb.TerminalMessage, 100),
+			sizeStore: sizeStore{
+				cols:  cols,
+				rows:  rows,
+				reset: true,
+			},
+		}
 	}
 	return session
 }
