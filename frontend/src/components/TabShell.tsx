@@ -37,7 +37,7 @@ const TabShell: React.FC<{
   const [term, setTerm] = useState<Terminal>();
   const [timestamp, setTimestamp] = useState(new Date().getTime());
   const fitAddon = useMemo(() => new FitAddon(), []);
-  const {t} =useTranslation()
+  const { t } = useTranslation();
 
   const ref = useRef<HTMLDivElement>(null);
   const sessions = useSelector(selectSessions);
@@ -51,7 +51,7 @@ const TabShell: React.FC<{
 
   const listContainer = useCallback(
     () =>
-    cardAllContainers(cardId).then((res) => {
+      cardAllContainers(cardId).then((res) => {
         setList(res.data.items);
         return res;
       }),
@@ -118,7 +118,7 @@ const TabShell: React.FC<{
   );
 
   const onTerminalResize = useCallback((id: string, ws: WebSocket) => {
-    return ({ cols, rows }: { cols: number; rows: number }) => {
+    return debounce(({ cols, rows }: { cols: number; rows: number }) => {
       let s = pb.websocket.TerminalMessageInput.encode({
         type: pb.websocket.Type.HandleExecShellMsg,
         message: new pb.websocket.TerminalMessage({
@@ -129,7 +129,7 @@ const TabShell: React.FC<{
         }),
       }).finish();
       ws?.send(s);
-    };
+    }, 200);
   }, []);
 
   const handleCloseShell = useCallback(
@@ -251,15 +251,18 @@ const TabShell: React.FC<{
     [initShell, listContainer, clusterId, namespace]
   );
 
-  const beforeUpload = useCallback((file: any) => {
-    const isLt50M = file.size / 1024 / 1024 <= 50;
-    if (!isLt50M) {
-      message.error(t("The maximum file size cannot exceed 50MB!"));
-    }
-    setLoading(isLt50M);
+  const beforeUpload = useCallback(
+    (file: any) => {
+      const isLt50M = file.size / 1024 / 1024 <= 50;
+      if (!isLt50M) {
+        message.error(t("The maximum file size cannot exceed 50MB!"));
+      }
+      setLoading(isLt50M);
 
-    return isLt50M;
-  }, [t]);
+      return isLt50M;
+    },
+    [t]
+  );
 
   const [loading, setLoading] = useState(false);
 
@@ -287,18 +290,27 @@ const TabShell: React.FC<{
           .then((res) => {
             console.log(res);
             message.success(
-              t("File {{name}} has been uploaded under container {{pod_file_path}}", {name: info.file.name, pod_file_path: res.data.pod_file_path}),
+              t(
+                "File {{name}} has been uploaded under container {{pod_file_path}}",
+                { name: info.file.name, pod_file_path: res.data.pod_file_path }
+              ),
               2
             );
           })
           .catch((e) => {
-            message.error(t("File {{name}} failed to upload to container", {name: info.file.name}));
+            message.error(
+              t("File {{name}} failed to upload to container", {
+                name: info.file.name,
+              })
+            );
           })
           .finally(() => {
             setLoading(false);
           });
       } else if (info.file.status === "error") {
-        message.error(t("File {{info.file.name}} upload failed", {name: info.file.name}));
+        message.error(
+          t("File {{info.file.name}} upload failed", { name: info.file.name })
+        );
         setLoading(false);
       }
     },

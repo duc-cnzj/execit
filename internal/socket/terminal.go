@@ -5,7 +5,6 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -202,18 +201,12 @@ func (r *Recorder) Write(data string) (err error) {
 	return err
 }
 
-var ErrResizeTooFrequently = errors.New("resize too frequently")
-
-func (r *Recorder) Resize(cols, rows uint16) (err error) {
+func (r *Recorder) Resize(cols, rows uint16) error {
 	t := r.timer.Now()
 
-	if t.Sub(r.currentStartTime.Get()).Seconds() <= 5 && !r.startTime.Equal(r.currentStartTime.Get()) {
-		return ErrResizeTooFrequently
-	}
-
-	_, err = r.buffer.WriteString(fmt.Sprintf(startLine, cols, rows, t.Unix(), r.shell))
+	_, err := r.buffer.WriteString(fmt.Sprintf(startLine, cols, rows, t.Unix(), r.shell))
 	r.currentStartTime.Set(t)
-	return
+	return err
 }
 
 func (r *Recorder) Close() error {
