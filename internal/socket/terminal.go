@@ -112,12 +112,15 @@ type PtyHandler interface {
 	Recorder() *Recorder
 	Toast(string) error
 
+	Send(*websocket_pb.TerminalMessage)
+	Resize(remotecommand.TerminalSize)
+
 	ResetTerminalRowCol(bool)
 	TerminalMessageChan() chan *websocket_pb.TerminalMessage
 	Rows() uint16
 	Cols() uint16
 
-	Close(string)
+	Close(string) bool
 	IsClosed() bool
 
 	io.Reader
@@ -256,20 +259,60 @@ type MyPtyHandler struct {
 	conn      *WsConn
 	sizeStore sizeStore
 	recorder  *Recorder
-	sizeChan  chan remotecommand.TerminalSize
-	shellCh   chan *websocket_pb.TerminalMessage
 	doneChan  chan struct{}
 
-	closeLock sync.Mutex
-	closeable utils.Closeable
+	shellMu sync.RWMutex
+	shellCh chan *websocket_pb.TerminalMessage
+
+	sizeMu   sync.RWMutex
+	sizeChan chan remotecommand.TerminalSize
+
+	closeMu sync.RWMutex
+	closed  bool
 }
 
-func (t *MyPtyHandler) ClosePreviousChannels() bool {
-	if !t.closeable.Close() {
+func (t *MyPtyHandler) Send(m *websocket_pb.TerminalMessage) {
+	t.shellMu.Lock()
+	defer t.shellMu.Unlock()
+
+	select {
+	case <-t.doneChan:
+		close(t.shellCh)
+		xlog.Warning("shell chan closed")
+		return
+	case t.shellCh <- m:
+	default:
+		xlog.Warning("shell chan full")
+	}
+}
+
+func (t *MyPtyHandler) Resize(size remotecommand.TerminalSize) {
+	t.sizeMu.Lock()
+	defer t.sizeMu.Unlock()
+	select {
+	case <-t.doneChan:
+		close(t.sizeChan)
+		return
+	case t.sizeChan <- size:
+	default:
+		xlog.Warning("size chan full")
+	}
+}
+
+func (t *MyPtyHandler) IsClosed() bool {
+	t.closeMu.RLock()
+	defer t.closeMu.RUnlock()
+	return t.closed
+}
+
+func (t *MyPtyHandler) CloseDoneChan() bool {
+	t.closeMu.Lock()
+	defer t.closeMu.Unlock()
+	if t.closed {
 		return false
 	}
-	close(t.shellCh)
-	close(t.sizeChan)
+	t.closed = true
+	xlog.Debug("close prev chan")
 	close(t.doneChan)
 	return true
 }
@@ -294,13 +337,13 @@ func (t *MyPtyHandler) TerminalMessageChan() chan *websocket_pb.TerminalMessage 
 	return t.shellCh
 }
 
-func (t *MyPtyHandler) IsClosed() bool {
-	return t.closeable.IsClosed()
-}
-func (t *MyPtyHandler) Close(reason string) {
-	if !t.closeable.Close() {
-		return
+func (t *MyPtyHandler) Close(reason string) bool {
+	t.closeMu.Lock()
+	defer t.closeMu.Unlock()
+	if t.closed {
+		return false
 	}
+	t.closed = true
 
 	NewMessageSender(t.conn, t.id, WsHandleExecShellMsg).SendProtoMsg(&websocket_pb.WsHandleShellResponse{
 		Metadata: &websocket_pb.Metadata{
@@ -323,21 +366,20 @@ func (t *MyPtyHandler) Close(reason string) {
 		},
 	})
 
-	t.shellCh <- &websocket_pb.TerminalMessage{
+	t.Send(&websocket_pb.TerminalMessage{
 		Op:        OpStdin,
 		Data:      ETX,
 		SessionId: t.id,
-	}
+	})
 	time.Sleep(200 * time.Millisecond)
-	t.shellCh <- &websocket_pb.TerminalMessage{
+	t.Send(&websocket_pb.TerminalMessage{
 		Op:        OpStdin,
 		Data:      END_OF_TRANSMISSION,
 		SessionId: t.id,
-	}
+	})
 	t.recorder.Close()
-	close(t.shellCh)
-	close(t.sizeChan)
 	close(t.doneChan)
+	return true
 }
 
 func (t *MyPtyHandler) Read(p []byte) (n int, err error) {
@@ -359,11 +401,7 @@ func (t *MyPtyHandler) Read(p []byte) (n int, err error) {
 		return copy(p, msg.Data), nil
 	case OpResize:
 		xlog.Debugf("[Websocket]: resize cols: %v  rows: %v", msg.Cols, msg.Rows)
-		select {
-		case t.sizeChan <- remotecommand.TerminalSize{Width: uint16(msg.Cols), Height: uint16(msg.Rows)}:
-		default:
-			xlog.Debug("[Websocket]: drop resize event")
-		}
+		t.Resize(remotecommand.TerminalSize{Width: uint16(msg.Cols), Height: uint16(msg.Rows)})
 		return 0, nil
 	default:
 		return copy(p, END_OF_TRANSMISSION), fmt.Errorf("unknown message type '%s'", msg.Op)
@@ -376,21 +414,11 @@ func (t *MyPtyHandler) Write(p []byte) (n int, err error) {
 		return 0, fmt.Errorf("%v doneChan closed", t.id)
 	default:
 	}
-	send := true
-	t.closeLock.Lock()
-	if t.IsClosed() {
-		send = false
-	}
-	t.closeLock.Unlock()
-	if send {
+	if !t.IsClosed() {
 		t.recorder.Write(string(p))
 		if t.sizeStore.TerminalRowColNeedReset() && t.sizeStore.Cols() != 0 {
 			t.sizeStore.ResetTerminalRowCol(false)
-			select {
-			case t.sizeChan <- remotecommand.TerminalSize{Width: t.sizeStore.Cols(), Height: t.sizeStore.Rows()}:
-			default:
-				xlog.Debug("[Websocket]: drop resize event")
-			}
+			t.Resize(remotecommand.TerminalSize{Width: t.sizeStore.Cols(), Height: t.sizeStore.Rows()})
 		}
 		NewMessageSender(t.conn, t.id, WsHandleExecShellMsg).SendProtoMsg(&websocket_pb.WsHandleShellResponse{
 			Metadata: &websocket_pb.Metadata{
@@ -482,11 +510,7 @@ func (sm *SessionMap) Send(m *websocket_pb.TerminalMessage) {
 	defer sm.sessLock.RUnlock()
 	if h, ok := sm.Sessions[m.SessionId]; ok {
 		if !h.IsClosed() {
-			select {
-			case h.TerminalMessageChan() <- m:
-			default:
-				xlog.Warningf("[Websocket]: sessionId %v 的 shellCh 满了: %d", m.SessionId, len(h.TerminalMessageChan()))
-			}
+			h.Send(m)
 		}
 	}
 }
@@ -672,13 +696,14 @@ func resetSession(session PtyHandler) PtyHandler {
 	}()
 
 	spty := session.(*MyPtyHandler)
-	if spty.ClosePreviousChannels() {
-		session = &MyPtyHandler{
+	var newSession PtyHandler = session
+	if spty.CloseDoneChan() {
+		newSession = &MyPtyHandler{
 			Container: spty.Container,
 			recorder:  spty.recorder,
 			id:        spty.id,
 			conn:      spty.conn,
-			doneChan:  spty.doneChan,
+			doneChan:  make(chan struct{}),
 			sizeChan:  make(chan remotecommand.TerminalSize, 1),
 			shellCh:   make(chan *websocket_pb.TerminalMessage, 100),
 			sizeStore: sizeStore{
@@ -688,7 +713,7 @@ func resetSession(session PtyHandler) PtyHandler {
 			},
 		}
 	}
-	return session
+	return newSession
 }
 
 type TerminalResponse struct {
@@ -720,7 +745,7 @@ func HandleExecShell(input *websocket_pb.WsHandleExecShellInput, conn *WsConn) (
 		id:        sessionID,
 		conn:      conn,
 		sizeChan:  make(chan remotecommand.TerminalSize, 1),
-		doneChan:  make(chan struct{}, 1),
+		doneChan:  make(chan struct{}),
 		shellCh:   make(chan *websocket_pb.TerminalMessage, 100),
 		recorder: &Recorder{
 			timer:     realTimer{},
