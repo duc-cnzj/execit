@@ -97,6 +97,19 @@ const TabShell: React.FC<{
     [fitAddon]
   );
 
+  useEffect(() => {
+    if (list.length === 0 && term) {
+      term.dispose();
+    }
+  }, [list, term]);
+
+  const setValuesByResult = useCallback((items: pb.container.Item[]) => {
+    if (items.length > 0) {
+      let first = items[0];
+      setValue(first.pod + "|" + first.container);
+    }
+  }, []);
+
   const handleConnectionMessage = useCallback(
     (frame: pb.websocket.TerminalMessage, term: Terminal) => {
       if (!term) {
@@ -109,12 +122,11 @@ const TabShell: React.FC<{
       if (frame.op === "toast") {
         message.error(frame.data);
         listContainer().then((res) => {
-          let first = res.data.items[0];
-          setValue(first.pod + "|" + first.container);
+          setValuesByResult(res.data.items);
         });
       }
     },
-    [listContainer]
+    [listContainer, setValuesByResult]
   );
 
   const onTerminalResize = useCallback((id: string, ws: WebSocket) => {
@@ -155,10 +167,9 @@ const TabShell: React.FC<{
 
   useEffect(() => {
     listContainer().then((res) => {
-      let first = res.data.items[0];
-      setValue(first.pod + "|" + first.container);
+      setValuesByResult(res.data.items);
     });
-  }, [listContainer]);
+  }, [listContainer, setValuesByResult]);
 
   const getTerm = useCallback(
     (id: string, ws: WebSocket) => {
@@ -239,8 +250,7 @@ const TabShell: React.FC<{
             } else {
               // message.error(`容器列表有更新，请重试！`);
               listContainer().then((res) => {
-                let first = res.data.items[0];
-                setValue(first.pod + "|" + first.container);
+                setValuesByResult(res.data.items);
               });
             }
           });
@@ -248,7 +258,7 @@ const TabShell: React.FC<{
         return e.target.value;
       });
     },
-    [initShell, listContainer, clusterId, namespace]
+    [initShell, listContainer, clusterId, namespace, setValuesByResult]
   );
 
   const beforeUpload = useCallback(
