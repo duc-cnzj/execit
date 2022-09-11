@@ -278,6 +278,10 @@ func (t *MyPtyHandler) Send(m *websocket_pb.TerminalMessage) {
 		close(t.shellCh)
 		xlog.Warning("shell chan closed")
 		return
+	default:
+	}
+
+	select {
 	case t.shellCh <- m:
 	default:
 		xlog.Warning("shell chan full")
@@ -291,6 +295,10 @@ func (t *MyPtyHandler) Resize(size remotecommand.TerminalSize) {
 	case <-t.doneChan:
 		close(t.sizeChan)
 		return
+	default:
+	}
+
+	select {
 	case t.sizeChan <- size:
 	default:
 		xlog.Warning("size chan full")
