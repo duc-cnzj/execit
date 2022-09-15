@@ -131,41 +131,26 @@ type PtyHandler interface {
 type Recorder struct {
 	sync.RWMutex
 
-	timer            timer
-	currentStartTime currentStart
-	filepath         string
-	container        Container
-	f                *os.File
-	shell            string
-	startTime        time.Time
-	user             *contracts.UserInfo
-	buffer           *bufio.Writer
+	timer     timer
+	filepath  string
+	container Container
+	f         *os.File
+	shell     string
+	startTime time.Time
+	user      *contracts.UserInfo
+	buffer    *bufio.Writer
 
 	t    *MyPtyHandler
 	once sync.Once
+
+	rcMu       sync.RWMutex
+	rows, cols uint16
 }
 
 var (
 	startLine = "{\"version\": 2, \"width\": %d, \"height\": %d, \"timestamp\": %d, \"env\": {\"SHELL\": \"%s\", \"TERM\": \"xterm-256color\"}}\n"
 	writeLine = "[%.6f, \"o\", %s]\n"
 )
-
-type currentStart struct {
-	sync.RWMutex
-	t time.Time
-}
-
-func (c *currentStart) Set(t time.Time) {
-	c.Lock()
-	defer c.Unlock()
-	c.t = t
-}
-
-func (c *currentStart) Get() (t time.Time) {
-	c.RLock()
-	defer c.RUnlock()
-	return c.t
-}
 
 type timer interface {
 	Now() time.Time
@@ -177,15 +162,29 @@ func (r realTimer) Now() time.Time {
 	return time.Now()
 }
 
+func (r *Recorder) HeadLine(cols, rows uint16) {
+	r.rcMu.Lock()
+	defer r.rcMu.Unlock()
+	r.cols = max(r.cols, cols)
+	r.rows = max(r.rows, rows)
+}
+
+func max[T uint16 | int | int64](i, j T) T {
+	if i < j {
+		return j
+	}
+	return i
+}
+
 func (r *Recorder) Write(data string) (err error) {
 	r.Lock()
 	defer r.Unlock()
 	r.once.Do(func() {
 		var file *os.File
-		file, err = app.Uploader().Disk("shell").NewFile(fmt.Sprintf("%s/%s/%s",
+		file, err = app.Uploader().Disk("tmp").NewFile(fmt.Sprintf("%s/%s/%s",
 			r.t.conn.GetUser().Name,
 			r.timer.Now().Format("2006-01-02"),
-			fmt.Sprintf("recorder-%d-%s-%s-%s-%s.cast", r.t.ClusterID, r.t.Namespace, r.t.Pod, r.t.Container.Container, utils.RandomString(20))))
+			fmt.Sprintf("recorder-%d-%s-%s-%s-%s.cast.tmp", r.t.ClusterID, r.t.Namespace, r.t.Pod, r.t.Container.Container, utils.RandomString(20))))
 		if err != nil {
 			return
 		}
@@ -193,20 +192,15 @@ func (r *Recorder) Write(data string) (err error) {
 		r.buffer = bufio.NewWriterSize(r.f, 1024*20)
 		r.filepath = file.Name()
 		r.startTime = r.timer.Now()
-		r.currentStartTime = currentStart{t: r.startTime}
-		r.buffer.Write([]byte(fmt.Sprintf(startLine, 106, 25, r.startTime.Unix(), r.shell)))
+		r.HeadLine(106, 25)
 	})
 	marshal, _ := json.Marshal(data)
-	_, err = r.buffer.WriteString(fmt.Sprintf(writeLine, float64(time.Since(r.currentStartTime.Get()).Microseconds())/1000000, string(marshal)))
+	_, err = r.buffer.WriteString(fmt.Sprintf(writeLine, float64(time.Since(r.startTime).Microseconds())/1000000, string(marshal)))
 	return err
 }
 
-func (r *Recorder) Resize(cols, rows uint16) error {
-	t := r.timer.Now()
-
-	_, err := r.buffer.WriteString(fmt.Sprintf(startLine, cols, rows, t.Unix(), r.shell))
-	r.currentStartTime.Set(t)
-	return err
+func (r *Recorder) Resize(cols, rows uint16) {
+	r.HeadLine(cols, rows)
 }
 
 func (r *Recorder) Close() error {
@@ -217,14 +211,32 @@ func (r *Recorder) Close() error {
 		return nil
 	}
 	r.buffer.Flush()
-	stat, e := r.f.Stat()
+	realFile, _ := app.Uploader().Disk("shell").NewFile(fmt.Sprintf("%s/%s/%s",
+		r.t.conn.GetUser().Name,
+		r.timer.Now().Format("2006-01-02"),
+		fmt.Sprintf("recorder-%d-%s-%s-%s-%s.cast", r.t.ClusterID, r.t.Namespace, r.t.Pod, r.t.Container.Container, utils.RandomString(20))))
+	xlog.Debugf("tmp: %v\nreal: %v", r.f.Name(), realFile.Name())
+	func() {
+		defer func() {
+			r.f.Close()
+			app.Uploader().Delete(r.f.Name())
+		}()
+		r.f.Seek(0, 0)
+		func() {
+			r.rcMu.Lock()
+			defer r.rcMu.Unlock()
+			realFile.WriteString(fmt.Sprintf(startLine, r.cols, r.rows, r.startTime.Unix(), r.shell))
+		}()
+		io.Copy(realFile, r.f)
+	}()
+	stat, e := realFile.Stat()
 	if e != nil {
 		return e
 	}
 	var emptyFile bool = true
 	if stat.Size() > 0 {
 		file := &models.File{
-			Path:      r.filepath,
+			Path:      realFile.Name(),
 			Size:      uint64(stat.Size()),
 			Username:  r.user.Name,
 			ClusterID: int(r.container.ClusterID),
@@ -243,9 +255,9 @@ func (r *Recorder) Close() error {
 		app.DB().Create(&emodal)
 		emptyFile = false
 	}
-	err = r.f.Close()
+	realFile.Close()
 	if emptyFile {
-		app.Uploader().Delete(r.f.Name())
+		app.Uploader().Delete(realFile.Name())
 	}
 	return err
 }

@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { selectSyncAt } from "../store/reducers/card";
 import { sortBy } from "lodash";
 import { useAuth } from "../contexts/auth";
-import {isOwned, setOwned as setLocalOwned} from '../utils/token'
+import { isOwned, setOwned as setLocalOwned } from "../utils/token";
 
 const AppContent: React.FC = () => {
   const { t } = useTranslation();
@@ -31,20 +31,36 @@ const AppContent: React.FC = () => {
   }, [s, owned]);
   const { hasCardPermission, isAdmin } = useAuth();
 
+  useEffect(() => {
+    window.history.pushState(null, document.title, window.location.href);
+    let fn = function (event: any) {
+      console.log("first");
+      window.history.pushState(null, document.title, window.location.href);
+    };
+    console.log("add");
+    window.addEventListener("popstate", fn);
+    return () => {
+      console.log("remove");
+      window.removeEventListener("popstate", fn);
+    };
+  }, []);
+
   return (
     <DraggableModalProvider>
       <div className="content" style={{ marginBottom: 30 }}>
-        {!isAdmin() && <Switch
-          style={{marginBottom: 5}}
-          checked={owned}
-          size="small"
-          onClick={() => {
-            setOwned((owned) => {
-              setLocalOwned(!owned)
-              return !owned
-            });
-          }}
-        />}
+        {!isAdmin() && (
+          <Switch
+            style={{ marginBottom: 5 }}
+            checked={owned}
+            size="small"
+            onClick={() => {
+              setOwned((owned) => {
+                setLocalOwned(!owned);
+                return !owned;
+              });
+            }}
+          />
+        )}
         <Row gutter={[16, 16]}>
           {data.length > 0 ? (
             data.map((item) => (
