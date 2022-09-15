@@ -86,17 +86,17 @@ func (p *rdsPubSub) ID() string {
 }
 
 func (p *rdsPubSub) ToSelf(wsResponse plugins.WebsocketMessage) error {
-	p.rds.Publish(context.TODO(), p.id, plugins.ProtoToMessage(wsResponse, websocket_pb.To_ToSelf, p.id).Marshal())
+	p.rds.Publish(context.TODO(), p.id, protoToMessage(wsResponse, websocket_pb.To_ToSelf, p.id).Marshal())
 	return nil
 }
 
 func (p *rdsPubSub) ToAll(wsResponse plugins.WebsocketMessage) error {
-	p.rds.Publish(context.TODO(), BroadcastRoom, plugins.ProtoToMessage(wsResponse, websocket_pb.To_ToAll, p.id).Marshal())
+	p.rds.Publish(context.TODO(), BroadcastRoom, protoToMessage(wsResponse, websocket_pb.To_ToAll, p.id).Marshal())
 	return nil
 }
 
 func (p *rdsPubSub) ToOthers(wsResponse plugins.WebsocketMessage) error {
-	p.rds.Publish(context.TODO(), BroadcastRoom, plugins.ProtoToMessage(wsResponse, websocket_pb.To_ToOthers, p.id).Marshal())
+	p.rds.Publish(context.TODO(), BroadcastRoom, protoToMessage(wsResponse, websocket_pb.To_ToOthers, p.id).Marshal())
 	return nil
 }
 
@@ -113,7 +113,7 @@ func (p *rdsPubSub) Subscribe() <-chan []byte {
 					p.Close()
 					return
 				}
-				message, _ := plugins.DecodeMessage([]byte(msg.Payload))
+				message, _ := decodeMessage([]byte(msg.Payload))
 				switch message.To {
 				case plugins.ToSelf:
 					fallthrough

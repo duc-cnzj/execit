@@ -23,6 +23,8 @@ import PodMetrics from "./PodMetrics";
 import { getToken } from "../utils/token";
 import { useTranslation } from "react-i18next";
 
+const encoder = new TextEncoder()
+
 const TabShell: React.FC<{
   resizeAt: number;
   cardId: number;
@@ -76,7 +78,7 @@ const TabShell: React.FC<{
         message: {
           session_id: id,
           op: "stdin",
-          data: str,
+          data: encoder.encode(str),
           cols: 0,
           rows: 0,
         },

@@ -19,7 +19,7 @@ const (
 	WsHandleSetLang      = websocket_pb.Type_HandleSetLang
 
 	// Maximum message size allowed from peer.
-	maxMessageSize = 1024 * 5
+	maxMessageSize = 1024 * 1024 * 10 // 10MB
 	// Time allowed to write a message to the peer.
 	writeWait = 10 * time.Second
 	// Time allowed to read the next pong message from the peer.
