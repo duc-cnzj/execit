@@ -327,7 +327,10 @@ func (c *ContainerSvc) StreamContainerLog(request *container.LogRequest, server 
 				xlog.Debugf("[Stream]: %v", err)
 				return
 			}
-			ch <- bytes
+			select {
+			case ch <- bytes:
+			default:
+			}
 		}
 	}()
 
