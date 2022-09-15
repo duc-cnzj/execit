@@ -76,7 +76,7 @@ const TabShell: React.FC<{
         message: {
           session_id: id,
           op: "stdin",
-          data: str,
+          data: new TextEncoder().encode(str),
           cols: 0,
           rows: 0,
         },

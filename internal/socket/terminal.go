@@ -32,9 +32,9 @@ import (
 	"k8s.io/client-go/tools/remotecommand"
 )
 
-const (
-	ETX                 = "\u0003"
-	END_OF_TRANSMISSION = "\u0004"
+var (
+	ETX                 = []byte("\u0003")
+	END_OF_TRANSMISSION = []byte("\u0004")
 )
 
 const (
@@ -362,7 +362,7 @@ func (t *MyPtyHandler) Close(reason string) bool {
 		TerminalMessage: &websocket_pb.TerminalMessage{
 			SessionId: t.id,
 			Op:        OpStdout,
-			Data:      reason,
+			Data:      []byte(reason),
 		},
 		Container: &websocket_pb.Container{
 			Namespace: t.Container.Namespace,
@@ -436,7 +436,7 @@ func (t *MyPtyHandler) Write(p []byte) (n int, err error) {
 			},
 			TerminalMessage: &websocket_pb.TerminalMessage{
 				Op:        OpStdout,
-				Data:      string(p),
+				Data:      []byte(p),
 				SessionId: t.id,
 			},
 			Container: &websocket_pb.Container{
@@ -482,7 +482,7 @@ func (t *MyPtyHandler) Toast(p string) error {
 		},
 		TerminalMessage: &websocket_pb.TerminalMessage{
 			Op:        OpToast,
-			Data:      p,
+			Data:      []byte(p),
 			SessionId: t.id,
 		},
 		Container: &websocket_pb.Container{
@@ -624,6 +624,7 @@ func isValidShell(validShells []string, shell string) bool {
 
 var silenceShellExitMessages = []string{
 	"command terminated with exit code 126",
+	"command terminated with exit code 130",
 }
 
 func silence(err error) bool {

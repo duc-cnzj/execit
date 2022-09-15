@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"sync"
 
-	"google.golang.org/protobuf/proto"
-
 	"github.com/duc-cnzj/execit/internal/plugins"
 	"github.com/duc-cnzj/execit/internal/xlog"
 )
@@ -101,10 +99,9 @@ func (p *memoryPubSub) ID() string {
 func (p *memoryPubSub) ToSelf(wsResponse plugins.WebsocketMessage) error {
 	p.manager.RLock()
 	defer p.manager.RUnlock()
-	marshal, _ := proto.Marshal(wsResponse)
 	if pp, ok := p.manager.conns[p.uid]; ok {
 		if c, ok := pp[p.id]; ok {
-			c.ch <- marshal
+			c.ch <- encodeData(wsResponse)
 		}
 	}
 	return nil
@@ -113,11 +110,10 @@ func (p *memoryPubSub) ToSelf(wsResponse plugins.WebsocketMessage) error {
 func (p *memoryPubSub) ToAll(wsResponse plugins.WebsocketMessage) error {
 	p.manager.RLock()
 	defer p.manager.RUnlock()
-	marshal, _ := proto.Marshal(wsResponse)
 
 	for _, m := range p.manager.conns {
 		for _, s := range m {
-			s.ch <- marshal
+			s.ch <- encodeData(wsResponse)
 		}
 	}
 	return nil
@@ -126,12 +122,11 @@ func (p *memoryPubSub) ToAll(wsResponse plugins.WebsocketMessage) error {
 func (p *memoryPubSub) ToOthers(wsResponse plugins.WebsocketMessage) error {
 	p.manager.RLock()
 	defer p.manager.RUnlock()
-	marshal, _ := proto.Marshal(wsResponse)
 
 	for _, m := range p.manager.conns {
 		for _, s := range m {
 			if s.id != p.id {
-				s.ch <- marshal
+				s.ch <- encodeData(wsResponse)
 			}
 		}
 	}
