@@ -24,6 +24,7 @@ import { getToken } from "../utils/token";
 import { useTranslation } from "react-i18next";
 
 const encoder = new TextEncoder()
+const decoder = new TextDecoder()
 
 const TabShell: React.FC<{
   resizeAt: number;
@@ -122,7 +123,7 @@ const TabShell: React.FC<{
       }
 
       if (frame.op === "toast") {
-        message.error(frame.data);
+        message.error(decoder.decode(frame.data));
         listContainer().then((res) => {
           setValuesByResult(res.data.items);
         });
