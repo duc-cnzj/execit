@@ -101,7 +101,7 @@ func (p *memoryPubSub) ToSelf(wsResponse plugins.WebsocketMessage) error {
 	defer p.manager.RUnlock()
 	if pp, ok := p.manager.conns[p.uid]; ok {
 		if c, ok := pp[p.id]; ok {
-			c.ch <- encodeData(wsResponse)
+			c.ch <- transformToResponse(wsResponse)
 		}
 	}
 	return nil
@@ -113,7 +113,7 @@ func (p *memoryPubSub) ToAll(wsResponse plugins.WebsocketMessage) error {
 
 	for _, m := range p.manager.conns {
 		for _, s := range m {
-			s.ch <- encodeData(wsResponse)
+			s.ch <- transformToResponse(wsResponse)
 		}
 	}
 	return nil
@@ -126,7 +126,7 @@ func (p *memoryPubSub) ToOthers(wsResponse plugins.WebsocketMessage) error {
 	for _, m := range p.manager.conns {
 		for _, s := range m {
 			if s.id != p.id {
-				s.ch <- encodeData(wsResponse)
+				s.ch <- transformToResponse(wsResponse)
 			}
 		}
 	}

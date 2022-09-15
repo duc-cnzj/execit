@@ -7,14 +7,14 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func encodeData(message proto.Message) []byte {
+func transformToResponse(message proto.Message) []byte {
 	marshal, _ := proto.Marshal(message)
 	return marshal
 }
 
 func protoToMessage(m proto.Message, to websocket_pb.To, id string) Message {
 	return Message{
-		Data: encodeData(m),
+		Data: transformToResponse(m),
 		To:   to,
 		ID:   id,
 	}
