@@ -231,6 +231,8 @@ func (r *Recorder) Close() error {
 	}()
 	stat, e := realFile.Stat()
 	if e != nil {
+		realFile.Close()
+		app.Uploader().Delete(realFile.Name())
 		return e
 	}
 	var emptyFile bool = true
