@@ -1,4 +1,6 @@
 import React, { memo, useEffect, useState, useCallback } from "react";
+import PodEntryPoint from "./PodEntrypoint";
+
 import { cardAllContainers } from "../api/card";
 import { Radio, Skeleton, Button, Tag } from "antd";
 import pb from "../api/compiled";
@@ -14,16 +16,14 @@ const ProjectContainerLogs: React.FC<{
   type: string;
 }> = ({ clusterId, namespace, name, type, cardId }) => {
   const [value, setValue] = useState<string>();
-  const {t} = useTranslation()
+  const { t } = useTranslation();
   const [list, setList] = useState<pb.container.Item[]>();
 
   const listContainer = useCallback(async () => {
-    return cardAllContainers(cardId).then(
-      (res) => {
-        setList(res.data.items);
-        return res;
-      }
-    );
+    return cardAllContainers(cardId).then((res) => {
+      setList(res.data.items);
+      return res;
+    });
   }, [cardId]);
 
   useEffect(() => {
@@ -40,7 +40,9 @@ const ProjectContainerLogs: React.FC<{
   const getUrl = () => {
     let [pod, container] = (value as string).split("|");
 
-    return `${process.env.REACT_APP_BASE_URL}/api/containers/cards/${cardId}/clusters/${clusterId}/namespaces/${namespace}/pods/${pod}/containers/${container}/stream_logs?timestamp=${timestamp}&lang=${getLang()}`;
+    return `${
+      process.env.REACT_APP_BASE_URL
+    }/api/containers/cards/${cardId}/clusters/${clusterId}/namespaces/${namespace}/pods/${pod}/containers/${container}/stream_logs?timestamp=${timestamp}&lang=${getLang()}`;
   };
 
   const reloadLog = useCallback((e: any) => {
@@ -52,16 +54,23 @@ const ProjectContainerLogs: React.FC<{
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Radio.Group value={value} style={{ marginBottom: 10 }}>
         {list?.map((item) => (
-          <Radio
-            onClick={reloadLog}
-            key={item.pod + "|" + item.container}
-            value={item.pod + "|" + item.container}
-          >
-            {item.container}
-            <Tag color="magenta" style={{ marginLeft: 10 }}>
-              {item.pod}
-            </Tag>
-          </Radio>
+          <>
+            <Radio
+              onClick={reloadLog}
+              key={item.pod + "|" + item.container}
+              value={item.pod + "|" + item.container}
+            >
+              <div style={{ display: "flex", alignItems: "center" }}>
+                {item.container}
+                <Tag color="magenta" style={{ marginLeft: 5 }}>
+                  {item.pod}
+                </Tag>
+                {item.proxies && item.proxies.length > 0 && (
+                  <PodEntryPoint proxies={item.proxies}/>
+                )}
+              </div>
+            </Radio>
+          </>
         ))}
       </Radio.Group>
 
@@ -76,7 +85,7 @@ const ProjectContainerLogs: React.FC<{
         {value ? (
           <LazyLog
             renderErrLineFunc={(e: any) => {
-              return JSON.parse(e.body).error.message
+              return JSON.parse(e.body).error.message;
             }}
             fetchOptions={{ headers: { Authorization: getToken() } }}
             enableSearch

@@ -7,11 +7,18 @@ import "validate/validate.proto";
 
 option go_package = "github.com/duc-cnzj/execit-client/container;container";
 
+message ProxyInfo {
+  string port = 2;
+  string name = 3;
+  string url = 4;
+}
+
 message Item {
   int64 cluster_id = 1;
   string namespace = 2;
   string pod = 3;
   string container = 4;
+  repeated ProxyInfo proxies = 5;
 }
 
 message CopyToPodRequest {

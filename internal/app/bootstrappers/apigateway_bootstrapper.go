@@ -8,10 +8,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/duc-cnzj/execit-client/event"
@@ -22,6 +24,7 @@ import (
 	"github.com/duc-cnzj/execit/internal/grpc/services"
 	"github.com/duc-cnzj/execit/internal/middlewares"
 	"github.com/duc-cnzj/execit/internal/models"
+	proxy2 "github.com/duc-cnzj/execit/internal/proxy"
 	"github.com/duc-cnzj/execit/internal/socket"
 	"github.com/duc-cnzj/execit/internal/utils"
 	"github.com/duc-cnzj/execit/internal/xlog"
@@ -37,6 +40,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/protojson"
 	"gorm.io/gorm"
+	"k8s.io/apimachinery/pkg/util/net"
 )
 
 type ApiGatewayBootstrapper struct{}
@@ -107,6 +111,7 @@ func (a *apiGateway) Run(ctx context.Context) error {
 		writer.Write([]byte("pong"))
 	})
 	serveWs(router)
+	serveProxy(router)
 	frontend.LoadFrontendRoutes(router)
 	LoadSwaggerUI(router)
 	router.PathPrefix("/").Handler(gmux)
@@ -134,6 +139,53 @@ func (a *apiGateway) Run(ctx context.Context) error {
 	}(s)
 
 	return nil
+}
+
+func serveProxy(r *mux.Router) {
+	fn := func(writer http.ResponseWriter, request *http.Request) {
+		var (
+			muxvars      = mux.Vars(request)
+			clusterID, _ = strconv.Atoi(muxvars["cluster_id"])
+			namespace    = muxvars["namespace"]
+			pod          = muxvars["pod"]
+			port         = muxvars["port"]
+		)
+		HandleProxy(contracts.ProxyPod{
+			ClusterId: int64(clusterID),
+			Namespace: namespace,
+			Pod:       pod,
+			Port:      port,
+		}, writer, request)
+	}
+
+	r.HandleFunc("/proxy/clusters/{cluster_id:[0-9]+}/namespace/{namespace}/pod/{pod}/port/{port:[0-9]+}", fn)
+	r.HandleFunc("/proxy/clusters/{cluster_id:[0-9]+}/namespace/{namespace}/pod/{pod}/port/{port:[0-9]+}/{rest:.*}", fn)
+	app.App().SetProxyManager(proxy2.NewProxyManager())
+	app.ProxyManager().Check()
+}
+
+func HandleProxy(pod contracts.ProxyPod, w http.ResponseWriter, req *http.Request) {
+	var (
+		id, _   = app.ProxyManager().Add(pod)
+		prepend = pod.Url()
+		port, _ = app.ProxyManager().GetPortByID(id)
+	)
+
+	app.ProxyManager().Visit(id)
+
+	parse, _ := url.Parse(fmt.Sprintf("http://127.0.0.1:%s/", port))
+	rp := httputil.NewSingleHostReverseProxy(parse)
+	rp.Transport = &proxy2.Transport{
+		Scheme:      req.URL.Scheme,
+		Host:        req.URL.Host,
+		PathPrepend: prepend,
+	}
+	newReq := req.WithContext(req.Context())
+	newReq.Header = net.CloneHeader(req.Header)
+	newReq.Host = parse.Host
+	newReq.URL.Path = strings.TrimPrefix(newReq.URL.Path, prepend)
+	xlog.Debugf("a: '%s' \n b: '%s' \n c: '%s", req.URL.Path, prepend, newReq.URL.Path)
+	rp.ServeHTTP(w, newReq)
 }
 
 func (a *apiGateway) Shutdown(ctx context.Context) error {

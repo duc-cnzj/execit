@@ -44,7 +44,7 @@ func (m *MetricsSvc) TopPod(ctx context.Context, request *metrics.TopPodRequest)
 	k8sClient := utils.K8sClientByClusterID(request.ClusterId)
 	podMetrics, err := k8sClient.MetricsClient().MetricsV1beta1().PodMetricses(request.Namespace).Get(context.TODO(), request.Pod, metav1.GetOptions{})
 	if err != nil {
-		running, reason := utils.IsPodRunning(k8sClient.Client(), request.Namespace, request.Pod)
+		running, reason := utils.IsPodRunning(k8sClient, request.Namespace, request.Pod)
 		if !running {
 			return nil, status.Error(codes.NotFound, reason)
 		}
@@ -64,7 +64,7 @@ func (m *MetricsSvc) StreamTopPod(request *metrics.TopPodRequest, server metrics
 	fn := func() error {
 		podMetrics, err := k8sClient.MetricsClient().MetricsV1beta1().PodMetricses(request.Namespace).Get(context.TODO(), request.Pod, metav1.GetOptions{})
 		if err != nil {
-			running, _ := utils.IsPodRunning(k8sClient.Client(), request.Namespace, request.Pod)
+			running, _ := utils.IsPodRunning(k8sClient, request.Namespace, request.Pod)
 			if running {
 				return nil
 			}

@@ -8,6 +8,7 @@ Super simple terminal management tool in k8s.
 
 ## ✨  Features
 
+* single pod web proxy.
 * multi cluster
 * like kubernetes dashboard, but more simple and friendly.
 * audit log.
@@ -45,6 +46,7 @@ open http://localhost:31996
 
 ## TODO
 
+- [x] single pod web proxy 
 - [x] Multi-cluster management
 - [x] base on deployment, statefulset
 - [x] RBAC

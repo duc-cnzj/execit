@@ -2250,6 +2250,63 @@ export namespace cluster {
 /** Namespace container. */
 export namespace container {
 
+    /** Properties of a ProxyInfo. */
+    interface IProxyInfo {
+
+        /** ProxyInfo port */
+        port?: (string|null);
+
+        /** ProxyInfo name */
+        name?: (string|null);
+
+        /** ProxyInfo url */
+        url?: (string|null);
+    }
+
+    /** Represents a ProxyInfo. */
+    class ProxyInfo implements IProxyInfo {
+
+        /**
+         * Constructs a new ProxyInfo.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: container.IProxyInfo);
+
+        /** ProxyInfo port. */
+        public port: string;
+
+        /** ProxyInfo name. */
+        public name: string;
+
+        /** ProxyInfo url. */
+        public url: string;
+
+        /**
+         * Encodes the specified ProxyInfo message. Does not implicitly {@link container.ProxyInfo.verify|verify} messages.
+         * @param message ProxyInfo message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: container.ProxyInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ProxyInfo message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ProxyInfo
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): container.ProxyInfo;
+
+        /**
+         * Gets the default type url for ProxyInfo
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
     /** Properties of an Item. */
     interface IItem {
 
@@ -2264,6 +2321,9 @@ export namespace container {
 
         /** Item container */
         container?: (string|null);
+
+        /** Item proxies */
+        proxies?: (container.ProxyInfo[]|null);
     }
 
     /** Represents an Item. */
@@ -2286,6 +2346,9 @@ export namespace container {
 
         /** Item container. */
         public container: string;
+
+        /** Item proxies. */
+        public proxies: container.ProxyInfo[];
 
         /**
          * Encodes the specified Item message. Does not implicitly {@link container.Item.verify|verify} messages.

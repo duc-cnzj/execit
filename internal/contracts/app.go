@@ -67,8 +67,6 @@ type OidcConfigItem struct {
 }
 type OidcConfig map[string]OidcConfigItem
 
-type Option func(ApplicationInterface)
-
 type ApplicationInterface interface {
 	IsDebug() bool
 
@@ -109,4 +107,7 @@ type ApplicationInterface interface {
 	ReleaseKubeClient(name string) error
 	ReleaseAllKubeClient() error
 	LoadKubeClient(name string, kubeConfig []byte, namespace string) (K8s, error)
+
+	ProxyManager() ProxyManagerInterface
+	SetProxyManager(ProxyManagerInterface)
 }

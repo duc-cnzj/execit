@@ -64,6 +64,7 @@ message CreateResponse {
 message ShowRequest {
   int64 card_id = 1 [(validate.rules).int64.gt = 0];
 }
+
 message ShowResponse {
   int64 id = 1;
   string type = 2;

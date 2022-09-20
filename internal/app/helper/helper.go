@@ -15,6 +15,10 @@ func Auth() contracts.AuthInterface {
 	return App().Auth()
 }
 
+func ProxyManager() contracts.ProxyManagerInterface {
+	return App().ProxyManager()
+}
+
 func Oidc() contracts.OidcConfig {
 	return App().Oidc()
 }
