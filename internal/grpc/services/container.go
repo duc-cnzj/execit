@@ -11,8 +11,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/duc-cnzj/execit-client/event"
-
 	"github.com/dustin/go-humanize"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -24,6 +22,7 @@ import (
 	"k8s.io/client-go/tools/remotecommand"
 
 	"github.com/duc-cnzj/execit-client/container"
+	"github.com/duc-cnzj/execit-client/event"
 	"github.com/duc-cnzj/execit-client/rbac"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/auth"
