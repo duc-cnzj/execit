@@ -3,9 +3,7 @@ package proxy
 import (
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
-	"os"
 	"sync"
 	"time"
 
@@ -16,7 +14,6 @@ import (
 	"github.com/duc-cnzj/execit/internal/config"
 	"github.com/duc-cnzj/execit/internal/contracts"
 	"github.com/duc-cnzj/execit/internal/xlog"
-	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/tools/portforward"
 	"k8s.io/client-go/transport/spdy"
 )
@@ -89,10 +86,6 @@ func (p *proxyManager) Add(proxypod contracts.ProxyPod) (string, error) {
 
 	p.Lock()
 	defer p.Unlock()
-	id, ok := p.podToID[proxypod]
-	if ok {
-		return id, nil
-	}
 	client := utils.K8sClientByClusterID(proxypod.ClusterId)
 	running, reason := utils.IsPodRunning(client, proxypod.Namespace, proxypod.Pod)
 	if !running {
@@ -111,7 +104,7 @@ func (p *proxyManager) Add(proxypod contracts.ProxyPod) (string, error) {
 	transport, upgrader, _ := spdy.RoundTripperFor(utils.K8sClientByClusterID(proxypod.ClusterId).RestConfig())
 	dialer := spdy.NewDialer(upgrader, &http.Client{Transport: transport}, "POST", req.URL())
 	freePort, _ := config.GetFreePort()
-	xlog.Warningf("freePort: %v port: %v", freePort, proxypod.Port)
+	xlog.Debugf("freePort: %v port: %v", freePort, proxypod.Port)
 
 	var newID = proxyidgen.GenProxyID(proxypod)
 	var conn = &Conn{
@@ -121,16 +114,17 @@ func (p *proxyManager) Add(proxypod contracts.ProxyPod) (string, error) {
 		port:     fmt.Sprintf("%d", freePort),
 	}
 
-	fw, err := portforward.NewOnAddresses(dialer, []string{"127.0.0.1"}, []string{fmt.Sprintf("%d:%s", freePort, proxypod.Port)}, conn.doneChan, conn.rdyChan, os.Stdout, os.Stderr)
+	fw, err := portforward.NewOnAddresses(dialer, []string{"127.0.0.1"}, []string{fmt.Sprintf("%d:%s", freePort, proxypod.Port)}, conn.doneChan, conn.rdyChan, nil, nil)
 	if err != nil {
-		log.Fatal(err)
+		xlog.Error(err)
+		return "", err
 	}
 	p.idToConnections[newID] = conn
 	p.idToPod[newID] = proxypod
 	p.podToID[proxypod] = newID
 	go func() {
 		defer p.Delete(newID)
-		defer xlog.Warning("ForwardPorts exit: " + newID)
+		defer xlog.Debug("ForwardPorts exit: " + newID)
 		defer utils.HandlePanic("ForwardPorts")
 		if err := fw.ForwardPorts(); err != nil {
 			xlog.Error(err)
@@ -190,20 +184,4 @@ func (p *proxyManager) GetPodByID(id string) (contracts.ProxyPod, error) {
 	}
 
 	return contracts.ProxyPod{}, errors.New("not found")
-}
-
-func FindDefaultContainer(pod *v1.Pod) *v1.Container {
-	if name := pod.Annotations["kubectl.kubernetes.io/default-container"]; len(name) > 0 {
-		for _, co := range pod.Spec.Containers {
-			if name == co.Name {
-				return &co
-			}
-		}
-	}
-
-	for _, co := range pod.Spec.Containers {
-		return &co
-	}
-
-	return nil
 }

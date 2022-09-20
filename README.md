@@ -28,14 +28,15 @@ open http://localhost:31996
 
 ## 💡 Minimum permissions required
 
-| Resource     | Verbs            |
-| ------------ | ---------------- |
-| pods         | `get`, `list`, `watch` |
-| deployments  | `get`, `list`, `watch` |
-| statefulsets | `get`, `list`, `watch` |
-| pods/exec    | `create`         |
-| pods/log     | `get`            |
-| metrics.k8s.io/pods(optional)  | `get` |
+| Resource                           | Verbs                 |
+|------------------------------------|-----------------------|
+| pods                               | `get`, `list`, `watch` |
+| deployments                        | `get`, `list`, `watch` |
+| statefulsets                       | `get`, `list`, `watch` |
+| pods/exec                          | `create`              |
+| pods/log                           | `get`                 |
+| pods/portforward(single pod web proxy) | `create`    |
+| metrics.k8s.io/pods(optional)      | `get`                 |
 
 
 ## 🧀 Preview
