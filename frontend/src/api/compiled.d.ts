@@ -2250,6 +2250,63 @@ export namespace cluster {
 /** Namespace container. */
 export namespace container {
 
+    /** Properties of a ProxyInfo. */
+    interface IProxyInfo {
+
+        /** ProxyInfo port */
+        port?: (string|null);
+
+        /** ProxyInfo name */
+        name?: (string|null);
+
+        /** ProxyInfo url */
+        url?: (string|null);
+    }
+
+    /** Represents a ProxyInfo. */
+    class ProxyInfo implements IProxyInfo {
+
+        /**
+         * Constructs a new ProxyInfo.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: container.IProxyInfo);
+
+        /** ProxyInfo port. */
+        public port: string;
+
+        /** ProxyInfo name. */
+        public name: string;
+
+        /** ProxyInfo url. */
+        public url: string;
+
+        /**
+         * Encodes the specified ProxyInfo message. Does not implicitly {@link container.ProxyInfo.verify|verify} messages.
+         * @param message ProxyInfo message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: container.ProxyInfo, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ProxyInfo message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ProxyInfo
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): container.ProxyInfo;
+
+        /**
+         * Gets the default type url for ProxyInfo
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
     /** Properties of an Item. */
     interface IItem {
 
@@ -2264,6 +2321,9 @@ export namespace container {
 
         /** Item container */
         container?: (string|null);
+
+        /** Item proxies */
+        proxies?: (container.ProxyInfo[]|null);
     }
 
     /** Represents an Item. */
@@ -2286,6 +2346,9 @@ export namespace container {
 
         /** Item container. */
         public container: string;
+
+        /** Item proxies. */
+        public proxies: container.ProxyInfo[];
 
         /**
          * Encodes the specified Item message. Does not implicitly {@link container.Item.verify|verify} messages.
@@ -3051,6 +3114,114 @@ export namespace container {
         public static getTypeUrl(typeUrlPrefix?: string): string;
     }
 
+    /** Properties of a ProxyRequest. */
+    interface IProxyRequest {
+
+        /** ProxyRequest cluster_id */
+        cluster_id?: (number|null);
+
+        /** ProxyRequest namespace */
+        namespace?: (string|null);
+
+        /** ProxyRequest pod */
+        pod?: (string|null);
+
+        /** ProxyRequest port */
+        port?: (string|null);
+    }
+
+    /** Represents a ProxyRequest. */
+    class ProxyRequest implements IProxyRequest {
+
+        /**
+         * Constructs a new ProxyRequest.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: container.IProxyRequest);
+
+        /** ProxyRequest cluster_id. */
+        public cluster_id: number;
+
+        /** ProxyRequest namespace. */
+        public namespace: string;
+
+        /** ProxyRequest pod. */
+        public pod: string;
+
+        /** ProxyRequest port. */
+        public port: string;
+
+        /**
+         * Encodes the specified ProxyRequest message. Does not implicitly {@link container.ProxyRequest.verify|verify} messages.
+         * @param message ProxyRequest message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: container.ProxyRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ProxyRequest message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ProxyRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): container.ProxyRequest;
+
+        /**
+         * Gets the default type url for ProxyRequest
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
+    /** Properties of a ProxyResponse. */
+    interface IProxyResponse {
+
+        /** ProxyResponse success */
+        success?: (boolean|null);
+    }
+
+    /** Represents a ProxyResponse. */
+    class ProxyResponse implements IProxyResponse {
+
+        /**
+         * Constructs a new ProxyResponse.
+         * @param [properties] Properties to set
+         */
+        constructor(properties?: container.IProxyResponse);
+
+        /** ProxyResponse success. */
+        public success: boolean;
+
+        /**
+         * Encodes the specified ProxyResponse message. Does not implicitly {@link container.ProxyResponse.verify|verify} messages.
+         * @param message ProxyResponse message or plain object to encode
+         * @param [writer] Writer to encode to
+         * @returns Writer
+         */
+        public static encode(message: container.ProxyResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+
+        /**
+         * Decodes a ProxyResponse message from the specified reader or buffer.
+         * @param reader Reader or buffer to decode from
+         * @param [length] Message length if known beforehand
+         * @returns ProxyResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        public static decode(reader: ($protobuf.Reader|Uint8Array), length?: number): container.ProxyResponse;
+
+        /**
+         * Gets the default type url for ProxyResponse
+         * @param [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns The default type url
+         */
+        public static getTypeUrl(typeUrlPrefix?: string): string;
+    }
+
     /** Represents a ContainerSvc */
     class ContainerSvc extends $protobuf.rpc.Service {
 
@@ -3159,6 +3330,20 @@ export namespace container {
          * @returns Promise
          */
         public streamContainerLog(request: container.LogRequest): Promise<container.LogResponse>;
+
+        /**
+         * Calls Proxy.
+         * @param request ProxyRequest message or plain object
+         * @param callback Node-style callback called with the error, if any, and ProxyResponse
+         */
+        public proxy(request: container.ProxyRequest, callback: container.ContainerSvc.ProxyCallback): void;
+
+        /**
+         * Calls Proxy.
+         * @param request ProxyRequest message or plain object
+         * @returns Promise
+         */
+        public proxy(request: container.ProxyRequest): Promise<container.ProxyResponse>;
     }
 
     namespace ContainerSvc {
@@ -3211,6 +3396,13 @@ export namespace container {
          * @param [response] LogResponse
          */
         type StreamContainerLogCallback = (error: (Error|null), response?: container.LogResponse) => void;
+
+        /**
+         * Callback as used by {@link container.ContainerSvc#proxy}.
+         * @param error Error, if any
+         * @param [response] ProxyResponse
+         */
+        type ProxyCallback = (error: (Error|null), response?: container.ProxyResponse) => void;
     }
 }
 

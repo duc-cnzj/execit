@@ -7,11 +7,9 @@ import (
 	"strings"
 	"sync/atomic"
 
-	"github.com/duc-cnzj/execit-client/card"
-
-	"github.com/duc-cnzj/execit-client/cluster"
-
 	"github.com/duc-cnzj/execit-client/auth"
+	"github.com/duc-cnzj/execit-client/card"
+	"github.com/duc-cnzj/execit-client/cluster"
 	"github.com/duc-cnzj/execit-client/container"
 	"github.com/duc-cnzj/execit-client/event"
 	"github.com/duc-cnzj/execit-client/file"

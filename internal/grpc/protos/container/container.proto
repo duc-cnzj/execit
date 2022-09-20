@@ -7,11 +7,18 @@ import "validate/validate.proto";
 
 option go_package = "github.com/duc-cnzj/execit-client/container;container";
 
+message ProxyInfo {
+  string port = 2;
+  string name = 3;
+  string url = 4;
+}
+
 message Item {
   int64 cluster_id = 1;
   string namespace = 2;
   string pod = 3;
   string container = 4;
+  repeated ProxyInfo proxies = 5;
 }
 
 message CopyToPodRequest {
@@ -95,6 +102,17 @@ message LogResponse {
   string log = 4;
 }
 
+message ProxyRequest {
+  int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
+  string namespace = 2 [(validate.rules).string.min_bytes = 1];
+  string pod = 3 [(validate.rules).string.min_bytes = 1];
+  string port = 4 [(validate.rules).string.min_bytes = 1];
+}
+
+message ProxyResponse {
+  bool success = 1;
+}
+
 service ContainerSvc {
   // CopyToPod (web): 页面上传文件到 pod 内部
   rpc CopyToPod(CopyToPodRequest) returns (CopyToPodResponse) {
@@ -176,6 +194,13 @@ service ContainerSvc {
   rpc StreamContainerLog(LogRequest) returns (stream LogResponse) {
     option (google.api.http) = {
       get: "/api/containers/cards/{card_id}/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/containers/{container}/stream_logs"
+    };
+  }
+
+  rpc Proxy(ProxyRequest) returns (ProxyResponse) {
+    option (google.api.http) = {
+      post: "/api/containers/proxies"
+      body: "*"
     };
   }
 }

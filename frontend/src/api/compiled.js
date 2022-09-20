@@ -4850,6 +4850,133 @@ export const container = $root.container = (() => {
      */
     const container = {};
 
+    container.ProxyInfo = (function() {
+
+        /**
+         * Properties of a ProxyInfo.
+         * @memberof container
+         * @interface IProxyInfo
+         * @property {string|null} [port] ProxyInfo port
+         * @property {string|null} [name] ProxyInfo name
+         * @property {string|null} [url] ProxyInfo url
+         */
+
+        /**
+         * Constructs a new ProxyInfo.
+         * @memberof container
+         * @classdesc Represents a ProxyInfo.
+         * @implements IProxyInfo
+         * @constructor
+         * @param {container.IProxyInfo=} [properties] Properties to set
+         */
+        function ProxyInfo(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ProxyInfo port.
+         * @member {string} port
+         * @memberof container.ProxyInfo
+         * @instance
+         */
+        ProxyInfo.prototype.port = "";
+
+        /**
+         * ProxyInfo name.
+         * @member {string} name
+         * @memberof container.ProxyInfo
+         * @instance
+         */
+        ProxyInfo.prototype.name = "";
+
+        /**
+         * ProxyInfo url.
+         * @member {string} url
+         * @memberof container.ProxyInfo
+         * @instance
+         */
+        ProxyInfo.prototype.url = "";
+
+        /**
+         * Encodes the specified ProxyInfo message. Does not implicitly {@link container.ProxyInfo.verify|verify} messages.
+         * @function encode
+         * @memberof container.ProxyInfo
+         * @static
+         * @param {container.ProxyInfo} message ProxyInfo message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProxyInfo.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.port != null && Object.hasOwnProperty.call(message, "port"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.port);
+            if (message.name != null && Object.hasOwnProperty.call(message, "name"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.name);
+            if (message.url != null && Object.hasOwnProperty.call(message, "url"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.url);
+            return writer;
+        };
+
+        /**
+         * Decodes a ProxyInfo message from the specified reader or buffer.
+         * @function decode
+         * @memberof container.ProxyInfo
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {container.ProxyInfo} ProxyInfo
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProxyInfo.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.container.ProxyInfo();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 2: {
+                        message.port = reader.string();
+                        break;
+                    }
+                case 3: {
+                        message.name = reader.string();
+                        break;
+                    }
+                case 4: {
+                        message.url = reader.string();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Gets the default type url for ProxyInfo
+         * @function getTypeUrl
+         * @memberof container.ProxyInfo
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        ProxyInfo.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/container.ProxyInfo";
+        };
+
+        return ProxyInfo;
+    })();
+
     container.Item = (function() {
 
         /**
@@ -4860,6 +4987,7 @@ export const container = $root.container = (() => {
          * @property {string|null} [namespace] Item namespace
          * @property {string|null} [pod] Item pod
          * @property {string|null} [container] Item container
+         * @property {Array.<container.ProxyInfo>|null} [proxies] Item proxies
          */
 
         /**
@@ -4871,6 +4999,7 @@ export const container = $root.container = (() => {
          * @param {container.IItem=} [properties] Properties to set
          */
         function Item(properties) {
+            this.proxies = [];
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
                     if (properties[keys[i]] != null)
@@ -4910,6 +5039,14 @@ export const container = $root.container = (() => {
         Item.prototype.container = "";
 
         /**
+         * Item proxies.
+         * @member {Array.<container.ProxyInfo>} proxies
+         * @memberof container.Item
+         * @instance
+         */
+        Item.prototype.proxies = $util.emptyArray;
+
+        /**
          * Encodes the specified Item message. Does not implicitly {@link container.Item.verify|verify} messages.
          * @function encode
          * @memberof container.Item
@@ -4929,6 +5066,9 @@ export const container = $root.container = (() => {
                 writer.uint32(/* id 3, wireType 2 =*/26).string(message.pod);
             if (message.container != null && Object.hasOwnProperty.call(message, "container"))
                 writer.uint32(/* id 4, wireType 2 =*/34).string(message.container);
+            if (message.proxies != null && message.proxies.length)
+                for (let i = 0; i < message.proxies.length; ++i)
+                    $root.container.ProxyInfo.encode(message.proxies[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
             return writer;
         };
 
@@ -4964,6 +5104,12 @@ export const container = $root.container = (() => {
                     }
                 case 4: {
                         message.container = reader.string();
+                        break;
+                    }
+                case 5: {
+                        if (!(message.proxies && message.proxies.length))
+                            message.proxies = [];
+                        message.proxies.push($root.container.ProxyInfo.decode(reader, reader.uint32()));
                         break;
                     }
                 default:
@@ -6655,6 +6801,245 @@ export const container = $root.container = (() => {
         return LogResponse;
     })();
 
+    container.ProxyRequest = (function() {
+
+        /**
+         * Properties of a ProxyRequest.
+         * @memberof container
+         * @interface IProxyRequest
+         * @property {number|null} [cluster_id] ProxyRequest cluster_id
+         * @property {string|null} [namespace] ProxyRequest namespace
+         * @property {string|null} [pod] ProxyRequest pod
+         * @property {string|null} [port] ProxyRequest port
+         */
+
+        /**
+         * Constructs a new ProxyRequest.
+         * @memberof container
+         * @classdesc Represents a ProxyRequest.
+         * @implements IProxyRequest
+         * @constructor
+         * @param {container.IProxyRequest=} [properties] Properties to set
+         */
+        function ProxyRequest(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ProxyRequest cluster_id.
+         * @member {number} cluster_id
+         * @memberof container.ProxyRequest
+         * @instance
+         */
+        ProxyRequest.prototype.cluster_id = $util.Long ? $util.Long.fromBits(0,0,false) : 0;
+
+        /**
+         * ProxyRequest namespace.
+         * @member {string} namespace
+         * @memberof container.ProxyRequest
+         * @instance
+         */
+        ProxyRequest.prototype.namespace = "";
+
+        /**
+         * ProxyRequest pod.
+         * @member {string} pod
+         * @memberof container.ProxyRequest
+         * @instance
+         */
+        ProxyRequest.prototype.pod = "";
+
+        /**
+         * ProxyRequest port.
+         * @member {string} port
+         * @memberof container.ProxyRequest
+         * @instance
+         */
+        ProxyRequest.prototype.port = "";
+
+        /**
+         * Encodes the specified ProxyRequest message. Does not implicitly {@link container.ProxyRequest.verify|verify} messages.
+         * @function encode
+         * @memberof container.ProxyRequest
+         * @static
+         * @param {container.ProxyRequest} message ProxyRequest message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProxyRequest.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.cluster_id != null && Object.hasOwnProperty.call(message, "cluster_id"))
+                writer.uint32(/* id 1, wireType 0 =*/8).int64(message.cluster_id);
+            if (message.namespace != null && Object.hasOwnProperty.call(message, "namespace"))
+                writer.uint32(/* id 2, wireType 2 =*/18).string(message.namespace);
+            if (message.pod != null && Object.hasOwnProperty.call(message, "pod"))
+                writer.uint32(/* id 3, wireType 2 =*/26).string(message.pod);
+            if (message.port != null && Object.hasOwnProperty.call(message, "port"))
+                writer.uint32(/* id 4, wireType 2 =*/34).string(message.port);
+            return writer;
+        };
+
+        /**
+         * Decodes a ProxyRequest message from the specified reader or buffer.
+         * @function decode
+         * @memberof container.ProxyRequest
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {container.ProxyRequest} ProxyRequest
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProxyRequest.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.container.ProxyRequest();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.cluster_id = reader.int64();
+                        break;
+                    }
+                case 2: {
+                        message.namespace = reader.string();
+                        break;
+                    }
+                case 3: {
+                        message.pod = reader.string();
+                        break;
+                    }
+                case 4: {
+                        message.port = reader.string();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Gets the default type url for ProxyRequest
+         * @function getTypeUrl
+         * @memberof container.ProxyRequest
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        ProxyRequest.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/container.ProxyRequest";
+        };
+
+        return ProxyRequest;
+    })();
+
+    container.ProxyResponse = (function() {
+
+        /**
+         * Properties of a ProxyResponse.
+         * @memberof container
+         * @interface IProxyResponse
+         * @property {boolean|null} [success] ProxyResponse success
+         */
+
+        /**
+         * Constructs a new ProxyResponse.
+         * @memberof container
+         * @classdesc Represents a ProxyResponse.
+         * @implements IProxyResponse
+         * @constructor
+         * @param {container.IProxyResponse=} [properties] Properties to set
+         */
+        function ProxyResponse(properties) {
+            if (properties)
+                for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
+                    if (properties[keys[i]] != null)
+                        this[keys[i]] = properties[keys[i]];
+        }
+
+        /**
+         * ProxyResponse success.
+         * @member {boolean} success
+         * @memberof container.ProxyResponse
+         * @instance
+         */
+        ProxyResponse.prototype.success = false;
+
+        /**
+         * Encodes the specified ProxyResponse message. Does not implicitly {@link container.ProxyResponse.verify|verify} messages.
+         * @function encode
+         * @memberof container.ProxyResponse
+         * @static
+         * @param {container.ProxyResponse} message ProxyResponse message or plain object to encode
+         * @param {$protobuf.Writer} [writer] Writer to encode to
+         * @returns {$protobuf.Writer} Writer
+         */
+        ProxyResponse.encode = function encode(message, writer) {
+            if (!writer)
+                writer = $Writer.create();
+            if (message.success != null && Object.hasOwnProperty.call(message, "success"))
+                writer.uint32(/* id 1, wireType 0 =*/8).bool(message.success);
+            return writer;
+        };
+
+        /**
+         * Decodes a ProxyResponse message from the specified reader or buffer.
+         * @function decode
+         * @memberof container.ProxyResponse
+         * @static
+         * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+         * @param {number} [length] Message length if known beforehand
+         * @returns {container.ProxyResponse} ProxyResponse
+         * @throws {Error} If the payload is not a reader or valid buffer
+         * @throws {$protobuf.util.ProtocolError} If required fields are missing
+         */
+        ProxyResponse.decode = function decode(reader, length) {
+            if (!(reader instanceof $Reader))
+                reader = $Reader.create(reader);
+            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.container.ProxyResponse();
+            while (reader.pos < end) {
+                let tag = reader.uint32();
+                switch (tag >>> 3) {
+                case 1: {
+                        message.success = reader.bool();
+                        break;
+                    }
+                default:
+                    reader.skipType(tag & 7);
+                    break;
+                }
+            }
+            return message;
+        };
+
+        /**
+         * Gets the default type url for ProxyResponse
+         * @function getTypeUrl
+         * @memberof container.ProxyResponse
+         * @static
+         * @param {string} [typeUrlPrefix] your custom typeUrlPrefix(default "type.googleapis.com")
+         * @returns {string} The default type url
+         */
+        ProxyResponse.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
+            if (typeUrlPrefix === undefined) {
+                typeUrlPrefix = "type.googleapis.com";
+            }
+            return typeUrlPrefix + "/container.ProxyResponse";
+        };
+
+        return ProxyResponse;
+    })();
+
     container.ContainerSvc = (function() {
 
         /**
@@ -6901,6 +7286,39 @@ export const container = $root.container = (() => {
          * @instance
          * @param {container.LogRequest} request LogRequest message or plain object
          * @returns {Promise<container.LogResponse>} Promise
+         * @variation 2
+         */
+
+        /**
+         * Callback as used by {@link container.ContainerSvc#proxy}.
+         * @memberof container.ContainerSvc
+         * @typedef ProxyCallback
+         * @type {function}
+         * @param {Error|null} error Error, if any
+         * @param {container.ProxyResponse} [response] ProxyResponse
+         */
+
+        /**
+         * Calls Proxy.
+         * @function proxy
+         * @memberof container.ContainerSvc
+         * @instance
+         * @param {container.ProxyRequest} request ProxyRequest message or plain object
+         * @param {container.ContainerSvc.ProxyCallback} callback Node-style callback called with the error, if any, and ProxyResponse
+         * @returns {undefined}
+         * @variation 1
+         */
+        Object.defineProperty(ContainerSvc.prototype.proxy = function proxy(request, callback) {
+            return this.rpcCall(proxy, $root.container.ProxyRequest, $root.container.ProxyResponse, request, callback);
+        }, "name", { value: "Proxy" });
+
+        /**
+         * Calls Proxy.
+         * @function proxy
+         * @memberof container.ContainerSvc
+         * @instance
+         * @param {container.ProxyRequest} request ProxyRequest message or plain object
+         * @returns {Promise<container.ProxyResponse>} Promise
          * @variation 2
          */
 

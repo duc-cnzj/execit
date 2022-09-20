@@ -43,38 +43,16 @@ const (
 
 var _ contracts.ApplicationInterface = (*Application)(nil)
 
-var DefaultBootstrappers = []contracts.Bootstrapper{
-	&bootstrappers.PluginsBootstrapper{},
-	&bootstrappers.I18nBootstrapper{},
-	&bootstrappers.AuthBootstrapper{},
-	&bootstrappers.UploadBootstrapper{},
-	&bootstrappers.DBBootstrapper{},
-	&bootstrappers.ApiGatewayBootstrapper{},
-	&bootstrappers.PprofBootstrapper{},
-	&bootstrappers.GrpcBootstrapper{},
-	&bootstrappers.MetricsBootstrapper{},
-	&bootstrappers.OidcBootstrapper{},
-	&bootstrappers.TracingBootstrapper{},
-	&bootstrappers.AppBootstrapper{},
-}
-
-type emptyMetrics struct{}
-
-func (e *emptyMetrics) IncWebsocketConn() {
-}
-
-func (e *emptyMetrics) DecWebsocketConn() {
-}
-
 type Application struct {
 	done          context.Context
 	doneFunc      func()
 	config        *config.Config
 	dbManager     contracts.DBManager
 	dispatcher    contracts.DispatcherInterface
-	metrics       contracts.Metrics
 	servers       []contracts.Server
 	bootstrappers []contracts.Bootstrapper
+
+	proxyManager contracts.ProxyManagerInterface
 
 	k8sMu      sync.RWMutex
 	k8sClients map[string]contracts.K8s
@@ -86,6 +64,14 @@ type Application struct {
 	oidcProvider contracts.OidcConfig
 	uploader     contracts.Uploader
 	auth         contracts.AuthInterface
+}
+
+func (app *Application) ProxyManager() contracts.ProxyManagerInterface {
+	return app.proxyManager
+}
+
+func (app *Application) SetProxyManager(proxyManager contracts.ProxyManagerInterface) {
+	app.proxyManager = proxyManager
 }
 
 func (app *Application) ReleaseKubeClient(name string) error {
@@ -211,14 +197,6 @@ func (app *Application) SetOidc(provider contracts.OidcConfig) {
 	app.oidcProvider = provider
 }
 
-func (app *Application) SetMetrics(metrics contracts.Metrics) {
-	app.metrics = metrics
-}
-
-func (app *Application) Metrics() contracts.Metrics {
-	return app.metrics
-}
-
 func (app *Application) GetPluginByName(name string) contracts.PluginInterface {
 	return app.plugins[name]
 }
@@ -243,7 +221,15 @@ func (app *Application) SetEventDispatcher(dispatcher contracts.DispatcherInterf
 	app.dispatcher = dispatcher
 }
 
-func NewApplication(config *config.Config, opts ...contracts.Option) contracts.ApplicationInterface {
+type Option func(*Application)
+
+func WithBootstrappers(bootstrappers ...contracts.Bootstrapper) Option {
+	return func(app *Application) {
+		app.bootstrappers = bootstrappers
+	}
+}
+
+func NewApplication(config *config.Config, opts ...Option) contracts.ApplicationInterface {
 	var mustBooted = []contracts.Bootstrapper{
 		&bootstrappers.LogBootstrapper{},
 		&bootstrappers.EventBootstrapper{},
@@ -251,14 +237,12 @@ func NewApplication(config *config.Config, opts ...contracts.Option) contracts.A
 
 	doneCtx, cancelFunc := context.WithCancel(context.Background())
 	app := &Application{
-		bootstrappers: DefaultBootstrappers,
-		config:        config,
-		done:          doneCtx,
-		doneFunc:      cancelFunc,
-		hooks:         make(map[Hook][]contracts.Callback),
-		servers:       []contracts.Server{},
-		metrics:       &emptyMetrics{},
-		k8sClients:    make(map[string]contracts.K8s),
+		config:     config,
+		done:       doneCtx,
+		doneFunc:   cancelFunc,
+		hooks:      make(map[Hook][]contracts.Callback),
+		servers:    []contracts.Server{},
+		k8sClients: make(map[string]contracts.K8s),
 	}
 
 	app.dbManager = database.NewManager(app)

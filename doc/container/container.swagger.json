@@ -237,6 +237,38 @@
           "ContainerSvc"
         ]
       }
+    },
+    "/api/containers/proxies": {
+      "post": {
+        "operationId": "ContainerSvc_Proxy",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/containerProxyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/containerProxyRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ContainerSvc"
+        ]
+      }
     }
   },
   "definitions": {
@@ -347,6 +379,32 @@
         },
         "log": {
           "type": "string"
+        }
+      }
+    },
+    "containerProxyRequest": {
+      "type": "object",
+      "properties": {
+        "cluster_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "pod": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        }
+      }
+    },
+    "containerProxyResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
         }
       }
     },

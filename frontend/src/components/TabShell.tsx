@@ -22,9 +22,10 @@ import { copyToPod } from "../api/cp";
 import PodMetrics from "./PodMetrics";
 import { getToken } from "../utils/token";
 import { useTranslation } from "react-i18next";
+import PodEntrypoint from "./PodEntrypoint";
 
-const encoder = new TextEncoder()
-const decoder = new TextDecoder()
+const encoder = new TextEncoder();
+const decoder = new TextDecoder();
 
 const TabShell: React.FC<{
   resizeAt: number;
@@ -345,10 +346,20 @@ const TabShell: React.FC<{
             key={item.pod + "|" + item.container}
             value={item.pod + "|" + item.container}
           >
-            {item.container}
-            <Tag color="magenta" style={{ marginLeft: 10 }}>
-              {item.pod}
-            </Tag>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {item.container}
+              <Tag color="magenta" style={{ marginLeft: 5 }}>
+                {item.pod}
+              </Tag>
+              {item.proxies && item.proxies.length > 0 && (
+                <PodEntrypoint
+                  clusterID={item.cluster_id}
+                  namespace={namespace}
+                  pod={item.pod}
+                  proxies={item.proxies}
+                />
+              )}
+            </div>
           </Radio>
         ))}
       </Radio.Group>

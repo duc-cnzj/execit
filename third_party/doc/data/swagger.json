@@ -525,6 +525,67 @@
         }
       }
     },
+    "/api/containers/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/proxy/{rest}": {
+      "get": {
+        "tags": [
+          "ProxySvc"
+        ],
+        "operationId": "ProxySvc_PodProxy",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "int64",
+            "name": "cluster_id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "namespace",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "pod",
+            "in": "path",
+            "required": true
+          },
+          {
+            "pattern": ".[^/]+",
+            "type": "string",
+            "name": "rest",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "format": "int64",
+            "name": "card_id",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "name": "port",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/proxyPodProxyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        }
+      }
+    },
     "/api/containers/copy_to_pod": {
       "post": {
         "tags": [
@@ -613,6 +674,38 @@
             "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/containerIsPodRunningResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        }
+      }
+    },
+    "/api/containers/proxies": {
+      "post": {
+        "tags": [
+          "ContainerSvc"
+        ],
+        "operationId": "ContainerSvc_Proxy",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/containerProxyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/containerProxyResponse"
             }
           },
           "default": {
@@ -1721,6 +1814,12 @@
         },
         "pod": {
           "type": "string"
+        },
+        "proxies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/containerProxyInfo"
+          }
         }
       }
     },
@@ -1738,6 +1837,46 @@
         },
         "pod_name": {
           "type": "string"
+        }
+      }
+    },
+    "containerProxyInfo": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      }
+    },
+    "containerProxyRequest": {
+      "type": "object",
+      "properties": {
+        "cluster_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "pod": {
+          "type": "string"
+        },
+        "port": {
+          "type": "string"
+        }
+      }
+    },
+    "containerProxyResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
         }
       }
     },
@@ -2037,6 +2176,14 @@
       },
       "additionalProperties": false
     },
+    "proxyPodProxyResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
     "rbacApplyForRequest": {
       "type": "object",
       "properties": {
@@ -2314,6 +2461,9 @@
     },
     {
       "name": "Picture"
+    },
+    {
+      "name": "ProxySvc"
     },
     {
       "name": "RBAC"
