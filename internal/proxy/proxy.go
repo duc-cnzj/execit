@@ -7,11 +7,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/duc-cnzj/execit/internal/metrics"
-
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/config"
 	"github.com/duc-cnzj/execit/internal/contracts"
+	"github.com/duc-cnzj/execit/internal/metrics"
 	"github.com/duc-cnzj/execit/internal/proxy/proxyidgen"
 	"github.com/duc-cnzj/execit/internal/utils"
 	"github.com/duc-cnzj/execit/internal/xlog"
