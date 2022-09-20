@@ -38,6 +38,7 @@ open http://localhost:31996
 | pods/portforward(single pod web proxy) | `create`    |
 | metrics.k8s.io/pods(optional)      | `get`                 |
 
+> The web proxy is only suitable for some web applications.
 
 ## 🧀 Preview
 

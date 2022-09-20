@@ -7,13 +7,13 @@ import (
 	"sync"
 	"time"
 
-	"github.com/duc-cnzj/execit/internal/proxy/proxyidgen"
-	"github.com/duc-cnzj/execit/internal/utils"
-
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/config"
 	"github.com/duc-cnzj/execit/internal/contracts"
+	"github.com/duc-cnzj/execit/internal/proxy/proxyidgen"
+	"github.com/duc-cnzj/execit/internal/utils"
 	"github.com/duc-cnzj/execit/internal/xlog"
+
 	"k8s.io/client-go/tools/portforward"
 	"k8s.io/client-go/transport/spdy"
 )
@@ -45,10 +45,10 @@ func NewProxyManager() *proxyManager {
 }
 
 func (p *proxyManager) Check() {
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(1 * time.Minute)
 	go func() {
-		xlog.Info("check start")
-		defer xlog.Info("check exit")
+		xlog.Debug("[PROXY]: checker start")
+		defer xlog.Debug("[PROXY]: checker exit")
 		defer utils.HandlePanic("pm check")
 
 		for {
@@ -59,7 +59,7 @@ func (p *proxyManager) Check() {
 					defer p.visitMu.Unlock()
 					for id, t := range p.visits {
 						if time.Now().After(t.Add(30 * time.Minute)) {
-							xlog.Info("delete id: ", id)
+							xlog.Warning("[PROXY]: delete id: ", id)
 							p.Delete(id)
 							delete(p.visits, id)
 						}
@@ -89,7 +89,7 @@ func (p *proxyManager) Add(proxypod contracts.ProxyPod) (string, error) {
 	client := utils.K8sClientByClusterID(proxypod.ClusterId)
 	running, reason := utils.IsPodRunning(client, proxypod.Namespace, proxypod.Pod)
 	if !running {
-		return "", errors.New("pod not running: " + reason)
+		return "", errors.New("[PROXY]: pod not running: " + reason)
 	}
 	req := client.
 		Client().
@@ -104,7 +104,7 @@ func (p *proxyManager) Add(proxypod contracts.ProxyPod) (string, error) {
 	transport, upgrader, _ := spdy.RoundTripperFor(utils.K8sClientByClusterID(proxypod.ClusterId).RestConfig())
 	dialer := spdy.NewDialer(upgrader, &http.Client{Transport: transport}, "POST", req.URL())
 	freePort, _ := config.GetFreePort()
-	xlog.Debugf("freePort: %v port: %v", freePort, proxypod.Port)
+	xlog.Debugf("[PROXY]: freePort: %v port: %v", freePort, proxypod.Port)
 
 	var newID = proxyidgen.GenProxyID(proxypod)
 	var conn = &Conn{
@@ -124,7 +124,7 @@ func (p *proxyManager) Add(proxypod contracts.ProxyPod) (string, error) {
 	p.podToID[proxypod] = newID
 	go func() {
 		defer p.Delete(newID)
-		defer xlog.Debug("ForwardPorts exit: " + newID)
+		defer xlog.Debug("[PROXY]: ForwardPorts exit: " + newID)
 		defer utils.HandlePanic("ForwardPorts")
 		if err := fw.ForwardPorts(); err != nil {
 			xlog.Error(err)
@@ -145,13 +145,13 @@ func (p *proxyManager) Delete(id string) error {
 	defer p.Unlock()
 	pod, ok := p.idToPod[id]
 	if !ok {
-		return errors.New("not found: " + id)
+		return errors.New("[PROXY]: not found: " + id)
 	}
 	delete(p.idToPod, id)
 	delete(p.podToID, pod)
 	conn, ok := p.idToConnections[id]
 	if !ok {
-		return errors.New("not found: " + id)
+		return errors.New("[PROXY]: not found: " + id)
 	}
 	close(conn.doneChan)
 	delete(p.idToConnections, id)
@@ -172,7 +172,7 @@ func (p *proxyManager) GetPortByID(id string) (string, error) {
 		return conn.port, nil
 	}
 
-	return "", errors.New("not found")
+	return "", errors.New("[PROXY]: not found")
 }
 
 func (p *proxyManager) GetPodByID(id string) (contracts.ProxyPod, error) {
@@ -183,5 +183,5 @@ func (p *proxyManager) GetPodByID(id string) (contracts.ProxyPod, error) {
 		return po, nil
 	}
 
-	return contracts.ProxyPod{}, errors.New("not found")
+	return contracts.ProxyPod{}, errors.New("[PROXY]: not found")
 }
