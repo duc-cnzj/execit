@@ -25,6 +25,7 @@ import (
 	"github.com/duc-cnzj/execit/internal/middlewares"
 	"github.com/duc-cnzj/execit/internal/models"
 	proxy2 "github.com/duc-cnzj/execit/internal/proxy"
+	"github.com/duc-cnzj/execit/internal/proxy/proxyidgen"
 	"github.com/duc-cnzj/execit/internal/socket"
 	"github.com/duc-cnzj/execit/internal/utils"
 	"github.com/duc-cnzj/execit/internal/xlog"
@@ -150,6 +151,7 @@ func serveProxy(r *mux.Router) {
 			pod          = muxvars["pod"]
 			port         = muxvars["port"]
 		)
+
 		HandleProxy(contracts.ProxyPod{
 			ClusterId: int64(clusterID),
 			Namespace: namespace,
@@ -158,18 +160,23 @@ func serveProxy(r *mux.Router) {
 		}, writer, request)
 	}
 
-	r.HandleFunc("/proxy/clusters/{cluster_id:[0-9]+}/namespace/{namespace}/pod/{pod}/port/{port:[0-9]+}", fn)
+	r.HandleFunc("/proxy/clusters/{cluster_id:[0-9]+}/namespace/{namespace}/pod/{pod}/port/{port:[0-9]+}", func(writer http.ResponseWriter, request *http.Request) {
+		request.URL.Path += "/"
+		fn(writer, request)
+	})
 	r.HandleFunc("/proxy/clusters/{cluster_id:[0-9]+}/namespace/{namespace}/pod/{pod}/port/{port:[0-9]+}/{rest:.*}", fn)
 	app.App().SetProxyManager(proxy2.NewProxyManager())
 	app.ProxyManager().Check()
 }
 
 func HandleProxy(pod contracts.ProxyPod, w http.ResponseWriter, req *http.Request) {
-	var (
-		id, _   = app.ProxyManager().Add(pod)
-		prepend = pod.Url()
-		port, _ = app.ProxyManager().GetPortByID(id)
-	)
+	id := proxyidgen.GenProxyID(pod)
+	prepend := pod.Url()
+	port, err := app.ProxyManager().GetPortByID(id)
+	if err != nil {
+		http.Error(w, "service not ready", http.StatusNotFound)
+		return
+	}
 
 	app.ProxyManager().Visit(id)
 

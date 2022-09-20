@@ -73,7 +73,7 @@ func (p *proxyManager) Check() {
 	}()
 }
 
-func (p *proxyManager) Add(proxypod contracts.ProxyPod) (string, error) {
+func (p *proxyManager) Add(proxypod contracts.ProxyPod) (id string, new bool, err error) {
 	id, found := func() (string, bool) {
 		p.RLock()
 		defer p.RUnlock()
@@ -81,7 +81,7 @@ func (p *proxyManager) Add(proxypod contracts.ProxyPod) (string, error) {
 		return id, ok
 	}()
 	if found {
-		return id, nil
+		return id, false, nil
 	}
 
 	p.Lock()
@@ -89,7 +89,7 @@ func (p *proxyManager) Add(proxypod contracts.ProxyPod) (string, error) {
 	client := utils.K8sClientByClusterID(proxypod.ClusterId)
 	running, reason := utils.IsPodRunning(client, proxypod.Namespace, proxypod.Pod)
 	if !running {
-		return "", errors.New("[PROXY]: pod not running: " + reason)
+		return "", false, errors.New("[PROXY]: pod not running: " + reason)
 	}
 	req := client.
 		Client().
@@ -117,7 +117,7 @@ func (p *proxyManager) Add(proxypod contracts.ProxyPod) (string, error) {
 	fw, err := portforward.NewOnAddresses(dialer, []string{"127.0.0.1"}, []string{fmt.Sprintf("%d:%s", freePort, proxypod.Port)}, conn.doneChan, conn.rdyChan, nil, nil)
 	if err != nil {
 		xlog.Error(err)
-		return "", err
+		return "", false, err
 	}
 	p.idToConnections[newID] = conn
 	p.idToPod[newID] = proxypod
@@ -137,7 +137,7 @@ func (p *proxyManager) Add(proxypod contracts.ProxyPod) (string, error) {
 		p.visits[newID] = time.Now()
 	}()
 
-	return newID, nil
+	return newID, true, nil
 }
 
 func (p *proxyManager) Delete(id string) error {
@@ -173,15 +173,4 @@ func (p *proxyManager) GetPortByID(id string) (string, error) {
 	}
 
 	return "", errors.New("[PROXY]: not found")
-}
-
-func (p *proxyManager) GetPodByID(id string) (contracts.ProxyPod, error) {
-	p.RLock()
-	defer p.RUnlock()
-	po, ok := p.idToPod[id]
-	if ok {
-		return po, nil
-	}
-
-	return contracts.ProxyPod{}, errors.New("[PROXY]: not found")
 }

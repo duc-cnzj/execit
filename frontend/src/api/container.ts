@@ -8,3 +8,7 @@ export function isPodRunning({namespace, pod, cluster_id}: pb.container.IsPodRun
 export function isPodExists({cluster_id, namespace, pod}: pb.container.IsPodExistsRequest) {
   return ajax.post<pb.container.IsPodExistsResponse>(`/api/containers/pod_exists`, {namespace, pod, cluster_id});
 }
+
+export function newProxy({cluster_id, namespace, pod, port}: pb.container.ProxyRequest) {
+  return ajax.post<pb.container.ProxyResponse>(`/api/containers/proxies/clusters/${cluster_id}/namespaces/${namespace}/pods/${pod}/ports/${port}`);
+}

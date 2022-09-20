@@ -10,13 +10,12 @@ type ProxyPod struct {
 }
 
 func (p ProxyPod) Url() string {
-	return fmt.Sprintf("/proxy/clusters/%v/namespace/%s/pod/%s/port/%s", p.ClusterId, p.Namespace, p.Pod, p.Port)
+	return fmt.Sprintf("/proxy/clusters/%v/namespace/%s/pod/%s/port/%s/", p.ClusterId, p.Namespace, p.Pod, p.Port)
 }
 
 type ProxyManagerInterface interface {
-	Add(ProxyPod) (string, error)
+	Add(ProxyPod) (string, bool, error)
 	GetPortByID(id string) (string, error)
-	GetPodByID(id string) (ProxyPod, error)
 
 	Visit(id string)
 	Check()

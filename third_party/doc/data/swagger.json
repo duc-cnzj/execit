@@ -685,6 +685,63 @@
         }
       }
     },
+    "/api/containers/proxies/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/ports/{port}": {
+      "post": {
+        "tags": [
+          "ContainerSvc"
+        ],
+        "operationId": "ContainerSvc_Proxy",
+        "parameters": [
+          {
+            "type": "string",
+            "format": "int64",
+            "name": "cluster_id",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "namespace",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "pod",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "name": "port",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/containerProxyResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        }
+      }
+    },
     "/api/events": {
       "get": {
         "tags": [
@@ -1819,6 +1876,14 @@
         },
         "url": {
           "type": "string"
+        }
+      }
+    },
+    "containerProxyResponse": {
+      "type": "object",
+      "properties": {
+        "success": {
+          "type": "boolean"
         }
       }
     },

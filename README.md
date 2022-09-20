@@ -39,6 +39,12 @@ open http://localhost:31996
 | metrics.k8s.io/pods(optional)      | `get`                 |
 
 > The web proxy is only suitable for some web applications.
+> 
+> for example:
+> 
+> ✅ kiali, prometheus, minio, ceph-dashboard...
+> 
+> ❌ grafana...
 
 ## 🧀 Preview
 

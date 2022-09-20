@@ -66,7 +66,12 @@ const ProjectContainerLogs: React.FC<{
                   {item.pod}
                 </Tag>
                 {item.proxies && item.proxies.length > 0 && (
-                  <PodEntryPoint proxies={item.proxies}/>
+                  <PodEntryPoint
+                    clusterID={item.cluster_id}
+                    namespace={namespace}
+                    pod={item.pod}
+                    proxies={item.proxies}
+                  />
                 )}
               </div>
             </Radio>

@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/duc-cnzj/execit-client/event"
+
 	"github.com/dustin/go-humanize"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -41,6 +43,29 @@ func init() {
 
 type ContainerSvc struct {
 	container.UnsafeContainerSvcServer
+}
+
+func (c *ContainerSvc) Proxy(ctx context.Context, request *container.ProxyRequest) (*container.ProxyResponse, error) {
+	var (
+		pod = contracts.ProxyPod{
+			ClusterId: request.ClusterId,
+			Namespace: request.Namespace,
+			Pod:       request.Pod,
+			Port:      request.Port,
+		}
+	)
+	_, isNew, err := app.ProxyManager().Add(pod)
+	if err != nil {
+		return nil, err
+	}
+
+	if isNew {
+		AuditLog(MustGetUser(ctx).Name,
+			event.ActionType_Create,
+			fmt.Sprintf("[PROXY]: user '%s' create proxy, cluster_id: '%v', namespace: '%v', pod: '%v', port: '%v' ", MustGetUser(ctx).Name, pod.ClusterId, pod.Namespace, pod.Pod, pod.Port))
+	}
+
+	return &container.ProxyResponse{Success: true}, nil
 }
 
 func (c *ContainerSvc) IsPodRunning(_ context.Context, request *container.IsPodRunningRequest) (*container.IsPodRunningResponse, error) {
