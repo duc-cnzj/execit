@@ -38,7 +38,3 @@ func Uploader() contracts.Uploader {
 func Event() contracts.DispatcherInterface {
 	return App().EventDispatcher()
 }
-
-func Metrics() contracts.Metrics {
-	return App().Metrics()
-}

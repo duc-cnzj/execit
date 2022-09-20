@@ -43,21 +43,12 @@ const (
 
 var _ contracts.ApplicationInterface = (*Application)(nil)
 
-type emptyMetrics struct{}
-
-func (e *emptyMetrics) IncWebsocketConn() {
-}
-
-func (e *emptyMetrics) DecWebsocketConn() {
-}
-
 type Application struct {
 	done          context.Context
 	doneFunc      func()
 	config        *config.Config
 	dbManager     contracts.DBManager
 	dispatcher    contracts.DispatcherInterface
-	metrics       contracts.Metrics
 	servers       []contracts.Server
 	bootstrappers []contracts.Bootstrapper
 
@@ -206,14 +197,6 @@ func (app *Application) SetOidc(provider contracts.OidcConfig) {
 	app.oidcProvider = provider
 }
 
-func (app *Application) SetMetrics(metrics contracts.Metrics) {
-	app.metrics = metrics
-}
-
-func (app *Application) Metrics() contracts.Metrics {
-	return app.metrics
-}
-
 func (app *Application) GetPluginByName(name string) contracts.PluginInterface {
 	return app.plugins[name]
 }
@@ -259,7 +242,6 @@ func NewApplication(config *config.Config, opts ...Option) contracts.Application
 		doneFunc:   cancelFunc,
 		hooks:      make(map[Hook][]contracts.Callback),
 		servers:    []contracts.Server{},
-		metrics:    &emptyMetrics{},
 		k8sClients: make(map[string]contracts.K8s),
 	}
 

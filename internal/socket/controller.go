@@ -14,6 +14,7 @@ import (
 	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/contracts"
+	"github.com/duc-cnzj/execit/internal/metrics"
 	"github.com/duc-cnzj/execit/internal/middlewares"
 	"github.com/duc-cnzj/execit/internal/plugins"
 	"github.com/duc-cnzj/execit/internal/utils"
@@ -77,7 +78,7 @@ func (wc *WebsocketManager) initConn(r *http.Request, c *websocket.Conn) *WsConn
 		lang:   &lang{l: middlewares.MustGetLang(r.Context())},
 	}
 	wsconn.terminalSessions = &SessionMap{Sessions: make(map[string]PtyHandler), conn: wsconn}
-	app.Metrics().IncWebsocketConn()
+	metrics.WebsocketConnectionsCount.Inc()
 	Wait.Inc()
 
 	return wsconn
@@ -89,7 +90,7 @@ func (c *WsConn) Shutdown() {
 	c.terminalSessions.CloseAll()
 	c.pubSub.Close()
 	c.conn.Close()
-	app.Metrics().DecWebsocketConn()
+	metrics.WebsocketConnectionsCount.Dec()
 	Wait.Dec()
 }
 

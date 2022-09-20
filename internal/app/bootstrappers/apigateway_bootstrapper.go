@@ -167,6 +167,10 @@ func serveProxy(r *mux.Router) {
 	r.HandleFunc("/proxy/clusters/{cluster_id:[0-9]+}/namespace/{namespace}/pod/{pod}/port/{port:[0-9]+}/{rest:.*}", fn)
 	app.App().SetProxyManager(proxy2.NewProxyManager())
 	app.ProxyManager().Check()
+	app.App().RegisterAfterShutdownFunc(func(app contracts.ApplicationInterface) {
+		xlog.Info("[PROXY]: close all")
+		app.ProxyManager().CloseAll()
+	})
 }
 
 func HandleProxy(pod contracts.ProxyPod, w http.ResponseWriter, req *http.Request) {

@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/duc-cnzj/execit/internal/metrics"
+
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/config"
 	"github.com/duc-cnzj/execit/internal/contracts"
@@ -137,12 +139,28 @@ func (p *proxyManager) Add(proxypod contracts.ProxyPod) (id string, new bool, er
 		p.visits[newID] = time.Now()
 	}()
 
+	metrics.ProxyConnections.Inc()
 	return newID, true, nil
+}
+
+func (p *proxyManager) CloseAll() error {
+	p.Lock()
+	defer p.Unlock()
+	for _, id := range p.podToID {
+		if err := p.delete(id); err != nil {
+			xlog.Error(err)
+		}
+	}
+	return nil
 }
 
 func (p *proxyManager) Delete(id string) error {
 	p.Lock()
 	defer p.Unlock()
+	return p.delete(id)
+}
+
+func (p *proxyManager) delete(id string) error {
 	pod, ok := p.idToPod[id]
 	if !ok {
 		return errors.New("[PROXY]: not found: " + id)
@@ -155,6 +173,7 @@ func (p *proxyManager) Delete(id string) error {
 	}
 	close(conn.doneChan)
 	delete(p.idToConnections, id)
+	metrics.ProxyConnections.Dec()
 	return nil
 }
 

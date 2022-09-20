@@ -19,4 +19,5 @@ type ProxyManagerInterface interface {
 
 	Visit(id string)
 	Check()
+	CloseAll() error
 }

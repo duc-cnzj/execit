@@ -18,11 +18,6 @@ import (
 
 type Callback func(ApplicationInterface)
 
-type Metrics interface {
-	IncWebsocketConn()
-	DecWebsocketConn()
-}
-
 type Server interface {
 	Run(context.Context) error
 	Shutdown(context.Context) error
@@ -69,9 +64,6 @@ type OidcConfig map[string]OidcConfigItem
 
 type ApplicationInterface interface {
 	IsDebug() bool
-
-	SetMetrics(Metrics)
-	Metrics() Metrics
 
 	Auth() AuthInterface
 	SetAuth(AuthInterface)
