@@ -349,6 +349,26 @@
         },
         "container": {
           "type": "string"
+        },
+        "proxies": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/containerProxyInfo"
+          }
+        }
+      }
+    },
+    "containerProxyInfo": {
+      "type": "object",
+      "properties": {
+        "port": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
         }
       }
     },

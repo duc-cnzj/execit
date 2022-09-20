@@ -189,7 +189,7 @@ func (c *ClusterSvc) Create(ctx context.Context, request *cluster.CreateRequest)
 	if err == nil {
 		restConfig, err = cc.ClientConfig()
 		if err == nil {
-			restConfig.Timeout = 5 * time.Second
+			restConfig.Timeout = 10 * time.Second
 			client, err = kubernetes.NewForConfig(restConfig)
 			if err == nil {
 				validOk, err = RunAccessCheck(client, request.Namespace)

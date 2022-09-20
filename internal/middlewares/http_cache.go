@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/duc-cnzj/execit/internal/utils"
+	"github.com/duc-cnzj/execit/internal/utils/md5"
 	"github.com/duc-cnzj/execit/version"
 )
 
@@ -13,7 +13,7 @@ var Etag string
 func init() {
 	v := version.GetVersion()
 	if v.HasBuildInfo() {
-		Etag = utils.Md5(fmt.Sprintf("%s-%s", v.GitCommit, v.BuildDate))
+		Etag = md5.Md5(fmt.Sprintf("%s-%s", v.GitCommit, v.BuildDate))
 	}
 }
 

@@ -35,6 +35,111 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on ProxyInfo with the rules defined in the
+// proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ProxyInfo) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ProxyInfo with the rules defined in
+// the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ProxyInfoMultiError, or nil
+// if none found.
+func (m *ProxyInfo) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ProxyInfo) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Port
+
+	// no validation rules for Name
+
+	// no validation rules for Url
+
+	if len(errors) > 0 {
+		return ProxyInfoMultiError(errors)
+	}
+
+	return nil
+}
+
+// ProxyInfoMultiError is an error wrapping multiple validation errors returned
+// by ProxyInfo.ValidateAll() if the designated constraints aren't met.
+type ProxyInfoMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ProxyInfoMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ProxyInfoMultiError) AllErrors() []error { return m }
+
+// ProxyInfoValidationError is the validation error returned by
+// ProxyInfo.Validate if the designated constraints aren't met.
+type ProxyInfoValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ProxyInfoValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ProxyInfoValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ProxyInfoValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ProxyInfoValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ProxyInfoValidationError) ErrorName() string { return "ProxyInfoValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ProxyInfoValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sProxyInfo.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ProxyInfoValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ProxyInfoValidationError{}
+
 // Validate checks the field values on Item with the rules defined in the proto
 // definition for this message. If any rules are violated, the first error
 // encountered is returned, or nil if there are no violations.
@@ -63,6 +168,40 @@ func (m *Item) validate(all bool) error {
 	// no validation rules for Pod
 
 	// no validation rules for Container
+
+	for idx, item := range m.GetProxies() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ItemValidationError{
+						field:  fmt.Sprintf("Proxies[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ItemValidationError{
+						field:  fmt.Sprintf("Proxies[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ItemValidationError{
+					field:  fmt.Sprintf("Proxies[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
 
 	if len(errors) > 0 {
 		return ItemMultiError(errors)
@@ -1672,3 +1811,248 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = LogResponseValidationError{}
+
+// Validate checks the field values on ProxyRequest with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ProxyRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ProxyRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ProxyRequestMultiError, or
+// nil if none found.
+func (m *ProxyRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ProxyRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.GetClusterId() <= 0 {
+		err := ProxyRequestValidationError{
+			field:  "ClusterId",
+			reason: "value must be greater than 0",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(m.GetNamespace()) < 1 {
+		err := ProxyRequestValidationError{
+			field:  "Namespace",
+			reason: "value length must be at least 1 bytes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(m.GetPod()) < 1 {
+		err := ProxyRequestValidationError{
+			field:  "Pod",
+			reason: "value length must be at least 1 bytes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(m.GetPort()) < 1 {
+		err := ProxyRequestValidationError{
+			field:  "Port",
+			reason: "value length must be at least 1 bytes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if len(errors) > 0 {
+		return ProxyRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ProxyRequestMultiError is an error wrapping multiple validation errors
+// returned by ProxyRequest.ValidateAll() if the designated constraints aren't met.
+type ProxyRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ProxyRequestMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ProxyRequestMultiError) AllErrors() []error { return m }
+
+// ProxyRequestValidationError is the validation error returned by
+// ProxyRequest.Validate if the designated constraints aren't met.
+type ProxyRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ProxyRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ProxyRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ProxyRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ProxyRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ProxyRequestValidationError) ErrorName() string { return "ProxyRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ProxyRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sProxyRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ProxyRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ProxyRequestValidationError{}
+
+// Validate checks the field values on ProxyResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ProxyResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ProxyResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ProxyResponseMultiError, or
+// nil if none found.
+func (m *ProxyResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ProxyResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Success
+
+	if len(errors) > 0 {
+		return ProxyResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ProxyResponseMultiError is an error wrapping multiple validation errors
+// returned by ProxyResponse.ValidateAll() if the designated constraints
+// aren't met.
+type ProxyResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ProxyResponseMultiError) Error() string {
+	var msgs []string
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ProxyResponseMultiError) AllErrors() []error { return m }
+
+// ProxyResponseValidationError is the validation error returned by
+// ProxyResponse.Validate if the designated constraints aren't met.
+type ProxyResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ProxyResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ProxyResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ProxyResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ProxyResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ProxyResponseValidationError) ErrorName() string { return "ProxyResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ProxyResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sProxyResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ProxyResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ProxyResponseValidationError{}

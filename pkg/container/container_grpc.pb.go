@@ -76,6 +76,7 @@ type ContainerSvcClient interface {
 	ContainerLog(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (*LogResponse, error)
 	// StreamContainerLog stream 方式查看 pod 日志
 	StreamContainerLog(ctx context.Context, in *LogRequest, opts ...grpc.CallOption) (ContainerSvc_StreamContainerLogClient, error)
+	Proxy(ctx context.Context, in *ProxyRequest, opts ...grpc.CallOption) (*ProxyResponse, error)
 }
 
 type containerSvcClient struct {
@@ -220,6 +221,15 @@ func (x *containerSvcStreamContainerLogClient) Recv() (*LogResponse, error) {
 	return m, nil
 }
 
+func (c *containerSvcClient) Proxy(ctx context.Context, in *ProxyRequest, opts ...grpc.CallOption) (*ProxyResponse, error) {
+	out := new(ProxyResponse)
+	err := c.cc.Invoke(ctx, "/container.ContainerSvc/Proxy", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ContainerSvcServer is the server API for ContainerSvc service.
 // All implementations must embed UnimplementedContainerSvcServer
 // for forward compatibility
@@ -277,6 +287,7 @@ type ContainerSvcServer interface {
 	ContainerLog(context.Context, *LogRequest) (*LogResponse, error)
 	// StreamContainerLog stream 方式查看 pod 日志
 	StreamContainerLog(*LogRequest, ContainerSvc_StreamContainerLogServer) error
+	Proxy(context.Context, *ProxyRequest) (*ProxyResponse, error)
 	mustEmbedUnimplementedContainerSvcServer()
 }
 
@@ -304,6 +315,9 @@ func (UnimplementedContainerSvcServer) ContainerLog(context.Context, *LogRequest
 }
 func (UnimplementedContainerSvcServer) StreamContainerLog(*LogRequest, ContainerSvc_StreamContainerLogServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamContainerLog not implemented")
+}
+func (UnimplementedContainerSvcServer) Proxy(context.Context, *ProxyRequest) (*ProxyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Proxy not implemented")
 }
 func (UnimplementedContainerSvcServer) mustEmbedUnimplementedContainerSvcServer() {}
 
@@ -458,6 +472,24 @@ func (x *containerSvcStreamContainerLogServer) Send(m *LogResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
+func _ContainerSvc_Proxy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ProxyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ContainerSvcServer).Proxy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/container.ContainerSvc/Proxy",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ContainerSvcServer).Proxy(ctx, req.(*ProxyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ContainerSvc_ServiceDesc is the grpc.ServiceDesc for ContainerSvc service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -480,6 +512,10 @@ var ContainerSvc_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ContainerLog",
 			Handler:    _ContainerSvc_ContainerLog_Handler,
+		},
+		{
+			MethodName: "Proxy",
+			Handler:    _ContainerSvc_Proxy_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

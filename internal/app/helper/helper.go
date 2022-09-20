@@ -15,6 +15,10 @@ func Auth() contracts.AuthInterface {
 	return App().Auth()
 }
 
+func ProxyManager() contracts.ProxyManagerInterface {
+	return App().ProxyManager()
+}
+
 func Oidc() contracts.OidcConfig {
 	return App().Oidc()
 }
@@ -33,8 +37,4 @@ func Uploader() contracts.Uploader {
 
 func Event() contracts.DispatcherInterface {
 	return App().EventDispatcher()
-}
-
-func Metrics() contracts.Metrics {
-	return App().Metrics()
 }

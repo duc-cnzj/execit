@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"context"
 	"fmt"
 
 	app "github.com/duc-cnzj/execit/internal/app/helper"
@@ -10,12 +9,10 @@ import (
 	"github.com/duc-cnzj/execit/internal/xlog"
 
 	v1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
 )
 
-func IsPodRunning(kubeClient kubernetes.Interface, namespace, podName string) (running bool, notRunningReason string) {
-	podInfo, err := kubeClient.CoreV1().Pods(namespace).Get(context.TODO(), podName, metav1.GetOptions{})
+func IsPodRunning(kubeClient contracts.K8s, namespace, podName string) (running bool, notRunningReason string) {
+	podInfo, err := kubeClient.PodLister().Pods(namespace).Get(podName)
 	if err != nil {
 		return false, err.Error()
 	}
