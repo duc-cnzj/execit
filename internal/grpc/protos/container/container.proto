@@ -199,7 +199,7 @@ service ContainerSvc {
 
   rpc Proxy(ProxyRequest) returns (ProxyResponse) {
     option (google.api.http) = {
-      post: "/api/containers/proxies/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/ports/{port}"
+      post: "/api/containers/proxies"
       body: "*"
     };
   }

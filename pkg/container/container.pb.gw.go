@@ -420,53 +420,6 @@ func request_ContainerSvc_Proxy_0(ctx context.Context, marshaler runtime.Marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["cluster_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "cluster_id")
-	}
-
-	protoReq.ClusterId, err = runtime.Int64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "cluster_id", err)
-	}
-
-	val, ok = pathParams["namespace"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "namespace")
-	}
-
-	protoReq.Namespace, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "namespace", err)
-	}
-
-	val, ok = pathParams["pod"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "pod")
-	}
-
-	protoReq.Pod, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "pod", err)
-	}
-
-	val, ok = pathParams["port"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "port")
-	}
-
-	protoReq.Port, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "port", err)
-	}
-
 	msg, err := client.Proxy(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
@@ -482,53 +435,6 @@ func local_request_ContainerSvc_Proxy_0(ctx context.Context, marshaler runtime.M
 	}
 	if err := marshaler.NewDecoder(newReader()).Decode(&protoReq); err != nil && err != io.EOF {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
-	}
-
-	var (
-		val string
-		ok  bool
-		err error
-		_   = err
-	)
-
-	val, ok = pathParams["cluster_id"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "cluster_id")
-	}
-
-	protoReq.ClusterId, err = runtime.Int64(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "cluster_id", err)
-	}
-
-	val, ok = pathParams["namespace"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "namespace")
-	}
-
-	protoReq.Namespace, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "namespace", err)
-	}
-
-	val, ok = pathParams["pod"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "pod")
-	}
-
-	protoReq.Pod, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "pod", err)
-	}
-
-	val, ok = pathParams["port"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "port")
-	}
-
-	protoReq.Port, err = runtime.String(val)
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "port", err)
 	}
 
 	msg, err := server.Proxy(ctx, &protoReq)
@@ -666,7 +572,7 @@ func RegisterContainerSvcHandlerServer(ctx context.Context, mux *runtime.ServeMu
 		ctx = grpc.NewContextWithServerTransportStream(ctx, &stream)
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/container.ContainerSvc/Proxy", runtime.WithHTTPPathPattern("/api/containers/proxies/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/ports/{port}"))
+		ctx, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/container.ContainerSvc/Proxy", runtime.WithHTTPPathPattern("/api/containers/proxies"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -876,7 +782,7 @@ func RegisterContainerSvcHandlerClient(ctx context.Context, mux *runtime.ServeMu
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
-		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/Proxy", runtime.WithHTTPPathPattern("/api/containers/proxies/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/ports/{port}"))
+		ctx, err = runtime.AnnotateContext(ctx, mux, req, "/container.ContainerSvc/Proxy", runtime.WithHTTPPathPattern("/api/containers/proxies"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -910,7 +816,7 @@ var (
 
 	pattern_ContainerSvc_StreamContainerLog_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7, 2, 8, 1, 0, 4, 1, 5, 9, 2, 1, 1, 0, 4, 1, 5, 10, 2, 11}, []string{"api", "containers", "cards", "card_id", "clusters", "cluster_id", "namespaces", "namespace", "pods", "pod", "container", "stream_logs"}, ""))
 
-	pattern_ContainerSvc_Proxy_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 2, 3, 1, 0, 4, 1, 5, 4, 2, 5, 1, 0, 4, 1, 5, 6, 2, 7, 1, 0, 4, 1, 5, 8, 2, 9, 1, 0, 4, 1, 5, 10}, []string{"api", "containers", "proxies", "clusters", "cluster_id", "namespaces", "namespace", "pods", "pod", "ports", "port"}, ""))
+	pattern_ContainerSvc_Proxy_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"api", "containers", "proxies"}, ""))
 )
 
 var (

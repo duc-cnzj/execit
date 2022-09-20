@@ -170,6 +170,7 @@ func serveProxy(r *mux.Router) {
 	app.App().RegisterAfterShutdownFunc(func(app contracts.ApplicationInterface) {
 		xlog.Info("[PROXY]: close all")
 		app.ProxyManager().CloseAll()
+		time.Sleep(1 * time.Second)
 	})
 }
 

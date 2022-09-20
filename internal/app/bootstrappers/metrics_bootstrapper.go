@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/duc-cnzj/execit/internal/contracts"
+	_ "github.com/duc-cnzj/execit/internal/metrics"
 	"github.com/duc-cnzj/execit/internal/xlog"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"

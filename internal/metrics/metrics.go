@@ -24,7 +24,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 )
 
-const system = "exec-it"
+const system = "execit"
 
 var appVersion = version.GetVersion().String()
 

@@ -685,7 +685,7 @@
         }
       }
     },
-    "/api/containers/proxies/clusters/{cluster_id}/namespaces/{namespace}/pods/{pod}/ports/{port}": {
+    "/api/containers/proxies": {
       "post": {
         "tags": [
           "ContainerSvc"
@@ -693,36 +693,11 @@
         "operationId": "ContainerSvc_Proxy",
         "parameters": [
           {
-            "type": "string",
-            "format": "int64",
-            "name": "cluster_id",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "namespace",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "pod",
-            "in": "path",
-            "required": true
-          },
-          {
-            "type": "string",
-            "name": "port",
-            "in": "path",
-            "required": true
-          },
-          {
             "name": "body",
             "in": "body",
             "required": true,
             "schema": {
-              "type": "object"
+              "$ref": "#/definitions/containerProxyRequest"
             }
           }
         ],
@@ -1875,6 +1850,24 @@
           "type": "string"
         },
         "url": {
+          "type": "string"
+        }
+      }
+    },
+    "containerProxyRequest": {
+      "type": "object",
+      "properties": {
+        "cluster_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "pod": {
+          "type": "string"
+        },
+        "port": {
           "type": "string"
         }
       }
