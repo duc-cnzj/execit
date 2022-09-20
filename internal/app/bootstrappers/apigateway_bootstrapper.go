@@ -194,7 +194,7 @@ func HandleProxy(pod contracts.ProxyPod, w http.ResponseWriter, req *http.Reques
 	}
 	newReq := req.WithContext(req.Context())
 	newReq.Header = net.CloneHeader(req.Header)
-	newReq.Host = parse.Host
+	newReq.Host = req.Host
 	newReq.URL.Path = strings.TrimPrefix(newReq.URL.Path, prepend)
 	xlog.Debugf("a: '%s' \n b: '%s' \n c: '%s", req.URL.Path, prepend, newReq.URL.Path)
 	rp.ServeHTTP(w, newReq)
