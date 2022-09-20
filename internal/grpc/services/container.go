@@ -61,7 +61,7 @@ func (c *ContainerSvc) Proxy(ctx context.Context, request *container.ProxyReques
 	if isNew {
 		AuditLog(MustGetUser(ctx).Name,
 			event.ActionType_Create,
-			fmt.Sprintf("[PROXY]: user '%s' create proxy, cluster_id: '%v', namespace: '%v', pod: '%v', port: '%v' ", MustGetUser(ctx).Name, pod.ClusterId, pod.Namespace, pod.Pod, pod.Port))
+			fmt.Sprintf("[PROXY]: user '%s' create web proxy, cluster_id: '%v', namespace: '%v', pod: '%v', port: '%v' ", MustGetUser(ctx).Name, pod.ClusterId, pod.Namespace, pod.Pod, pod.Port))
 	}
 
 	return &container.ProxyResponse{Success: true}, nil
