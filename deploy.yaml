@@ -17,6 +17,9 @@ spec:
   replicas: 1
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9001"
       labels:
         app: execit
     spec:
@@ -43,6 +46,9 @@ spec:
         - name: db
           mountPath: /data
         ports:
+          - name: metrics
+            containerPort: 9001
+            protocol: TCP
           - containerPort: 6000
             name: http
             protocol: TCP
