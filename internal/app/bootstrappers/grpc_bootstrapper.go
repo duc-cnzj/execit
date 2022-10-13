@@ -106,7 +106,8 @@ func (g *grpcRunner) Run(ctx context.Context) error {
 			},
 			grpc_recovery.UnaryServerInterceptor(grpc_recovery.WithRecoveryHandler(func(p any) (err error) {
 				bf := make([]byte, 1024*5)
-				runtime.Stack(bf, false)
+				n := runtime.Stack(bf, false)
+				bf = bf[:n]
 				xlog.Error("[Grpc]: recovery error: ", p, string(bf))
 				return nil
 			})),
