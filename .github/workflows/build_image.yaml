@@ -11,12 +11,12 @@ jobs:
     steps:
       -
         name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set output
         id: vars
-        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+        run: echo "tag=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
       -
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
         id: buildx
         with:
           install: true
@@ -25,4 +25,4 @@ jobs:
         run: |
           docker login registry.cn-hangzhou.aliyuncs.com -u ${{ secrets.ALIYUN_DOCKER_USERNAME }} --password ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
           docker login -u ${{ secrets.DOCKER_USERNAME }} --password ${{ secrets.DOCKER_PASSWORD }}
-          docker build --platform linux/arm64,linux/amd64 -t duccnzj/execit -t duccnzj/execit:${{ steps.vars.outputs.tag }} -t registry.cn-hangzhou.aliyuncs.com/duc-cnzj/execit:${{ steps.vars.outputs.tag }} -t registry.cn-hangzhou.aliyuncs.com/duc-cnzj/execit --push .
+          docker build --platform linux/arm64,linux/amd64 -t duccnzj/execit -t duccnzj/execit:${{ env.tag }} -t registry.cn-hangzhou.aliyuncs.com/duc-cnzj/execit:${{ env.tag }} -t registry.cn-hangzhou.aliyuncs.com/duc-cnzj/execit --push .

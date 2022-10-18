@@ -8,12 +8,12 @@ jobs:
     name: build-frontend
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           cache: "yarn"
           cache-dependency-path: frontend/yarn.lock
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         id: yarn-cache
         with:
           path: |
@@ -28,7 +28,7 @@ jobs:
         with:
           cmd: --cwd frontend build
       - name: upload build files
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: frontend_dist_files
           path: |
@@ -39,19 +39,19 @@ jobs:
     name: unittest
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download frontend files
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: frontend_dist_files
           path: frontend/build
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v3
         with:
           go-version: '1.18'
       - run: |
@@ -62,19 +62,19 @@ jobs:
     name: Build Go Binary linux amd64
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download frontend files
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: frontend_dist_files
           path: frontend/build
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v3
         with:
           go-version: '1.18'
       - run: |
@@ -82,13 +82,13 @@ jobs:
           make build_linux_amd64
           make build_linux_arm64
       - name: upload app-linux-amd64
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: app-linux-amd64
           path: |
             app-linux-amd64
       - name: upload app-linux-arm64
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: app-linux-arm64
           path: |
@@ -99,32 +99,32 @@ jobs:
     name: Build Go Binary macos amd64
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Download frontend files
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: frontend_dist_files
           path: frontend/build
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: ~/go/pkg/mod
           key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
           restore-keys: |
             ${{ runner.os }}-go-
-      - uses: actions/setup-go@v2
+      - uses: actions/setup-go@v3
         with:
           go-version: '1.18'
       - run: |
           make build_darwin_arm64
           make build_darwin_amd64
       - name: upload app-darwin-arm64
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: app-darwin-arm64
           path: |
             app-darwin-arm64
       - name: upload app-darwin-amd64
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: app-darwin-amd64
           path: |
@@ -136,24 +136,24 @@ jobs:
     permissions:
       contents: write
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Download linux arm64 app
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: app-linux-arm64
         path: /tmp
     - name: Download linux amd64 app
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: app-linux-amd64
         path: /tmp
     - name: Download darwin amd64 app
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: app-darwin-amd64
         path: /tmp
     - name: Download darwin arm64 app
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: app-darwin-arm64
         path: /tmp

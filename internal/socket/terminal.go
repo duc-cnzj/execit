@@ -194,7 +194,10 @@ func (r *Recorder) Write(data string) (err error) {
 		r.startTime = r.timer.Now()
 		r.HeadLine(106, 25)
 	})
-	marshal, _ := json.Marshal(data)
+	marshal, err := json.Marshal(data)
+	if err != nil {
+		xlog.Error(err)
+	}
 	_, err = r.buffer.WriteString(fmt.Sprintf(writeLine, float64(time.Since(r.startTime).Microseconds())/1000000, string(marshal)))
 	return err
 }
