@@ -16,6 +16,19 @@ type JwtClaims struct {
 	*UserInfo
 }
 
+type ClaimUserInfo struct {
+	LogoutUrl string `json:"logout_url"`
+	OpenIDClaims
+}
+
+func (c ClaimUserInfo) ToUserInfo() UserInfo {
+	return UserInfo{
+		LogoutUrl:    c.LogoutUrl,
+		Roles:        []string{},
+		OpenIDClaims: c.OpenIDClaims,
+	}
+}
+
 type UserInfo struct {
 	LogoutUrl   string             `json:"logout_url"`
 	Roles       []string           `json:"roles"`

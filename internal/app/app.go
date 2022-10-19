@@ -3,6 +3,8 @@ package app
 import (
 	"context"
 	"fmt"
+	"net"
+	"net/url"
 	"os"
 	"os/signal"
 	"sync"
@@ -30,6 +32,7 @@ import (
 	"github.com/duc-cnzj/execit/internal/database"
 	"github.com/duc-cnzj/execit/internal/event/events"
 	"github.com/duc-cnzj/execit/internal/models"
+	"github.com/duc-cnzj/execit/internal/utils"
 	"github.com/duc-cnzj/execit/internal/xlog"
 )
 
@@ -356,6 +359,7 @@ func (app *Application) RunServerHooks(hook Hook) {
 		wg.Add(1)
 		go func(cb contracts.Callback) {
 			defer wg.Done()
+			defer utils.HandlePanic("RunServerHooks: " + string(hook))
 			cb(app)
 		}(cb)
 	}
@@ -369,17 +373,34 @@ func (app *Application) BeforeServerRunHooks(cb contracts.Callback) {
 }
 
 // NewKubeClient TODO  metrics: record initialized time
-func NewKubeClient(kubeconfig []byte) (client kubernetes.Interface, restConfig *restclient.Config, err error) {
+func NewKubeClient(kubeconfig []byte) (kubernetes.Interface, *restclient.Config, error) {
+	var (
+		cc         clientcmd.ClientConfig
+		restConfig = &restclient.Config{}
+		conn       net.Conn
+		k8sUrl     *url.URL
+		err        error
+		client     kubernetes.Interface
+	)
 	defer func() {
 		xlog.Warningf("new kube client %s", restConfig.Host)
 	}()
-	var cc clientcmd.ClientConfig
+
 	cc, err = clientcmd.NewClientConfigFromBytes(kubeconfig)
 	if err == nil {
 		restConfig, err = cc.ClientConfig()
 		if err == nil {
 			restConfig.QPS = -1
 		}
+		k8sUrl, err = url.Parse(restConfig.Host)
+		if err != nil {
+			return nil, nil, err
+		}
+		conn, err = net.DialTimeout("tcp", k8sUrl.Host, time.Second*3)
+		if err != nil {
+			return nil, nil, err
+		}
+		defer conn.Close()
 		client, err = kubernetes.NewForConfig(restConfig)
 		if err == nil {
 			return client, restConfig, err

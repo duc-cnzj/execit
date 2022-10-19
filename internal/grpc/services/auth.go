@@ -128,32 +128,31 @@ func (a *AuthSvc) Settings(ctx context.Context, request *auth.SettingsRequest) (
 
 func (a *AuthSvc) Exchange(ctx context.Context, request *auth.ExchangeRequest) (*auth.ExchangeResponse, error) {
 	var (
-		idtoken  *oidc.IDToken
-		err      error
-		userinfo contracts.UserInfo
-		parsed   bool
+		idtoken       *oidc.IDToken
+		err           error
+		claimUserInfo contracts.ClaimUserInfo
+		parsed        bool
 	)
 
 	for _, item := range a.cfg {
 		if idtoken, err = verify(item.Config, item.Provider, request.Code); err != nil {
 			continue
 		}
-		if err := idtoken.Claims(&userinfo); err != nil {
+		if err := idtoken.Claims(&claimUserInfo); err != nil {
 			return nil, err
 		}
 		parsed = true
-		userinfo.LogoutUrl = item.EndSessionEndpoint
+		claimUserInfo.LogoutUrl = item.EndSessionEndpoint
 	}
 
 	if !parsed {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid code: "+request.Code)
 	}
 
-	userinfo.Roles = []string{}
-
-	xlog.Debug(userinfo)
+	xlog.Debug(claimUserInfo)
 	//userinfo.Permissions = auth2.GetUserPermissions(userinfo.Email)
-	data, err := a.authsvc.Sign(&userinfo)
+	userInfo := claimUserInfo.ToUserInfo()
+	data, err := a.authsvc.Sign(&userInfo)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
