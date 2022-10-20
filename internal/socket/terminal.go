@@ -82,9 +82,7 @@ func (s *sizeStore) Set(cols, rows uint16) {
 func (s *sizeStore) Changed(cols, rows uint16) bool {
 	s.rwMu.RLock()
 	defer s.rwMu.RUnlock()
-	if s.rows == 0 || s.cols == 0 {
-		return false
-	}
+
 	if s.rows != rows {
 		return true
 	}
@@ -194,10 +192,7 @@ func (r *Recorder) Write(data string) (err error) {
 		r.startTime = r.timer.Now()
 		r.HeadLine(106, 25)
 	})
-	marshal, err := json.Marshal(data)
-	if err != nil {
-		xlog.Error(err)
-	}
+	marshal, _ := json.Marshal(data)
 	_, err = r.buffer.WriteString(fmt.Sprintf(writeLine, float64(time.Since(r.startTime).Microseconds())/1000000, string(marshal)))
 	return err
 }
