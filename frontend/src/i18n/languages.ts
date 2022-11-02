@@ -299,6 +299,10 @@ const languages: Lang = {
     en: "Click to reload",
     zh: "点击重新加载",
   },
+  "size": {
+    en: "size",
+    zh: "大小",
+  },
   username: {
     en: "username",
     zh: "用户名",

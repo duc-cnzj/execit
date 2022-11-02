@@ -1936,6 +1936,9 @@
           "type": "string",
           "format": "int64"
         },
+        "humanize_size": {
+          "type": "string"
+        },
         "id": {
           "type": "string",
           "format": "int64"

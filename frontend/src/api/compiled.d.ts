@@ -3512,6 +3512,9 @@ export namespace event {
 
         /** ListItem duration */
         duration?: (string|null);
+
+        /** ListItem humanize_size */
+        humanize_size?: (string|null);
     }
 
     /** Represents a ListItem. */
@@ -3549,6 +3552,9 @@ export namespace event {
 
         /** ListItem duration. */
         public duration: string;
+
+        /** ListItem humanize_size. */
+        public humanize_size: string;
 
         /**
          * Encodes the specified ListItem message. Does not implicitly {@link event.ListItem.verify|verify} messages.

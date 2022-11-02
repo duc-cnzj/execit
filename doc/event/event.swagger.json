@@ -124,6 +124,9 @@
         },
         "duration": {
           "type": "string"
+        },
+        "humanize_size": {
+          "type": "string"
         }
       }
     },

@@ -7518,6 +7518,7 @@ export const event = $root.event = (() => {
          * @property {string|null} [event_at] ListItem event_at
          * @property {number|null} [file_id] ListItem file_id
          * @property {string|null} [duration] ListItem duration
+         * @property {string|null} [humanize_size] ListItem humanize_size
          */
 
         /**
@@ -7608,6 +7609,14 @@ export const event = $root.event = (() => {
         ListItem.prototype.duration = "";
 
         /**
+         * ListItem humanize_size.
+         * @member {string} humanize_size
+         * @memberof event.ListItem
+         * @instance
+         */
+        ListItem.prototype.humanize_size = "";
+
+        /**
          * Encodes the specified ListItem message. Does not implicitly {@link event.ListItem.verify|verify} messages.
          * @function encode
          * @memberof event.ListItem
@@ -7637,6 +7646,8 @@ export const event = $root.event = (() => {
                 writer.uint32(/* id 8, wireType 0 =*/64).int64(message.file_id);
             if (message.duration != null && Object.hasOwnProperty.call(message, "duration"))
                 writer.uint32(/* id 9, wireType 2 =*/74).string(message.duration);
+            if (message.humanize_size != null && Object.hasOwnProperty.call(message, "humanize_size"))
+                writer.uint32(/* id 10, wireType 2 =*/82).string(message.humanize_size);
             return writer;
         };
 
@@ -7692,6 +7703,10 @@ export const event = $root.event = (() => {
                     }
                 case 9: {
                         message.duration = reader.string();
+                        break;
+                    }
+                case 10: {
+                        message.humanize_size = reader.string();
                         break;
                     }
                 default:

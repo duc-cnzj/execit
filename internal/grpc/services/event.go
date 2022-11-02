@@ -49,27 +49,32 @@ func (e *EventSvc) List(ctx context.Context, request *event.ListRequest) (*event
 	}
 
 	if err := app.DB().Preload("File", func(db *gorm.DB) *gorm.DB {
-		return db.Select("ID")
+		return db.Select("ID", "Size")
 	}).Scopes(queryScope, scopes.Paginate(&page, &pageSize)).Order("`id` DESC").Find(&events).Error; err != nil {
 		return nil, err
 	}
 	app.DB().Model(&models.Event{}).Scopes(queryScope).Count(&count)
 	res := make([]*event.ListItem, 0, len(events))
 	for _, m := range events {
-		var fid int64
+		var (
+			fid   int64
+			fsize string
+		)
 		if m.File != nil {
 			fid = int64(m.File.ID)
+			fsize = humanize.Bytes(m.File.Size)
 		}
 		res = append(res, &event.ListItem{
-			Id:       int64(m.ID),
-			Action:   event.ActionType(m.Action),
-			Username: m.Username,
-			Message:  m.Message,
-			Old:      m.Old,
-			New:      m.New,
-			FileId:   fid,
-			EventAt:  humanize.Time(m.CreatedAt),
-			Duration: m.Duration,
+			Id:           int64(m.ID),
+			Action:       event.ActionType(m.Action),
+			Username:     m.Username,
+			Message:      m.Message,
+			Old:          m.Old,
+			New:          m.New,
+			FileId:       fid,
+			HumanizeSize: fsize,
+			EventAt:      humanize.Time(m.CreatedAt),
+			Duration:     m.Duration,
 		})
 	}
 

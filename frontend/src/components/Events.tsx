@@ -347,7 +347,7 @@ const EventList: React.FC = () => {
                       {t("viewing Operation Records")}
                       {item.duration && (
                         <span style={{ fontSize: "10px", marginLeft: 5 }}>
-                          ({t("duration")}: {item.duration})
+                          ({t("duration")}: {item.duration}, {t("size")}: {item.humanize_size})
                         </span>
                       )}
                     </Button>

@@ -200,6 +200,8 @@ func (m *ListItem) validate(all bool) error {
 
 	// no validation rules for Duration
 
+	// no validation rules for HumanizeSize
+
 	if len(errors) > 0 {
 		return ListItemMultiError(errors)
 	}

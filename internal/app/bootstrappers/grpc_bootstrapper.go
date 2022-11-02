@@ -64,6 +64,7 @@ func (g *grpcRunner) Run(ctx context.Context) error {
 		return err
 	}
 	server := grpc.NewServer(
+		grpc.MaxRecvMsgSize(1<<20*20), // 20 Mib
 		grpc.ChainStreamInterceptor(
 			middlewares.I18nStreamServerInterceptor(),
 			grpc_opentracing.StreamServerInterceptor(traceWithOpName()),

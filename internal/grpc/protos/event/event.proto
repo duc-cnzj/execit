@@ -35,6 +35,7 @@ message ListItem {
   string event_at = 7;
   int64 file_id = 8;
   string duration = 9;
+  string humanize_size = 10;
 }
 
 message ListResponse {
