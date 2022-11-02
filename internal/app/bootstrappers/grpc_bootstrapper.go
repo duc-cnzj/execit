@@ -57,8 +57,6 @@ func (g *grpcRunner) Shutdown(ctx context.Context) error {
 	}
 }
 
-const MaxRecvSize = 1 << 20 * 20
-
 func (g *grpcRunner) Run(ctx context.Context) error {
 	xlog.Infof("[Server]: start grpcRunner runner at %s.", g.endpoint)
 	listen, err := net.Listen("tcp", g.endpoint)
@@ -66,7 +64,6 @@ func (g *grpcRunner) Run(ctx context.Context) error {
 		return err
 	}
 	server := grpc.NewServer(
-		grpc.MaxRecvMsgSize(MaxRecvSize), // 20 Mib
 		grpc.ChainStreamInterceptor(
 			middlewares.I18nStreamServerInterceptor(),
 			grpc_opentracing.StreamServerInterceptor(traceWithOpName()),

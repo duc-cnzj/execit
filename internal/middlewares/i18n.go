@@ -46,7 +46,7 @@ func In18nUnaryClientInterceptor() grpc.UnaryClientInterceptor {
 			})
 		}
 		outgoingContext := metadata.NewOutgoingContext(ctx, md)
-		return invoker(outgoingContext, method, req, reply, cc)
+		return invoker(outgoingContext, method, req, reply, cc, opts...)
 	}
 }
 
@@ -97,7 +97,7 @@ func I18nStreamClientInterceptor() grpc.StreamClientInterceptor {
 			})
 		}
 		ctx = metadata.NewOutgoingContext(ctx, md)
-		return streamer(ctx, desc, cc, method)
+		return streamer(ctx, desc, cc, method, opts...)
 	}
 }
 

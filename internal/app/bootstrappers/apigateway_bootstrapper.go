@@ -44,6 +44,8 @@ import (
 	"k8s.io/apimachinery/pkg/util/net"
 )
 
+const MaxRecvSize = 1 << 20 * 20
+
 type ApiGatewayBootstrapper struct{}
 
 func (a *ApiGatewayBootstrapper) Bootstrap(app contracts.ApplicationInterface) error {
@@ -90,7 +92,9 @@ func (a *apiGateway) Run(ctx context.Context) error {
 		}))
 
 	opts := []grpc.DialOption{
-		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(MaxRecvSize)),
+		grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(MaxRecvSize),
+		),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithChainUnaryInterceptor(
 			grpc_opentracing.UnaryClientInterceptor(grpc_opentracing.WithFilterFunc(middlewares.TracingIgnoreFn), grpc_opentracing.WithTracer(opentracing.GlobalTracer())),
