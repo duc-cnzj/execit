@@ -44,7 +44,7 @@ export const setLang = (lang: string) => {
 };
 
 export const getLang = (): string => {
-  return window.localStorage.getItem("lang") || "en";
+  return window.localStorage.getItem("lang") || "zh";
 };
 
 export const setOwned = (owned: boolean) => {

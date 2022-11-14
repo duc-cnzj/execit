@@ -11,10 +11,6 @@ interface LangResult {
   };
 }
 const languages: Lang = {
-  duc: {
-    en: "hello",
-    zh: "你好",
-  },
   "Don't have any project cards yet": {
     en: "Don't have any project cards yet",
     zh: "还没有任何项目卡片",
