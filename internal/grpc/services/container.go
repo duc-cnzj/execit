@@ -340,7 +340,7 @@ func (c *ContainerSvc) StreamContainerLog(request *container.LogRequest, server 
 	}
 	bf := bufio.NewReader(stream)
 
-	ch := make(chan []byte)
+	ch := make(chan []byte, 100)
 	go func() {
 		defer func() {
 			xlog.Debug("[Stream]:  read exit!")
