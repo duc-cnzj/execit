@@ -81,7 +81,7 @@ const Login: React.FC = () => {
       </div>
       <div className="login__card">
         <div className="login__title">
-          <span style={{ textTransform: "uppercase" }}>ExecIt</span> Login
+          <span className="login__title__app-name">{t("exec-it")}</span>
         </div>
         <div>
           <Form

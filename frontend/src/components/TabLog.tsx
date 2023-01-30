@@ -63,7 +63,7 @@ const ProjectContainerLogs: React.FC<{
               <div style={{ display: "flex", alignItems: "center" }}>
                 {item.container}
                 <Tag color="magenta" style={{ marginLeft: 5 }}>
-                  {item.pod}
+                  {item.pod} {item.is_new && <span style={{ fontFamily: '"Fira code", "Fira Mono", monospace', color: "red", textShadow: "0px 0px 3px red", marginRight: 3}}>new</span>}
                 </Tag>
                 {item.proxies && item.proxies.length > 0 && (
                   <PodEntryPoint

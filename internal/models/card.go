@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
 	"gorm.io/gorm"
@@ -29,8 +30,13 @@ type Card struct {
 	Cluster Cluster
 }
 
+// isNewPod 返回创建时间小于 5 min 的 pod.
+func isNewPod(pod *v1.Pod) bool {
+	return pod.CreationTimestamp.Add(5 * time.Minute).After(time.Now())
+}
+
 func (c Card) GetItems() ([]*cc.Item, error) {
-	var subItems []*cc.Item
+	var subItems sortItems
 
 	client, err := app.App().LoadKubeClient(c.Cluster.Name, []byte(c.Cluster.KubeConfig), c.Cluster.Namespace)
 	if err != nil {
@@ -47,11 +53,13 @@ func (c Card) GetItems() ([]*cc.Item, error) {
 		for _, pod := range list {
 			for _, container := range pod.Spec.Containers {
 				subItems = append(subItems, &cc.Item{
-					ClusterId: int64(c.ClusterID),
-					Namespace: c.Namespace,
-					Pod:       pod.Name,
-					Container: container.Name,
-					Proxies:   c.getContainerPorts(pod.Name, container),
+					ClusterId:   int64(c.ClusterID),
+					Namespace:   c.Namespace,
+					Pod:         pod.Name,
+					Container:   container.Name,
+					Proxies:     c.getContainerPorts(pod.Name, container),
+					IsNew:       isNewPod(pod),
+					Terminating: pod.DeletionTimestamp != nil,
 				})
 			}
 		}
@@ -65,15 +73,19 @@ func (c Card) GetItems() ([]*cc.Item, error) {
 		for _, pod := range list {
 			for _, container := range pod.Spec.Containers {
 				subItems = append(subItems, &cc.Item{
-					ClusterId: int64(c.ClusterID),
-					Namespace: c.Namespace,
-					Pod:       pod.Name,
-					Container: container.Name,
-					Proxies:   c.getContainerPorts(pod.Name, container),
+					ClusterId:   int64(c.ClusterID),
+					Namespace:   c.Namespace,
+					Pod:         pod.Name,
+					Container:   container.Name,
+					Proxies:     c.getContainerPorts(pod.Name, container),
+					IsNew:       isNewPod(pod),
+					Terminating: pod.DeletionTimestamp != nil,
 				})
 			}
 		}
 	}
+	sort.Sort(subItems)
+
 	return subItems, nil
 }
 
@@ -94,4 +106,18 @@ func (c Card) getContainerPorts(pod string, container v1.Container) (proxyInfos 
 		}
 	}
 	return
+}
+
+type sortItems []*cc.Item
+
+func (s sortItems) Len() int {
+	return len(s)
+}
+
+func (s sortItems) Less(i, j int) bool {
+	return s[i].IsNew && !s[j].IsNew
+}
+
+func (s sortItems) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
 }

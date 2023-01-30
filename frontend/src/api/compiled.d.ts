@@ -2324,6 +2324,12 @@ export namespace container {
 
         /** Item proxies */
         proxies?: (container.ProxyInfo[]|null);
+
+        /** Item is_new */
+        is_new?: (boolean|null);
+
+        /** Item terminating */
+        terminating?: (boolean|null);
     }
 
     /** Represents an Item. */
@@ -2349,6 +2355,12 @@ export namespace container {
 
         /** Item proxies. */
         public proxies: container.ProxyInfo[];
+
+        /** Item is_new. */
+        public is_new: boolean;
+
+        /** Item terminating. */
+        public terminating: boolean;
 
         /**
          * Encodes the specified Item message. Does not implicitly {@link container.Item.verify|verify} messages.

@@ -355,6 +355,12 @@
           "items": {
             "$ref": "#/definitions/containerProxyInfo"
           }
+        },
+        "is_new": {
+          "type": "boolean"
+        },
+        "terminating": {
+          "type": "boolean"
         }
       }
     },

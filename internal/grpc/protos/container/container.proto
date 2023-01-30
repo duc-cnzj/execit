@@ -19,6 +19,8 @@ message Item {
   string pod = 3;
   string container = 4;
   repeated ProxyInfo proxies = 5;
+  bool is_new = 6;
+  bool terminating = 7;
 }
 
 message CopyToPodRequest {

@@ -203,6 +203,10 @@ func (m *Item) validate(all bool) error {
 
 	}
 
+	// no validation rules for IsNew
+
+	// no validation rules for Terminating
+
 	if len(errors) > 0 {
 		return ItemMultiError(errors)
 	}

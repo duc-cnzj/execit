@@ -11,6 +11,10 @@ interface LangResult {
   };
 }
 const languages: Lang = {
+  "exec-it": {
+    en: "exec-it",
+    zh: "命令行工具",
+  },
   "Don't have any project cards yet": {
     en: "Don't have any project cards yet",
     zh: "还没有任何项目卡片",
@@ -230,6 +234,10 @@ const languages: Lang = {
   "speed": {
     en: "speed",
     zh: "速度",
+  },
+  "login": {
+    en: "login",
+    zh: "登录",
   },
   "wrong username or password": {
     en: "wrong username or password",

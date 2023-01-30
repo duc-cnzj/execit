@@ -4988,6 +4988,8 @@ export const container = $root.container = (() => {
          * @property {string|null} [pod] Item pod
          * @property {string|null} [container] Item container
          * @property {Array.<container.ProxyInfo>|null} [proxies] Item proxies
+         * @property {boolean|null} [is_new] Item is_new
+         * @property {boolean|null} [terminating] Item terminating
          */
 
         /**
@@ -5047,6 +5049,22 @@ export const container = $root.container = (() => {
         Item.prototype.proxies = $util.emptyArray;
 
         /**
+         * Item is_new.
+         * @member {boolean} is_new
+         * @memberof container.Item
+         * @instance
+         */
+        Item.prototype.is_new = false;
+
+        /**
+         * Item terminating.
+         * @member {boolean} terminating
+         * @memberof container.Item
+         * @instance
+         */
+        Item.prototype.terminating = false;
+
+        /**
          * Encodes the specified Item message. Does not implicitly {@link container.Item.verify|verify} messages.
          * @function encode
          * @memberof container.Item
@@ -5069,6 +5087,10 @@ export const container = $root.container = (() => {
             if (message.proxies != null && message.proxies.length)
                 for (let i = 0; i < message.proxies.length; ++i)
                     $root.container.ProxyInfo.encode(message.proxies[i], writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+            if (message.is_new != null && Object.hasOwnProperty.call(message, "is_new"))
+                writer.uint32(/* id 6, wireType 0 =*/48).bool(message.is_new);
+            if (message.terminating != null && Object.hasOwnProperty.call(message, "terminating"))
+                writer.uint32(/* id 7, wireType 0 =*/56).bool(message.terminating);
             return writer;
         };
 
@@ -5110,6 +5132,14 @@ export const container = $root.container = (() => {
                         if (!(message.proxies && message.proxies.length))
                             message.proxies = [];
                         message.proxies.push($root.container.ProxyInfo.decode(reader, reader.uint32()));
+                        break;
+                    }
+                case 6: {
+                        message.is_new = reader.bool();
+                        break;
+                    }
+                case 7: {
+                        message.terminating = reader.bool();
                         break;
                     }
                 default:

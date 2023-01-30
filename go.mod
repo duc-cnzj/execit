@@ -9,7 +9,6 @@ require (
 	github.com/duc-cnzj/execit-client v0.0.0
 	github.com/dustin/go-humanize v1.0.0
 	github.com/envoyproxy/protoc-gen-validate v0.6.7
-	github.com/go-redis/redis/v8 v8.11.3
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/golangci/golangci-lint v1.49.0
 	github.com/google/uuid v1.3.0
@@ -75,7 +74,6 @@ require (
 	github.com/daixiang0/gci v0.6.3 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/denis-tingaikin/go-header v0.4.3 // indirect
-	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dsnet/compress v0.0.2-0.20210315054119-f66993602bf5 // indirect
 	github.com/emicklei/go-restful/v3 v3.8.0 // indirect
 	github.com/esimonov/ifshort v1.0.4 // indirect

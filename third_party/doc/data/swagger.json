@@ -1809,6 +1809,9 @@
         "container": {
           "type": "string"
         },
+        "is_new": {
+          "type": "boolean"
+        },
         "namespace": {
           "type": "string"
         },
@@ -1820,6 +1823,9 @@
           "items": {
             "$ref": "#/definitions/containerProxyInfo"
           }
+        },
+        "terminating": {
+          "type": "boolean"
         }
       }
     },

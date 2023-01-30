@@ -23,13 +23,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type FileSvcClient interface {
-	//  文件列表
+	// 文件列表
 	List(ctx context.Context, in *ListRequest, opts ...grpc.CallOption) (*ListResponse, error)
-	//  records 文件信息
+	// records 文件信息
 	ShowRecords(ctx context.Context, in *ShowRecordsRequest, opts ...grpc.CallOption) (*ShowRecordsResponse, error)
-	//  删除文件
+	// 删除文件
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
-	//  DeleteUndocumentedFiles 删除未被记录的文件，model 表中没有，但是文件目录中有
+	// DeleteUndocumentedFiles 删除未被记录的文件，model 表中没有，但是文件目录中有
 	DeleteUndocumentedFiles(ctx context.Context, in *DeleteUndocumentedFilesRequest, opts ...grpc.CallOption) (*DeleteUndocumentedFilesResponse, error)
 	// DiskInfo 查看上传文件目录大小
 	DiskInfo(ctx context.Context, in *DiskInfoRequest, opts ...grpc.CallOption) (*DiskInfoResponse, error)
@@ -92,13 +92,13 @@ func (c *fileSvcClient) DiskInfo(ctx context.Context, in *DiskInfoRequest, opts 
 // All implementations must embed UnimplementedFileSvcServer
 // for forward compatibility
 type FileSvcServer interface {
-	//  文件列表
+	// 文件列表
 	List(context.Context, *ListRequest) (*ListResponse, error)
-	//  records 文件信息
+	// records 文件信息
 	ShowRecords(context.Context, *ShowRecordsRequest) (*ShowRecordsResponse, error)
-	//  删除文件
+	// 删除文件
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
-	//  DeleteUndocumentedFiles 删除未被记录的文件，model 表中没有，但是文件目录中有
+	// DeleteUndocumentedFiles 删除未被记录的文件，model 表中没有，但是文件目录中有
 	DeleteUndocumentedFiles(context.Context, *DeleteUndocumentedFilesRequest) (*DeleteUndocumentedFilesResponse, error)
 	// DiskInfo 查看上传文件目录大小
 	DiskInfo(context.Context, *DiskInfoRequest) (*DiskInfoResponse, error)

@@ -23,9 +23,9 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MetricsClient interface {
-	//  TopPod 获取 pod 的 cpu memory 信息
+	// TopPod 获取 pod 的 cpu memory 信息
 	TopPod(ctx context.Context, in *TopPodRequest, opts ...grpc.CallOption) (*TopPodResponse, error)
-	//  StreamTopPod stream 的方式获取 pod 的 cpu memory 信息
+	// StreamTopPod stream 的方式获取 pod 的 cpu memory 信息
 	StreamTopPod(ctx context.Context, in *TopPodRequest, opts ...grpc.CallOption) (Metrics_StreamTopPodClient, error)
 }
 
@@ -82,9 +82,9 @@ func (x *metricsStreamTopPodClient) Recv() (*TopPodResponse, error) {
 // All implementations must embed UnimplementedMetricsServer
 // for forward compatibility
 type MetricsServer interface {
-	//  TopPod 获取 pod 的 cpu memory 信息
+	// TopPod 获取 pod 的 cpu memory 信息
 	TopPod(context.Context, *TopPodRequest) (*TopPodResponse, error)
-	//  StreamTopPod stream 的方式获取 pod 的 cpu memory 信息
+	// StreamTopPod stream 的方式获取 pod 的 cpu memory 信息
 	StreamTopPod(*TopPodRequest, Metrics_StreamTopPodServer) error
 	mustEmbedUnimplementedMetricsServer()
 }

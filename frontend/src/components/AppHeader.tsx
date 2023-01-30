@@ -39,7 +39,7 @@ const AppHeader: React.FC = () => {
           textTransform: "lowercase",
         }}
       >
-        exec-it
+          {t("exec-it")}
       </Link>
       <div style={{ display: "flex", alignItems: "center" }}>
         <svg

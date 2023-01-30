@@ -1,12 +1,18 @@
 package wssender
 
 import (
+	"encoding/json"
 	"fmt"
 	"sync"
+
+	websocket_pb "github.com/duc-cnzj/execit-client/websocket"
+	"google.golang.org/protobuf/proto"
 
 	"github.com/duc-cnzj/execit/internal/plugins"
 	"github.com/duc-cnzj/execit/internal/xlog"
 )
+
+const messageChSize = 100
 
 var memorySenderName = "ws_sender_memory"
 
@@ -145,4 +151,20 @@ func (p *memoryPubSub) Subscribe() <-chan []byte {
 	m := p.manager.conns[p.Uid()]
 	s := m[p.ID()]
 	return s.ch
+}
+
+func transformToResponse(message proto.Message) []byte {
+	marshal, _ := proto.Marshal(message)
+	return marshal
+}
+
+type Message struct {
+	Data []byte
+	To   websocket_pb.To
+	ID   string
+}
+
+func (m Message) Marshal() []byte {
+	marshal, _ := json.Marshal(&m)
+	return marshal
 }

@@ -8,15 +8,9 @@ cache_driver: "memory"
 
 ws_sender_plugin:
   name: ws_sender_memory
-#  name: ws_sender_redis
-#  args:
-#    addr: 127.0.0.1:6379
-#    password: ""
-#    db: 1
 picture_plugin:
   name: picture_cartoon
 #  name: picture_bing
-
 
 # upload_dir 默认是 /tmp/execit-uploads
 # upload_dir: ""
