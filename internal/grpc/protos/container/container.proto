@@ -4,6 +4,7 @@ package container;
 
 import "google/api/annotations.proto";
 import "validate/validate.proto";
+import "google/api/timestamp.proto";
 
 option go_package = "github.com/duc-cnzj/execit-client/container;container";
 
@@ -21,6 +22,7 @@ message Item {
   repeated ProxyInfo proxies = 5;
   bool is_new = 6;
   bool terminating = 7;
+  google.api.Timestamp created_at = 8;
 }
 
 message CopyToPodRequest {

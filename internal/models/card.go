@@ -5,6 +5,7 @@ import (
 	"sort"
 	"time"
 
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -60,6 +61,7 @@ func (c Card) GetItems() ([]*cc.Item, error) {
 					Proxies:     c.getContainerPorts(pod.Name, container),
 					IsNew:       isNewPod(pod),
 					Terminating: pod.DeletionTimestamp != nil,
+					CreatedAt:   timestamppb.New(pod.CreationTimestamp.Time),
 				})
 			}
 		}
@@ -80,6 +82,7 @@ func (c Card) GetItems() ([]*cc.Item, error) {
 					Proxies:     c.getContainerPorts(pod.Name, container),
 					IsNew:       isNewPod(pod),
 					Terminating: pod.DeletionTimestamp != nil,
+					CreatedAt:   timestamppb.New(pod.CreationTimestamp.Time),
 				})
 			}
 		}
@@ -115,7 +118,7 @@ func (s sortItems) Len() int {
 }
 
 func (s sortItems) Less(i, j int) bool {
-	return s[i].IsNew && !s[j].IsNew
+	return s[i].CreatedAt.AsTime().Before(s[j].CreatedAt.AsTime())
 }
 
 func (s sortItems) Swap(i, j int) {
