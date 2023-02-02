@@ -118,7 +118,7 @@ func (s sortItems) Len() int {
 }
 
 func (s sortItems) Less(i, j int) bool {
-	return s[i].CreatedAt.AsTime().Before(s[j].CreatedAt.AsTime())
+	return s[i].CreatedAt.AsTime().After(s[j].CreatedAt.AsTime())
 }
 
 func (s sortItems) Swap(i, j int) {
