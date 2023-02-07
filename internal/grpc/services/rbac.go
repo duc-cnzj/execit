@@ -86,7 +86,7 @@ func (r *rbacsvc) ApplyFor(ctx context.Context, request *rbac.ApplyForRequest) (
 		app.DB().Preload("Cluster").First(&c)
 		desc = fmt.Sprintf("card prmission cluster: %s type: %s namespace: %s name: %s", c.Cluster.Name, c.Type, c.Namespace, c.Name)
 	default:
-		return nil, status.Error(codes.Unimplemented, trans.RTrans("not support {{.Type}}", map[string]any{"Type": request.Permission}, MustGetLang(ctx)))
+		return nil, status.Error(codes.Unimplemented, trans.RTrans("not support {{.Type}}", map[string]any{"Type": request.Permission.String()}, MustGetLang(ctx)))
 	}
 	m := &models.UserPermission{
 		Username:    user.Name,
@@ -99,9 +99,11 @@ func (r *rbacsvc) ApplyFor(ctx context.Context, request *rbac.ApplyForRequest) (
 	if err := app.DB().Create(&m).Error; err != nil {
 		return nil, err
 	}
-	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("ApplyFor permission '%d' desc: '%s'", m.ID, p.Description))
+	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("ApplyFor permission '%s' desc: '%s'", m.Permission.String(), p.Description))
+
 	return &rbac.ApplyForResponse{Permission: m.ProtoTransform()}, nil
 }
+
 func (r *rbacsvc) Approve(ctx context.Context, request *rbac.ApproveRequest) (*rbac.ApproveResponse, error) {
 	var p models.UserPermission
 	if err := app.DB().Where("`id` = ?", request.Id).First(&p).Error; err != nil {
@@ -115,7 +117,8 @@ func (r *rbacsvc) Approve(ctx context.Context, request *rbac.ApproveRequest) (*r
 	if p.State == rbac.State_Request {
 		app.DB().Model(&p).Update("State", rbac.State_Approved)
 	}
-	AuditLog(MustGetUser(ctx).Name, event.ActionType_Update, fmt.Sprintf("Approve permission '%d' desc: '%s'", request.Id, p.Description))
+	AuditLog(MustGetUser(ctx).Name, event.ActionType_Update, fmt.Sprintf("Approve permission '%s' desc: '%s'", p.Permission.String(), p.Description))
+
 	return &rbac.ApproveResponse{Permission: p.ProtoTransform()}, nil
 }
 
@@ -136,7 +139,7 @@ func (r *rbacsvc) Reject(ctx context.Context, request *rbac.RejectRequest) (*rba
 		})
 	}
 
-	AuditLog(MustGetUser(ctx).Name, event.ActionType_Update, fmt.Sprintf("Reject permission '%d' desc: '%s', reason: '%s'", request.Id, p.Description, request.Reason))
+	AuditLog(MustGetUser(ctx).Name, event.ActionType_Update, fmt.Sprintf("Reject permission '%s' desc: '%s', reason: '%s'", p.Permission.String(), p.Description, request.Reason))
 
 	return &rbac.RejectResponse{Permission: p.ProtoTransform()}, nil
 }
@@ -154,7 +157,7 @@ func (r *rbacsvc) Revoke(ctx context.Context, request *rbac.RevokeRequest) (*rba
 			"Reason": request.Reason,
 		})
 	}
-	AuditLog(MustGetUser(ctx).Name, event.ActionType_Update, fmt.Sprintf("Revoke permission '%d' desc: '%s', reason: '%s'", request.Id, p.Description, request.Reason))
+	AuditLog(MustGetUser(ctx).Name, event.ActionType_Update, fmt.Sprintf("Revoke permission '%s' desc: '%s', reason: '%s'", p.Permission.String(), p.Description, request.Reason))
 
 	return &rbac.RevokeResponse{Permission: p.ProtoTransform()}, nil
 }

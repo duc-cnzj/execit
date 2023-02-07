@@ -167,7 +167,7 @@ func (c *CardSvc) List(ctx context.Context, request *card.ListRequest) (*card.Li
 
 func (c *CardSvc) Create(ctx context.Context, request *card.CreateRequest) (*card.CreateResponse, error) {
 	var ca models.Card
-	if err := app.DB().Where("`type` = ? and `name` = ? and `namespace` = ? and `cluster_id` = ?", request.Type, request.Name, request.Namespace, request.ClusterId).First(&ca).Error; err != nil {
+	if err := app.DB().Preload("Cluster").Where("`type` = ? and `name` = ? and `namespace` = ? and `cluster_id` = ?", request.Type, request.Name, request.Namespace, request.ClusterId).First(&ca).Error; err != nil {
 		if !errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, status.Error(codes.Internal, err.Error())
 		}
@@ -182,7 +182,7 @@ func (c *CardSvc) Create(ctx context.Context, request *card.CreateRequest) (*car
 	app.Event().Dispatch(events.EventCardCreated, events.EventCardCreatedData{
 		Card: &ca,
 	})
-	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("add card item, cluster '%d' namesapce '%s' name '%s'", ca.ClusterID, ca.Namespace, ca.Name))
+	AuditLog(MustGetUser(ctx).Name, event.ActionType_Create, fmt.Sprintf("add card item, cluster '%s' namesapce '%s' name '%s'", ca.Cluster.Name, ca.Namespace, ca.Name))
 	return &card.CreateResponse{
 		Id:        int64(ca.ID),
 		Type:      ca.Type,
@@ -214,9 +214,9 @@ func (c *CardSvc) Show(ctx context.Context, request *card.ShowRequest) (*card.Sh
 
 func (c *CardSvc) Delete(ctx context.Context, request *card.DeleteRequest) (*card.DeleteResponse, error) {
 	var ca models.Card
-	if err := app.DB().First(&ca, request.CardId).Error; err == nil {
+	if err := app.DB().Preload("Cluster").First(&ca, request.CardId).Error; err == nil {
 		app.DB().Delete(&ca)
-		AuditLog(MustGetUser(ctx).Name, event.ActionType_Delete, fmt.Sprintf("delete card item, cluster '%d' namesapce '%s' name '%s'", ca.ClusterID, ca.Namespace, ca.Name))
+		AuditLog(MustGetUser(ctx).Name, event.ActionType_Delete, fmt.Sprintf("delete card item, cluster '%s' namesapce '%s' name '%s'", ca.Cluster.Name, ca.Namespace, ca.Name))
 	}
 	app.Event().Dispatch(events.EventCardDeleted, events.EventCardDeletedData{
 		Card: &ca,
