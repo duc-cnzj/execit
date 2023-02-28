@@ -1,3 +1,4 @@
+
 <h1 align="center">exec-it</h1>
 <p align="center">exec pods in one web page.</p>
 <br><br>
@@ -28,15 +29,16 @@ open http://localhost:31996
 
 ## 💡 Minimum permissions required
 
-| Resource                           | Verbs                 |
-|------------------------------------|-----------------------|
-| pods                               | `get`, `list`, `watch` |
-| deployments                        | `get`, `list`, `watch` |
-| statefulsets                       | `get`, `list`, `watch` |
-| pods/exec                          | `create`              |
-| pods/log                           | `get`                 |
+| Resource                               | Verbs                 |
+|----------------------------------------|-----------------------|
+| pods                                   | `get`, `list`, `watch` |
+| deployments                            | `get`, `list`, `watch` |
+| statefulsets                           | `get`, `list`, `watch` |
+| job(optional)                          | `get`, `list`, `watch` |
+| pods/exec                              | `create`              |
+| pods/log                               | `get`                 |
 | pods/portforward(single pod web proxy) | `create`    |
-| metrics.k8s.io/pods(optional)      | `get`                 |
+| metrics.k8s.io/pods(optional)          | `get`                 |
 
 > The web proxy is only suitable for some web applications.
 > 
@@ -51,11 +53,3 @@ open http://localhost:31996
 ![execit-preview](./images/img_1.png)
 ![execit](./images/img.png)
 ![user commands](./images/img_2.png)
-
-## TODO
-
-- [x] single pod web proxy 
-- [x] Multi-cluster management
-- [x] base on deployment, statefulset
-- [x] RBAC
-- [x] base permission for execit

@@ -9,8 +9,10 @@ import (
 
 	"gorm.io/gorm"
 	authorizationv1 "k8s.io/api/authorization/v1"
+	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
 	restclient "k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -260,9 +262,6 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ShowRequest) (*c
 	var cards []*models.Card
 	var existsMap = make(map[string]*models.Card)
 	app.DB().Find(&cards)
-	keyFn := func(clusterID int, namespace, name, t string) string {
-		return fmt.Sprintf("c:%d-ns:%s-name:%s-type:%s", clusterID, namespace, name, t)
-	}
 	for _, card := range cards {
 		existsMap[keyFn(card.ClusterID, card.Namespace, card.Name, card.Type)] = card
 	}
@@ -273,73 +272,11 @@ func (c *ClusterSvc) Show(ctx context.Context, request *cluster.ShowRequest) (*c
 	}
 	list, _ := client.DeploymentLister().List(labels.Everything())
 	var items = make(map[string]*cluster.Items)
-	for _, deployment := range list {
-		var cardID int64
-		card, exists := existsMap[keyFn(cl.ID, deployment.Namespace, deployment.Name, "Deployment")]
-		if exists {
-			cardID = int64(card.ID)
-		}
-		if responseItems, ok := items[deployment.Namespace]; ok {
-			items[deployment.Namespace] = &cluster.Items{
-				Items: append(responseItems.Items, &cluster.Item{
-					Namespace: deployment.Namespace,
-					Type:      "Deployment",
-					Name:      deployment.Name,
-					Enabled:   exists,
-					ClusterId: int64(cl.ID),
-					CardId:    cardID,
-				}),
-			}
-		} else {
-			items[deployment.Namespace] = &cluster.Items{
-				Items: []*cluster.Item{
-					{
-						Namespace: deployment.Namespace,
-						Type:      "Deployment",
-						Name:      deployment.Name,
-						Enabled:   exists,
-						ClusterId: int64(cl.ID),
-						CardId:    cardID,
-					},
-				},
-			}
-		}
-	}
-
+	objToItems(cl, "Deployment", existsMap, list, items)
 	statefulList, _ := client.StatefulSetLister().List(labels.Everything())
-	for _, state := range statefulList {
-		var cardID int64
-		card, exists := existsMap[keyFn(cl.ID, state.Namespace, state.Name, "StatefulSet")]
-		if exists {
-			cardID = int64(card.ID)
-		}
-
-		if responseItems, ok := items[state.Namespace]; ok {
-			items[state.Namespace] = &cluster.Items{
-				Items: append(responseItems.Items, &cluster.Item{
-					Namespace: state.Namespace,
-					Type:      "StatefulSet",
-					Name:      state.Name,
-					Enabled:   exists,
-					ClusterId: int64(cl.ID),
-					CardId:    cardID,
-				}),
-			}
-		} else {
-			items[state.Namespace] = &cluster.Items{
-				Items: []*cluster.Item{
-					{
-						Namespace: state.Namespace,
-						Type:      "StatefulSet",
-						Name:      state.Name,
-						Enabled:   exists,
-						ClusterId: int64(cl.ID),
-						CardId:    cardID,
-					},
-				},
-			}
-		}
-	}
+	objToItems(cl, "StatefulSet", existsMap, statefulList, items)
+	jobList, _ := client.JobLister().List(labels.Everything())
+	objToItems(cl, "Job", existsMap, jobList, items)
 	var result = make([]*cluster.Items, 0)
 
 	for k, clusterItems := range items {
@@ -395,4 +332,44 @@ func (c *ClusterSvc) Authorize(ctx context.Context, fullMethodName string) (cont
 	}
 
 	return ctx, nil
+}
+func keyFn(clusterID int, namespace, name, t string) string {
+	return fmt.Sprintf("c:%d-ns:%s-name:%s-type:%s", clusterID, namespace, name, t)
+}
+func objToItems[T runtime.Object](cl models.Cluster, kind string, existsMap map[string]*models.Card, objs []T, items map[string]*cluster.Items) {
+	for _, s := range objs {
+		var cardID int64
+
+		state, _ := meta.Accessor(s)
+		card, exists := existsMap[keyFn(cl.ID, state.GetNamespace(), state.GetName(), kind)]
+		if exists {
+			cardID = int64(card.ID)
+		}
+
+		if responseItems, ok := items[state.GetNamespace()]; ok {
+			items[state.GetNamespace()] = &cluster.Items{
+				Items: append(responseItems.Items, &cluster.Item{
+					Namespace: state.GetNamespace(),
+					Type:      kind,
+					Name:      state.GetName(),
+					Enabled:   exists,
+					ClusterId: int64(cl.ID),
+					CardId:    cardID,
+				}),
+			}
+		} else {
+			items[state.GetNamespace()] = &cluster.Items{
+				Items: []*cluster.Item{
+					{
+						Namespace: state.GetNamespace(),
+						Type:      kind,
+						Name:      state.GetName(),
+						Enabled:   exists,
+						ClusterId: int64(cl.ID),
+						CardId:    cardID,
+					},
+				},
+			}
+		}
+	}
 }

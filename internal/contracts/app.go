@@ -3,6 +3,8 @@ package contracts
 import (
 	"context"
 
+	corev1 "k8s.io/client-go/listers/batch/v1"
+
 	"k8s.io/client-go/informers"
 	appsv1 "k8s.io/client-go/listers/apps/v1"
 	v1 "k8s.io/client-go/listers/core/v1"
@@ -39,6 +41,7 @@ type K8s interface {
 	DeploymentListerSynced() func() bool
 	StatefulSetLister() appsv1.StatefulSetLister
 	StatefulSetListerSynced() func() bool
+	JobLister() corev1.JobLister
 }
 
 type K8sClient struct {

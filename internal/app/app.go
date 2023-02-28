@@ -11,13 +11,15 @@ import (
 	"syscall"
 	"time"
 
-	v12 "k8s.io/api/apps/v1"
+	appsv1 "k8s.io/api/apps/v1"
+	batchv1 "k8s.io/api/batch/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
-	appsv1 "k8s.io/client-go/listers/apps/v1"
+	appsv1lister "k8s.io/client-go/listers/apps/v1"
+	corev1 "k8s.io/client-go/listers/batch/v1"
 	v1 "k8s.io/client-go/listers/core/v1"
 	restclient "k8s.io/client-go/rest"
 	kubeCache "k8s.io/client-go/tools/cache"
@@ -132,6 +134,8 @@ func (app *Application) LoadKubeClient(name string, kubeConfig []byte, namespace
 		deploymentListerSynced:  informer.Apps().V1().Deployments().Informer().HasSynced,
 		statefulSetLister:       informer.Apps().V1().StatefulSets().Lister(),
 		statefulSetListerSynced: informer.Apps().V1().StatefulSets().Informer().HasSynced,
+		jobLister:               informer.Batch().V1().Jobs().Lister(),
+		jobListerSynced:         informer.Batch().V1().Jobs().Informer().HasSynced,
 	}
 	informer.Apps().V1().Deployments().Informer().AddEventHandler(&kubeCache.ResourceEventHandlerFuncs{
 		DeleteFunc: onDelete(name),
@@ -140,7 +144,7 @@ func (app *Application) LoadKubeClient(name string, kubeConfig []byte, namespace
 		DeleteFunc: onDelete(name),
 	})
 	kc.Informer().Start(ch)
-	kubeCache.WaitForCacheSync(wait.NeverStop, kc.DeploymentListerSynced(), kc.PodListerSynced(), kc.StatefulSetListerSynced())
+	kubeCache.WaitForCacheSync(wait.NeverStop, kc.DeploymentListerSynced(), kc.PodListerSynced(), kc.StatefulSetListerSynced(), kc.JobListerSynced())
 	app.k8sClients[key] = kc
 	return kc, nil
 }
@@ -152,12 +156,15 @@ func onDelete(clusterName string) func(obj any) {
 			t  string
 		)
 		switch o := obj.(type) {
-		case *v12.Deployment:
+		case *appsv1.Deployment:
 			ob = o
 			t = "Deployment"
-		case *v12.StatefulSet:
+		case *appsv1.StatefulSet:
 			ob = o
 			t = "StatefulSet"
+		case *batchv1.Job:
+			ob = o
+			t = "Job"
 		default:
 			return
 		}
@@ -418,10 +425,12 @@ type k8sClient struct {
 	done                    chan struct{}
 	podLister               v1.PodLister
 	podListerSynced         func() bool
-	deploymentLister        appsv1.DeploymentLister
+	deploymentLister        appsv1lister.DeploymentLister
 	deploymentListerSynced  func() bool
-	statefulSetLister       appsv1.StatefulSetLister
+	statefulSetLister       appsv1lister.StatefulSetLister
 	statefulSetListerSynced func() bool
+	jobLister               corev1.JobLister
+	jobListerSynced         func() bool
 }
 
 func (k *k8sClient) Client() kubernetes.Interface {
@@ -452,7 +461,7 @@ func (k *k8sClient) PodListerSynced() func() bool {
 	return k.podListerSynced
 }
 
-func (k *k8sClient) DeploymentLister() appsv1.DeploymentLister {
+func (k *k8sClient) DeploymentLister() appsv1lister.DeploymentLister {
 	return k.deploymentLister
 }
 
@@ -460,10 +469,18 @@ func (k *k8sClient) DeploymentListerSynced() func() bool {
 	return k.deploymentListerSynced
 }
 
-func (k *k8sClient) StatefulSetLister() appsv1.StatefulSetLister {
+func (k *k8sClient) StatefulSetLister() appsv1lister.StatefulSetLister {
 	return k.statefulSetLister
+}
+
+func (k *k8sClient) JobLister() corev1.JobLister {
+	return k.jobLister
 }
 
 func (k *k8sClient) StatefulSetListerSynced() func() bool {
 	return k.statefulSetListerSynced
+}
+
+func (k *k8sClient) JobListerSynced() kubeCache.InformerSynced {
+	return k.jobListerSynced
 }

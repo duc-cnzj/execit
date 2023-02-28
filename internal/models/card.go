@@ -43,7 +43,27 @@ func (c Card) GetItems() ([]*cc.Item, error) {
 	if err != nil {
 		return nil, err
 	}
+	addSubItem := func(list []*v1.Pod) {
+		for _, pod := range list {
+			for _, container := range pod.Spec.Containers {
+				subItems = append(subItems, &cc.Item{
+					ClusterId:   int64(c.ClusterID),
+					Namespace:   c.Namespace,
+					Pod:         pod.Name,
+					Container:   container.Name,
+					Proxies:     c.getContainerPorts(pod.Name, container),
+					IsNew:       isNewPod(pod),
+					Terminating: pod.DeletionTimestamp != nil,
+					CreatedAt:   timestamppb.New(pod.CreationTimestamp.Time),
+				})
+			}
+		}
+	}
 	switch c.Type {
+	case "Job":
+		job, _ := client.JobLister().Jobs(c.Namespace).Get(c.Name)
+		list, _ := client.PodLister().Pods(c.Namespace).List(labels.SelectorFromSet(job.Spec.Template.GetLabels()))
+		addSubItem(list)
 	case "Deployment":
 		deployment, err := client.DeploymentLister().Deployments(c.Namespace).Get(c.Name)
 		if err != nil {
@@ -51,20 +71,7 @@ func (c Card) GetItems() ([]*cc.Item, error) {
 		}
 		asMap, _ := metav1.LabelSelectorAsMap(deployment.Spec.Selector)
 		list, _ := client.PodLister().Pods(c.Namespace).List(labels.SelectorFromSet(asMap))
-		for _, pod := range list {
-			for _, container := range pod.Spec.Containers {
-				subItems = append(subItems, &cc.Item{
-					ClusterId:   int64(c.ClusterID),
-					Namespace:   c.Namespace,
-					Pod:         pod.Name,
-					Container:   container.Name,
-					Proxies:     c.getContainerPorts(pod.Name, container),
-					IsNew:       isNewPod(pod),
-					Terminating: pod.DeletionTimestamp != nil,
-					CreatedAt:   timestamppb.New(pod.CreationTimestamp.Time),
-				})
-			}
-		}
+		addSubItem(list)
 	case "StatefulSet":
 		statefulSet, err := client.StatefulSetLister().StatefulSets(c.Namespace).Get(c.Name)
 		if err != nil {
@@ -72,20 +79,7 @@ func (c Card) GetItems() ([]*cc.Item, error) {
 		}
 		asMap, _ := metav1.LabelSelectorAsMap(statefulSet.Spec.Selector)
 		list, _ := client.PodLister().Pods(c.Namespace).List(labels.SelectorFromSet(asMap))
-		for _, pod := range list {
-			for _, container := range pod.Spec.Containers {
-				subItems = append(subItems, &cc.Item{
-					ClusterId:   int64(c.ClusterID),
-					Namespace:   c.Namespace,
-					Pod:         pod.Name,
-					Container:   container.Name,
-					Proxies:     c.getContainerPorts(pod.Name, container),
-					IsNew:       isNewPod(pod),
-					Terminating: pod.DeletionTimestamp != nil,
-					CreatedAt:   timestamppb.New(pod.CreationTimestamp.Time),
-				})
-			}
-		}
+		addSubItem(list)
 	}
 	sort.Sort(subItems)
 

@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -286,6 +287,10 @@ func (c *ContainerSvc) StreamCopyToPod(server container.ContainerSvc_StreamCopyT
 	}
 }
 
+func podHasLog(pod *v1.Pod) bool {
+	return pod.Status.Phase == v1.PodRunning || pod.Status.Phase == v1.PodSucceeded || pod.Status.Phase == v1.PodFailed
+}
+
 func (c *ContainerSvc) ContainerLog(ctx context.Context, request *container.LogRequest) (*container.LogResponse, error) {
 	if !auth.HasPermissionFor(MustGetUser(ctx), rbac.Permission_Card, request.CardId) {
 		return nil, trans.TToError("forbidden", MustGetLang(ctx))
@@ -293,16 +298,19 @@ func (c *ContainerSvc) ContainerLog(ctx context.Context, request *container.LogR
 
 	client := utils.K8sClientByClusterID(request.ClusterId)
 	kclient := client.Client()
-
-	if running, reason := utils.IsPodRunning(client, request.Namespace, request.Pod); !running {
-		return nil, status.Errorf(codes.NotFound, reason)
+	podInfo, err := client.PodLister().Pods(request.Namespace).Get(request.Pod)
+	if err != nil || !podHasLog(podInfo) {
+		return nil, status.Error(codes.NotFound, trans.T("log not found", MustGetLang(ctx)))
 	}
 
 	var limit int64 = 2000
-	logs := kclient.CoreV1().Pods(request.Namespace).GetLogs(request.Pod, &v1.PodLogOptions{
+	opt := &v1.PodLogOptions{
 		Container: request.Container,
-		TailLines: &limit,
-	})
+	}
+	if podInfo.Status.Phase == v1.PodRunning {
+		opt.TailLines = &limit
+	}
+	logs := kclient.CoreV1().Pods(request.Namespace).GetLogs(request.Pod, opt)
 	do := logs.Do(context.Background())
 	raw, err := do.Raw()
 	if err != nil {
@@ -323,9 +331,27 @@ func (c *ContainerSvc) StreamContainerLog(request *container.LogRequest, server 
 	}
 	client := utils.K8sClientByClusterID(request.ClusterId)
 	kclient := client.Client()
+	podInfo, err := client.PodLister().Pods(request.Namespace).Get(request.Pod)
 
-	if running, reason := utils.IsPodRunning(client, request.Namespace, request.Pod); !running {
-		return status.Errorf(codes.NotFound, reason)
+	if err != nil || !podHasLog(podInfo) {
+		return status.Error(codes.NotFound, trans.T("log not found", MustGetLang(server.Context())))
+	}
+	if podInfo.Status.Phase == v1.PodSucceeded || podInfo.Status.Phase == v1.PodFailed {
+		log, err := c.ContainerLog(server.Context(), request)
+		if err != nil {
+			return err
+		}
+		scanner := bufio.NewScanner(strings.NewReader(log.Log))
+		scanner.Split(bufio.ScanLines)
+		for scanner.Scan() {
+			server.Send(&container.LogResponse{
+				Namespace:     request.Namespace,
+				PodName:       request.Pod,
+				ContainerName: request.Container,
+				Log:           scanner.Text(),
+			})
+		}
+		return scanner.Err()
 	}
 
 	var limit int64 = 2000
