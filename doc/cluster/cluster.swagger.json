@@ -143,6 +143,53 @@
           "ClusterSvc"
         ]
       }
+    },
+    "/api/clusters/{id}": {
+      "put": {
+        "operationId": "ClusterSvc_Update",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/clusterUpdateResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "format": "int64"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "kube_config": {
+                  "type": "string"
+                },
+                "namespace": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
+        "tags": [
+          "ClusterSvc"
+        ]
+      }
     }
   },
   "definitions": {
@@ -279,6 +326,9 @@
         }
       }
     },
+    "clusterUpdateResponse": {
+      "type": "object"
+    },
     "modelClusterModel": {
       "type": "object",
       "properties": {
@@ -302,6 +352,9 @@
           "type": "string"
         },
         "deleted_at": {
+          "type": "string"
+        },
+        "namespace": {
           "type": "string"
         }
       }

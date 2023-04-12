@@ -71,6 +71,8 @@ func (m *ClusterModel) validate(all bool) error {
 
 	// no validation rules for DeletedAt
 
+	// no validation rules for Namespace
+
 	if len(errors) > 0 {
 		return ClusterModelMultiError(errors)
 	}

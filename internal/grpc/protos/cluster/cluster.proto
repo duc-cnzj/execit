@@ -33,6 +33,14 @@ message CreateResponse {
   string deleted_at = 6;
 }
 
+message UpdateRequest {
+  int64 id = 1 [(validate.rules).int64.gt = 0];
+  string kube_config = 2 [(validate.rules).string.min_bytes = 1];
+  string namespace = 3;
+}
+
+message UpdateResponse {}
+
 message ShowRequest {
   int64 cluster_id = 1 [(validate.rules).int64.gt = 0];
 }
@@ -78,6 +86,13 @@ service ClusterSvc {
   rpc Create(CreateRequest) returns (CreateResponse) {
     option (google.api.http) = {
       post: "/api/clusters",
+      body: "*"
+    };
+  }
+
+  rpc Update(UpdateRequest) returns (UpdateResponse) {
+    option (google.api.http) = {
+      put: "/api/clusters/{id}",
       body: "*"
     };
   }

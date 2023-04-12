@@ -18,6 +18,7 @@ import { cardCreate, cardDelete } from "../api/card";
 import {
   clusterList,
   clusterCreate,
+  clusterUpdate,
   clusterDelete,
   clusterShow,
 } from "../api/cluster";
@@ -46,6 +47,8 @@ const ClusterManager: React.FC = () => {
     clusterID: 0,
     detail: undefined,
   });
+  const [cluster, setCluster] = useState<pb.model.ClusterModel | null>();
+
   const load = useCallback(() => {
     setLoading(true);
     clusterList({ page: 1, page_size: defaultPageSize })
@@ -137,6 +140,24 @@ const ClusterManager: React.FC = () => {
   const [isAddClusterVisible, setIsAddClusterVisible] = useState(false);
   const [form] = Form.useForm();
   const onFinish = (values: any) => {
+    if (cluster && cluster.id > 0) {
+      clusterUpdate({
+        id: cluster.id,
+        kube_config: values.kube_config,
+        namespace: values.namespace,
+      })
+        .then(() => {
+          message.success(t("success"));
+          setCluster(null);
+          setIsAddClusterVisible(false);
+          form.resetFields();
+          load();
+        })
+        .catch((e) => {
+          message.error(e.response.data.message);
+        });
+      return;
+    }
     clusterCreate({
       name: values.name,
       kube_config: values.kube_config,
@@ -144,6 +165,7 @@ const ClusterManager: React.FC = () => {
     })
       .then(() => {
         message.success(t("success"));
+        setCluster(null);
         setIsAddClusterVisible(false);
         form.resetFields();
         load();
@@ -164,15 +186,24 @@ const ClusterManager: React.FC = () => {
           }}
         >
           <div>{t("cluster management")}</div>
-          <Button type="dashed" onClick={() => setIsAddClusterVisible(true)}>
+          <Button
+            type="dashed"
+            onClick={() => {
+              setCluster(null);
+              setIsAddClusterVisible(true);
+            }}
+          >
             {t("add cluster")}
           </Button>
           <Modal
-            title={t("add cluster")}
+            title={
+              cluster && cluster.id > 0 ? t("update cluster") : t("add cluster")
+            }
             footer={null}
             width={"60%"}
             visible={isAddClusterVisible}
             onCancel={() => {
+              setCluster(null);
               setIsAddClusterVisible(false);
               form.resetFields();
             }}
@@ -182,7 +213,12 @@ const ClusterManager: React.FC = () => {
               form={form}
               labelCol={{ span: 4 }}
               wrapperCol={{ span: 20 }}
-              initialValues={{ remember: true }}
+              initialValues={{
+                remember: true,
+                name: cluster?.name,
+                kube_config: cluster?.kube_config,
+                namespace: cluster?.namespace,
+              }}
               onFinish={onFinish}
               autoComplete="off"
             >
@@ -203,7 +239,7 @@ const ClusterManager: React.FC = () => {
                 rules={[{ required: true }]}
                 style={{ maxHeight: 550, overflowY: "auto" }}
               >
-                <MyCodeMirror/>
+                <MyCodeMirror />
               </Form.Item>
 
               <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
@@ -254,6 +290,7 @@ const ClusterManager: React.FC = () => {
                   <Button
                     type="primary"
                     onClick={() => {
+                      setCluster(null);
                       setIsAddClusterVisible(true);
                     }}
                   >
@@ -267,6 +304,14 @@ const ClusterManager: React.FC = () => {
                 className="git__list-item"
                 key={item.id}
                 actions={[
+                  <Button
+                    onClick={() => {
+                      setCluster(item);
+                      setIsAddClusterVisible(true);
+                    }}
+                  >
+                    {t("update cluster")}
+                  </Button>,
                   <Button
                     onClick={() => {
                       setCurrent({ clusterID: item.id });

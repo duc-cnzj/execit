@@ -33,7 +33,7 @@ const languages: Lang = {
   },
   events: {
     en: "events",
-    zh: "事件",
+    zh: "查看事件",
   },
   logout: {
     en: "logout",
@@ -274,6 +274,10 @@ const languages: Lang = {
   "add card": {
     en: "add card",
     zh: "添加卡片",
+  },
+  "update cluster": {
+    en: "update cluster",
+    zh: "更新集群",
   },
   "uploading...": {
     en: "uploading...",

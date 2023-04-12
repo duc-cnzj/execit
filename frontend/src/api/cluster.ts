@@ -9,6 +9,10 @@ export function clusterCreate({name, kube_config, namespace}: pb.cluster.CreateR
   return ajax.post<pb.cluster.CreateResponse>(`/api/clusters`, {name, kube_config, namespace});
 }
 
+export function clusterUpdate({id, kube_config, namespace}: pb.cluster.UpdateRequest) {
+  return ajax.put<pb.cluster.CreateResponse>(`/api/clusters/${id}`, {kube_config, namespace});
+}
+
 export function clusterShow(cluster_id: number) {
   return ajax.get<pb.cluster.ShowResponse>(`/api/clusters/${cluster_id}`);
 }

@@ -22,6 +22,7 @@ import (
 	"github.com/duc-cnzj/execit-client/model"
 	app "github.com/duc-cnzj/execit/internal/app/helper"
 	"github.com/duc-cnzj/execit/internal/contracts"
+	"github.com/duc-cnzj/execit/internal/event/events"
 	"github.com/duc-cnzj/execit/internal/models"
 	"github.com/duc-cnzj/execit/internal/scopes"
 	"github.com/duc-cnzj/execit/internal/utils/date"
@@ -63,6 +64,7 @@ func (c *ClusterSvc) List(ctx context.Context, request *cluster.ListRequest) (*c
 			CreatedAt:    date.ToRFC3339DatetimeString(&m.CreatedAt),
 			UpdatedAt:    date.ToRFC3339DatetimeString(&m.UpdatedAt),
 			DeletedAt:    date.ToRFC3339DatetimeString(&m.DeletedAt.Time),
+			Namespace:    m.Namespace,
 		})
 	}
 
@@ -180,25 +182,7 @@ func (c *ClusterSvc) Create(ctx context.Context, request *cluster.CreateRequest)
 		return nil, status.Errorf(codes.AlreadyExists, "cluster name '%s' already exists", request.Name)
 	}
 
-	var (
-		cc         clientcmd.ClientConfig
-		err        error
-		restConfig *restclient.Config
-		validOk    bool
-		client     *kubernetes.Clientset
-	)
-	cc, err = clientcmd.NewClientConfigFromBytes([]byte(request.KubeConfig))
-	if err == nil {
-		restConfig, err = cc.ClientConfig()
-		if err == nil {
-			restConfig.Timeout = 10 * time.Second
-			client, err = kubernetes.NewForConfig(restConfig)
-			if err == nil {
-				validOk, err = RunAccessCheck(client, request.Namespace)
-			}
-		}
-	}
-	if !validOk {
+	if err, ok := checkKubeConfigAccess(request.KubeConfig, request.Namespace); !ok {
 		return nil, err
 	}
 
@@ -224,6 +208,49 @@ func (c *ClusterSvc) Create(ctx context.Context, request *cluster.CreateRequest)
 		UpdatedAt: date.ToRFC3339DatetimeString(&clm.UpdatedAt),
 		DeletedAt: date.ToRFC3339DatetimeString(&clm.DeletedAt.Time),
 	}, nil
+}
+
+func checkKubeConfigAccess(config string, namespace string) (error, bool) {
+	var (
+		cc         clientcmd.ClientConfig
+		err        error
+		restConfig *restclient.Config
+		validOk    bool
+		client     *kubernetes.Clientset
+	)
+	cc, err = clientcmd.NewClientConfigFromBytes([]byte(config))
+	if err == nil {
+		restConfig, err = cc.ClientConfig()
+		if err == nil {
+			restConfig.Timeout = 10 * time.Second
+			client, err = kubernetes.NewForConfig(restConfig)
+			if err == nil {
+				validOk, err = RunAccessCheck(client, namespace)
+			}
+		}
+	}
+
+	return err, validOk
+}
+
+func (c *ClusterSvc) Update(ctx context.Context, req *cluster.UpdateRequest) (*cluster.UpdateResponse, error) {
+	var cl models.Cluster
+	if err := app.DB().First(&cl, req.Id).Error; err != nil {
+		return nil, status.Errorf(codes.NotFound, "cluster id: '%d' not exists", req.Id)
+	}
+	if err, ok := checkKubeConfigAccess(req.KubeConfig, req.Namespace); !ok {
+		return nil, err
+	}
+	var newCl = cl
+	app.DB().Model(&newCl).Updates(map[string]any{
+		"namespace":   req.GetNamespace(),
+		"kube_config": req.GetKubeConfig(),
+	})
+
+	app.App().ReleaseKubeClient(cl.Name)
+	events.AuditLog(MustGetUser(ctx).Name, event.ActionType_Update, fmt.Sprintf("update cluster '%s' host: '%s'", cl.Name, cl.ClusterConfig().Host), cl, newCl)
+
+	return &cluster.UpdateResponse{}, nil
 }
 
 type sortClusterItemsList []*cluster.Items
