@@ -47,7 +47,11 @@ const ClusterManager: React.FC = () => {
     clusterID: 0,
     detail: undefined,
   });
-  const [cluster, setCluster] = useState<pb.model.ClusterModel | null>();
+  const [cluster, setCluster] = useState<{
+    item?: pb.model.ClusterModel;
+    update?: boolean;
+    visible: boolean;
+  }>({ visible: false });
 
   const load = useCallback(() => {
     setLoading(true);
@@ -137,20 +141,17 @@ const ClusterManager: React.FC = () => {
     }
     return h;
   };
-  const [isAddClusterVisible, setIsAddClusterVisible] = useState(false);
   const [form] = Form.useForm();
   const onFinish = (values: any) => {
-    if (cluster && cluster.id > 0) {
+    if (cluster.item && cluster.item.id > 0) {
       clusterUpdate({
-        id: cluster.id,
+        id: cluster.item.id,
         kube_config: values.kube_config,
         namespace: values.namespace,
       })
         .then(() => {
           message.success(t("success"));
-          setCluster(null);
-          setIsAddClusterVisible(false);
-          form.resetFields();
+          setCluster({ update: false, visible: false });
           load();
         })
         .catch((e) => {
@@ -165,8 +166,7 @@ const ClusterManager: React.FC = () => {
     })
       .then(() => {
         message.success(t("success"));
-        setCluster(null);
-        setIsAddClusterVisible(false);
+        setCluster({ visible: false });
         form.resetFields();
         load();
       })
@@ -189,23 +189,27 @@ const ClusterManager: React.FC = () => {
           <Button
             type="dashed"
             onClick={() => {
-              setCluster(null);
-              setIsAddClusterVisible(true);
+              form.resetFields()
+              setCluster({ visible: true, update: false });
             }}
           >
             {t("add cluster")}
           </Button>
           <Modal
             title={
-              cluster && cluster.id > 0 ? t("update cluster") : t("add cluster")
+              cluster.item && cluster.item.id > 0
+                ? t("update cluster")
+                : t("add cluster")
             }
+            destroyOnClose
             footer={null}
             width={"60%"}
-            visible={isAddClusterVisible}
+            visible={
+              (cluster.visible && cluster.update && !!cluster.item) ||
+              (cluster.visible && !cluster.update)
+            }
             onCancel={() => {
-              setCluster(null);
-              setIsAddClusterVisible(false);
-              form.resetFields();
+              setCluster({ visible: false });
             }}
           >
             <Form
@@ -213,12 +217,6 @@ const ClusterManager: React.FC = () => {
               form={form}
               labelCol={{ span: 4 }}
               wrapperCol={{ span: 20 }}
-              initialValues={{
-                remember: true,
-                name: cluster?.name,
-                kube_config: cluster?.kube_config,
-                namespace: cluster?.namespace,
-              }}
               onFinish={onFinish}
               autoComplete="off"
             >
@@ -290,8 +288,7 @@ const ClusterManager: React.FC = () => {
                   <Button
                     type="primary"
                     onClick={() => {
-                      setCluster(null);
-                      setIsAddClusterVisible(true);
+                      setCluster({ visible: true });
                     }}
                   >
                     {t("Create Now")}
@@ -306,8 +303,8 @@ const ClusterManager: React.FC = () => {
                 actions={[
                   <Button
                     onClick={() => {
-                      setCluster(item);
-                      setIsAddClusterVisible(true);
+                      form.setFieldsValue(item)
+                      setCluster({ item: item, update: true, visible: true });
                     }}
                   >
                     {t("update cluster")}

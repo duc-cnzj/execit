@@ -15,7 +15,6 @@ import (
 	batchv1 "k8s.io/api/batch/v1"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	appsv1lister "k8s.io/client-go/listers/apps/v1"
@@ -144,7 +143,7 @@ func (app *Application) LoadKubeClient(name string, kubeConfig []byte, namespace
 		DeleteFunc: onDelete(name),
 	})
 	kc.Informer().Start(ch)
-	kubeCache.WaitForCacheSync(wait.NeverStop, kc.DeploymentListerSynced(), kc.PodListerSynced(), kc.StatefulSetListerSynced(), kc.JobListerSynced())
+	kubeCache.WaitForCacheSync(ch, kc.DeploymentListerSynced(), kc.PodListerSynced(), kc.StatefulSetListerSynced(), kc.JobListerSynced())
 	app.k8sClients[key] = kc
 	return kc, nil
 }
