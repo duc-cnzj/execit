@@ -78,11 +78,13 @@ func (app *Application) SetProxyManager(proxyManager contracts.ProxyManagerInter
 	app.proxyManager = proxyManager
 }
 
-func (app *Application) ReleaseKubeClient(name string) error {
+func (app *Application) ReleaseKubeClient(name string, namespace string) error {
 	app.k8sMu.Lock()
 	defer app.k8sMu.Unlock()
-	if client, ok := app.k8sClients[name]; ok {
-		delete(app.k8sClients, name)
+	key := keyFn(name, namespace)
+	if client, ok := app.k8sClients[key]; ok {
+		xlog.Warning("ReleaseKubeClient: ", key)
+		delete(app.k8sClients, key)
 		close(client.Done())
 	}
 	return nil
@@ -98,10 +100,11 @@ func (app *Application) ReleaseAllKubeClient() error {
 	return nil
 }
 
+func keyFn(name, namespace string) string {
+	return fmt.Sprintf("name:%s-namesapce:%s", name, namespace)
+}
+
 func (app *Application) LoadKubeClient(name string, kubeConfig []byte, namespace string) (contracts.K8s, error) {
-	keyFn := func(name, namespace string) string {
-		return fmt.Sprintf("name:%s-namesapce:%s", name, namespace)
-	}
 	key := keyFn(name, namespace)
 
 	app.k8sMu.Lock()
@@ -143,7 +146,6 @@ func (app *Application) LoadKubeClient(name string, kubeConfig []byte, namespace
 		DeleteFunc: onDelete(name),
 	})
 	kc.Informer().Start(ch)
-	kubeCache.WaitForCacheSync(ch, kc.DeploymentListerSynced(), kc.PodListerSynced(), kc.StatefulSetListerSynced(), kc.JobListerSynced())
 	app.k8sClients[key] = kc
 	return kc, nil
 }

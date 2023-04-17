@@ -99,7 +99,7 @@ type ApplicationInterface interface {
 	GetPlugins() map[string]PluginInterface
 	GetPluginByName(string) PluginInterface
 
-	ReleaseKubeClient(name string) error
+	ReleaseKubeClient(name string, namespace string) error
 	ReleaseAllKubeClient() error
 	LoadKubeClient(name string, kubeConfig []byte, namespace string) (K8s, error)
 

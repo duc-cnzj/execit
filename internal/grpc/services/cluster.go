@@ -247,7 +247,7 @@ func (c *ClusterSvc) Update(ctx context.Context, req *cluster.UpdateRequest) (*c
 		"kube_config": req.GetKubeConfig(),
 	})
 
-	app.App().ReleaseKubeClient(cl.Name)
+	app.App().ReleaseKubeClient(cl.Name, cl.Namespace)
 	events.AuditLog(MustGetUser(ctx).Name, event.ActionType_Update, fmt.Sprintf("update cluster '%s' host: '%s'", cl.Name, cl.ClusterConfig().Host), cl, newCl)
 
 	return &cluster.UpdateResponse{}, nil
@@ -340,7 +340,7 @@ func (c *ClusterSvc) Delete(ctx context.Context, request *cluster.DeleteRequest)
 		if err := db.Where("`cluster_id` = ?", cl.ID).Delete(&models.Card{}).Error; err != nil {
 			return err
 		}
-		if err := app.App().ReleaseKubeClient(cl.Name); err != nil {
+		if err := app.App().ReleaseKubeClient(cl.Name, cl.Namespace); err != nil {
 			xlog.Error(err)
 		}
 
