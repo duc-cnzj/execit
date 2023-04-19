@@ -146,6 +146,7 @@ func (app *Application) LoadKubeClient(name string, kubeConfig []byte, namespace
 		DeleteFunc: onDelete(name),
 	})
 	kc.Informer().Start(ch)
+	kubeCache.WaitForCacheSync(ch, kc.DeploymentListerSynced(), kc.PodListerSynced(), kc.StatefulSetListerSynced(), kc.JobListerSynced())
 	app.k8sClients[key] = kc
 	return kc, nil
 }
