@@ -12,7 +12,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import { List, Modal, Input, Divider, Button, Tag } from "antd";
 import VirtualList, { ListRef } from "rc-virtual-list";
 import pb from "../api/compiled";
-import { flatten, lowerCase } from "lodash";
+import { flatten } from "lodash";
 import { t } from "i18next";
 import classnames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
@@ -56,7 +56,7 @@ const Search: React.FC<{ data: pb.card.ItemsList[] }> = ({ data: items }) => {
         return;
       }
       setData(
-        cards.filter((item) => item.name.includes(lowerCase(v.target.value)))
+        cards.filter((item) => item.name.includes(v.target.value))
       );
     },
     [cards]
