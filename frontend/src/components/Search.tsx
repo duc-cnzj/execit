@@ -84,7 +84,8 @@ const Search: React.FC<{ data: pb.card.ItemsList[] }> = ({ data: items }) => {
     () => {
       isModalOpen ? handleCancel() : showModal();
     },
-    [isModalOpen]
+    [isModalOpen],
+    { preventDefault: true }
   );
   useEffect(() => {
     const onKeyDown = (ev: KeyboardEvent) => {
