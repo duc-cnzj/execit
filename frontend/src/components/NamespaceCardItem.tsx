@@ -5,16 +5,20 @@ import React, {
   lazy,
   Suspense,
   useMemo,
+  useEffect,
 } from "react";
 import { DraggableModal } from "../pkg/DraggableModal";
 import { Button, Tabs, Skeleton, Badge, Popover, message } from "antd";
 import ErrorBoundary from "./ErrorBoundary";
 import pb from "../api/compiled";
 import { rbacApplyFor, rbacNotApprovedReason } from "../api/rbac";
-import { throttle } from "lodash";
+import { get, throttle } from "lodash";
 import TabLog from "./TabLog";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../contexts/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { modals } from "../store/reducers/openedModal";
+import { appendOpenedModal, removeOpenedModal } from "../store/actions";
 const Shell = lazy(() => import("./TabShell"));
 
 const { TabPane } = Tabs;
@@ -22,8 +26,26 @@ const { TabPane } = Tabs;
 const NamespaceCardItem: React.FC<{
   item: pb.card.Items;
 }> = ({ item }) => {
-  const [visible, setVisible] = useState(false);
-  const onOk = useCallback(() => setVisible(true), []);
+  const openModals = useSelector(modals);
+  let modalID = useMemo(
+    () => item.cluster_name + item.namespace + item.name,
+    [item]
+  );
+  const dispatch = useDispatch();
+
+  const [visible, setVisible] = useState(
+    (openModals && openModals[modalID]) || false
+  );
+  const onOk = useCallback(() => {
+    dispatch(appendOpenedModal(modalID));
+    setVisible(true);
+  }, [dispatch, modalID]);
+  useEffect(() => {
+    if (get(openModals, modalID)) {
+      setVisible(true);
+    }
+  }, [openModals, modalID, onOk]);
+
   const [resizeAt, setResizeAt] = useState<number>(0);
   const [reason, setReason] = useState("");
   const fetchReason = useMemo(
@@ -40,8 +62,9 @@ const NamespaceCardItem: React.FC<{
   );
 
   const onCancel = useCallback(() => {
+    dispatch(removeOpenedModal(modalID));
     setVisible(false);
-  }, []);
+  }, [dispatch, modalID]);
   const { t } = useTranslation();
 
   const { hasCardPermission } = useAuth();

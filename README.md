@@ -53,3 +53,8 @@ open http://localhost:31996
 ![execit-preview](./images/img_1.png)
 ![execit](./images/img.png)
 ![user commands](./images/img_2.png)
+
+## TODO
+
+1. ~~cmd + k~~
+2. split view

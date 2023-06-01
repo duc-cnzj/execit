@@ -6,7 +6,7 @@ import React, {
   useState,
   memo,
 } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { cardAllContainers } from "../api/card";
 import { isPodExists } from "../api/container";
 import { message, Radio, Tag, Upload, Button } from "antd";
@@ -23,6 +23,7 @@ import PodMetrics from "./PodMetrics";
 import { getToken } from "../utils/token";
 import { useTranslation } from "react-i18next";
 import PodEntrypoint from "./PodEntrypoint";
+import { setSearch } from "../store/actions";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -169,6 +170,7 @@ const TabShell: React.FC<{
     }
   }, [logCount, log, handleConnectionMessage, term]);
 
+  const dispatch = useDispatch();
   useEffect(() => {
     listContainer().then((res) => {
       setValuesByResult(res.data.items);
@@ -184,6 +186,13 @@ const TabShell: React.FC<{
         cursorBlink: true,
         rows: 26,
       });
+      myterm.attachCustomKeyEventHandler((event: KeyboardEvent) => {
+        if ((event.metaKey || event.ctrlKey) && event.key === "k") {
+          dispatch(setSearch(true));
+          return true;
+        }
+        return false;
+      });
       myterm.loadAddon(fitAddon);
       myterm.onResize(onTerminalResize(id, ws));
       myterm.onData(onTerminalSendString(id, ws));
@@ -192,7 +201,7 @@ const TabShell: React.FC<{
       myterm.focus();
       return myterm;
     },
-    [onTerminalResize, onTerminalSendString, debouncedFit_, fitAddon]
+    [onTerminalResize, onTerminalSendString, debouncedFit_, fitAddon, dispatch]
   );
 
   let sid = useMemo(() => sessions[sname]?.sessionID, [sessions, sname]);
@@ -349,7 +358,19 @@ const TabShell: React.FC<{
             <div style={{ display: "flex", alignItems: "center" }}>
               {item.container}
               <Tag color="magenta" style={{ marginLeft: 5 }}>
-                {item.pod} {item.is_new && <span style={{ fontFamily: '"Fira code", "Fira Mono", monospace', color: "red", textShadow: "0px 0px 3px red", marginRight: 3}}>new</span>}
+                {item.pod}{" "}
+                {item.is_new && (
+                  <span
+                    style={{
+                      fontFamily: '"Fira code", "Fira Mono", monospace',
+                      color: "red",
+                      textShadow: "0px 0px 3px red",
+                      marginRight: 3,
+                    }}
+                  >
+                    new
+                  </span>
+                )}
               </Tag>
               {item.proxies && item.proxies.length > 0 && (
                 <PodEntrypoint

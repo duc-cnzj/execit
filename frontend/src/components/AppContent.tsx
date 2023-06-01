@@ -4,6 +4,7 @@ import "../pkg/DraggableModal/index.css";
 import pb from "../api/compiled";
 import { Card, Row, Col, Empty, Button, Tag, Switch } from "antd";
 import { cardAll } from "../api/card";
+import Search from "./Search";
 import NamespaceCardItem from "./NamespaceCardItem";
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -47,6 +48,7 @@ const AppContent: React.FC = () => {
 
   return (
     <DraggableModalProvider>
+      <Search data={data} />
       <div className="content" style={{ marginBottom: 30 }}>
         {!isAdmin() && (
           <Switch
@@ -128,14 +130,16 @@ const AppContent: React.FC = () => {
                   <span>{t("Don't have any project cards yet")}</span>
                 }
               >
-                {isAdmin() && <Button
-                  type="primary"
-                  onClick={() => {
-                    h.push("/cluster-manager");
-                  }}
-                >
-                  {t("Create Now")}
-                </Button>}
+                {isAdmin() && (
+                  <Button
+                    type="primary"
+                    onClick={() => {
+                      h.push("/cluster-manager");
+                    }}
+                  >
+                    {t("Create Now")}
+                  </Button>
+                )}
               </Empty>
             </Col>
           )}

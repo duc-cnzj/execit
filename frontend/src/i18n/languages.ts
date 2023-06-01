@@ -279,6 +279,10 @@ const languages: Lang = {
     en: "update cluster",
     zh: "更新集群",
   },
+  "search container": {
+    en: "search container",
+    zh: "搜索容器",
+  },
   "uploading...": {
     en: "uploading...",
     zh: "上传中...",

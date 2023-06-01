@@ -4,6 +4,10 @@ import {
   SET_SHELL_SESSION_ID,
   SET_SHELL_LOG,
   SET_SYNC_CARD,
+  APPEND_OPENED_MODAL,
+  REMOVE_OPENED_MODAL,
+  CLEAR_OPENED_MODALS,
+  SET_VISIBLE,
 } from "./actionTypes";
 import { Dispatch } from "redux";
 import { message } from "antd";
@@ -16,6 +20,28 @@ export const appendCreateProjectLog = (id: string, log: string) => ({
     id,
     output: log,
   },
+});
+
+export const appendOpenedModal = (key: string) => ({
+  type: APPEND_OPENED_MODAL,
+  data: {
+    key,
+  },
+});
+
+export const setSearch = (visible: boolean) => ({
+  type: SET_VISIBLE,
+  visible,
+});
+
+export const removeOpenedModal = (key: string) => ({
+  type: REMOVE_OPENED_MODAL,
+  data: {
+    key,
+  },
+});
+export const clearOpenedModals = () => ({
+  type: CLEAR_OPENED_MODALS,
 });
 
 export const clearCreateProjectLog = (id: string) => ({
@@ -47,7 +73,11 @@ export const setSyncCard = () => ({
   },
 });
 
-export const handleEvents = (id: string, data: pb.websocket.Metadata, input: any) => {
+export const handleEvents = (
+  id: string,
+  data: pb.websocket.Metadata,
+  input: any
+) => {
   return function (dispatch: Dispatch) {
     switch (data.type.valueOf()) {
       case pb.websocket.Type.SetUid:
