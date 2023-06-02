@@ -18,12 +18,16 @@ import classnames from "classnames";
 import { useDispatch, useSelector } from "react-redux";
 import { appendOpenedModal, setSearch } from "../store/actions";
 import { visible } from "../store/reducers/search";
-
+import Fuse from "fuse.js";
 interface card {
   namespace: string;
   name: string;
   clusterName: string;
 }
+const options = {
+  includeScore: true,
+  keys: ["namespace", "name", "clusterName"],
+};
 const Search: React.FC<{ data: pb.card.ItemsList[] }> = ({ data: items }) => {
   const v = useSelector(visible);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,6 +52,9 @@ const Search: React.FC<{ data: pb.card.ItemsList[] }> = ({ data: items }) => {
   const ref = useRef<ListRef>(null);
 
   const [data, setData] = useState<card[]>([]);
+
+  const fuse = useMemo(() => new Fuse(data, options), [data]);
+
   const filterData = useCallback(
     (v: ChangeEvent<HTMLInputElement>) => {
       setSelected(0);
@@ -55,11 +62,10 @@ const Search: React.FC<{ data: pb.card.ItemsList[] }> = ({ data: items }) => {
         setData(cards);
         return;
       }
-      setData(
-        cards.filter((item) => item.name.includes(v.target.value))
-      );
+
+      setData(fuse.search(v.target.value).map((v) => v.item));
     },
-    [cards]
+    [cards, fuse]
   );
   const [selected, setSelected] = useState(0);
   const dispatch = useDispatch();

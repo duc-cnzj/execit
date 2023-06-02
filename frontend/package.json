@@ -23,6 +23,7 @@
     "dayjs": "^1.11.1",
     "eslint-config-react-app": "^7.0.1",
     "fetch-readablestream": "^0.2.0",
+    "fuse.js": "^6.6.2",
     "hotkeys-js": "^3.8.7",
     "i18next": "^21.6.16",
     "immutable": "^4.0.0",
