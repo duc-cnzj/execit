@@ -58,6 +58,7 @@ const Search: React.FC<{ data: pb.card.ItemsList[] }> = ({ data: items }) => {
   const filterData = useCallback(
     (v: ChangeEvent<HTMLInputElement>) => {
       setSelected(0);
+      ref.current?.scrollTo(0);
       if (!v.target.value) {
         setData(cards);
         return;
@@ -96,15 +97,17 @@ const Search: React.FC<{ data: pb.card.ItemsList[] }> = ({ data: items }) => {
   useEffect(() => {
     const onKeyDown = (ev: KeyboardEvent) => {
       if (ev.code === "ArrowDown") {
+        ev.preventDefault();
+        ev.stopPropagation();
         setSelected((n) => {
           let nn = (n + 1) % data.length;
           ref.current?.scrollTo(69 * nn);
           return nn;
         });
-        ev.preventDefault();
-        ev.stopPropagation();
       }
       if (ev.code === "ArrowUp") {
+        ev.preventDefault();
+        ev.stopPropagation();
         setSelected((n) => {
           let nn = (n - 1) % data.length;
           if (nn < 0) {
@@ -113,8 +116,6 @@ const Search: React.FC<{ data: pb.card.ItemsList[] }> = ({ data: items }) => {
           ref.current?.scrollTo(69 * nn);
           return nn;
         });
-        ev.preventDefault();
-        ev.stopPropagation();
       }
     };
 
