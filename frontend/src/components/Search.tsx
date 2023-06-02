@@ -188,8 +188,8 @@ const Search: React.FC<{ data: pb.card.ItemsList[] }> = ({ data: items }) => {
             {(item: card, index: number) => (
               <List.Item
                 onClick={finish}
-                id={item.namespace + item.name}
-                key={item.namespace + item.name}
+                id={item.clusterName + item.namespace + item.name}
+                key={item.clusterName + item.namespace + item.name}
                 onMouseEnter={() => setSelected(index)}
                 className={classnames(
                   { "search__item--selected": index === selected },
