@@ -189,9 +189,9 @@ const TabShell: React.FC<{
       myterm.attachCustomKeyEventHandler((event: KeyboardEvent) => {
         if ((event.metaKey || event.ctrlKey) && event.key === "k") {
           dispatch(setSearch(true));
-          return true;
+          return false;
         }
-        return false;
+        return true;
       });
       myterm.loadAddon(fitAddon);
       myterm.onResize(onTerminalResize(id, ws));
