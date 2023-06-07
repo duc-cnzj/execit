@@ -101,7 +101,7 @@ const Search: React.FC<{ data: pb.card.ItemsList[] }> = ({ data: items }) => {
         ev.stopPropagation();
         setSelected((n) => {
           let nn = (n + 1) % data.length;
-          ref.current?.scrollTo(69 * nn);
+          ref.current?.scrollTo(69 * (nn - 5));
           return nn;
         });
       }
@@ -113,7 +113,7 @@ const Search: React.FC<{ data: pb.card.ItemsList[] }> = ({ data: items }) => {
           if (nn < 0) {
             nn += data.length;
           }
-          ref.current?.scrollTo(69 * nn);
+          ref.current?.scrollTo(69 * (nn - 5));
           return nn;
         });
       }
@@ -188,7 +188,7 @@ const Search: React.FC<{ data: pb.card.ItemsList[] }> = ({ data: items }) => {
             {(item: card, index: number) => (
               <List.Item
                 onClick={finish}
-                onMouseEnter={() => setSelected(index)}
+                onMouseMove={() => setSelected(index)}
                 className={classnames(
                   { "search__item--selected": index === selected },
                   "search__item"
