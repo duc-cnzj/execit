@@ -387,13 +387,13 @@ export default class LazyLog extends Component {
       count = lines.count();
     }
 
-      let scrollToIndex = getScrollIndex({
-        follow:  follow && isBottom,
-        scrollToLine,
-        previousCount,
-        count,
-        offset,
-      });
+    let scrollToIndex = getScrollIndex({
+      follow:  follow && isBottom,
+      scrollToLine,
+      previousCount,
+      count,
+      offset,
+    });
 
     this.setState({
       lines,
