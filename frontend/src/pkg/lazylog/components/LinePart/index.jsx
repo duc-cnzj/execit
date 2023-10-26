@@ -60,10 +60,6 @@ export default class LinePart extends Component {
   render() {
     const { format, part, style } = this.props;
 
-    return (
-      <span className={getClassName(part)} style={style}>
-        {format ? format(part.text) : part.text}
-      </span>
-    );
+    return format ? format(part.text) : <span className={getClassName(part)} style={style}>{part.text}</span>
   }
 }

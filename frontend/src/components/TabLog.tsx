@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState, useCallback } from "react";
+import React, { memo, useEffect, useState, useCallback, ReactNode } from "react";
 import PodEntryPoint from "./PodEntrypoint";
 
 import { cardAllContainers } from "../api/card";
@@ -7,6 +7,7 @@ import pb from "../api/compiled";
 import LazyLog from "../pkg/lazylog/components/LazyLog";
 import { getLang, getToken } from "./../utils/token";
 import { useTranslation } from "react-i18next";
+import { AnsiUp } from "ansi_up";
 
 const ProjectContainerLogs: React.FC<{
   cardId: number;
@@ -63,7 +64,19 @@ const ProjectContainerLogs: React.FC<{
               <div style={{ display: "flex", alignItems: "center" }}>
                 {item.container}
                 <Tag color="magenta" style={{ marginLeft: 5 }}>
-                  {item.pod} {item.is_new && <span style={{ fontFamily: '"Fira code", "Fira Mono", monospace', color: "red", textShadow: "0px 0px 3px red", marginRight: 3}}>new</span>}
+                  {item.pod}{" "}
+                  {item.is_new && (
+                    <span
+                      style={{
+                        fontFamily: '"Fira code", "Fira Mono", monospace',
+                        color: "red",
+                        textShadow: "0px 0px 3px red",
+                        marginRight: 3,
+                      }}
+                    >
+                      new
+                    </span>
+                  )}
                 </Tag>
                 {item.proxies && item.proxies.length > 0 && (
                   <PodEntryPoint
@@ -96,7 +109,7 @@ const ProjectContainerLogs: React.FC<{
             enableSearch
             selectableLines
             captureHotkeys
-            formatPart={(text: string) => {
+            formatPart={(text: string): ReactNode => {
               let res = JSON.parse(text);
               if (res.error) {
                 return (
@@ -112,7 +125,13 @@ const ProjectContainerLogs: React.FC<{
                   </span>
                 );
               }
-              return res.result.log;
+              return (
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: new AnsiUp().ansi_to_html(res.result.log),
+                  }}
+                />
+              );
             }}
             stream
             onError={(e: any) => {
