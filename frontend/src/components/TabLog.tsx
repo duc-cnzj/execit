@@ -7,7 +7,6 @@ import pb from "../api/compiled";
 import LazyLog from "../pkg/lazylog/components/LazyLog";
 import { getLang, getToken } from "./../utils/token";
 import { useTranslation } from "react-i18next";
-import { AnsiUp } from "ansi_up";
 
 const ProjectContainerLogs: React.FC<{
   cardId: number;
@@ -125,13 +124,7 @@ const ProjectContainerLogs: React.FC<{
                   </span>
                 );
               }
-              return (
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: new AnsiUp().ansi_to_html(res.result.log),
-                  }}
-                />
-              );
+              return res.result.log
             }}
             stream
             onError={(e: any) => {

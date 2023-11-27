@@ -1,8 +1,9 @@
-import { Component } from 'react';
-import { func, object, shape, string } from 'prop-types';
-import styles from './index.module.css';
+import { Component } from "react";
+import { func, object, shape, string } from "prop-types";
+import styles from "./index.module.css";
+import Ansi from "ansi-to-react";
 
-const getClassName = part => {
+const getClassName = (part) => {
   const className = [];
 
   if (part.foreground && part.bold) {
@@ -25,7 +26,7 @@ const getClassName = part => {
     className.push(styles.underline);
   }
 
-  return className.join(' ');
+  return className.join(" ");
 };
 
 /**
@@ -59,7 +60,27 @@ export default class LinePart extends Component {
 
   render() {
     const { format, part, style } = this.props;
+    let text = format ? format(part.text) : part.text;
+    let itemText = [];
+    if (typeof text === "string") {
+      itemText.push(<Ansi>{text}</Ansi>);
+    } else if (typeof text === "object") {
+      for (let index = 0; index < text.length; index++) {
+        const element = text[index];
+        if (typeof element === "string") {
+          itemText.push(<Ansi>{element}</Ansi>);
+        } else {
+          itemText.push(element);
+        }
+      }
+    }
 
-    return format ? format(part.text) : <span className={getClassName(part)} style={style}>{part.text}</span>
+    return (
+      <span className={getClassName(part)} style={style}>
+        {itemText.map((v, k) => (
+          <span key={k}>{v}</span>
+        ))}
+      </span>
+    );
   }
 }
